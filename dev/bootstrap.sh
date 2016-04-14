@@ -76,18 +76,18 @@ exchange_setup()
 
 geoserver_setup()
 {
-    if [ ! -d /vagrant/.geoserver ]; then
-        mkdir -p /vagrant/.geoserver
+    if [ ! -d /vagrant/dev/.geoserver ]; then
+        mkdir -p /vagrant/dev/.geoserver
     fi
     if [ ! -f /vagrant/dev/.geoserver/jetty-runner-9.3.8.v20160314.jar ]; then
         echo "=> Downloading jetty-runner.jar"
-	    pushd /vagrant/.geoserver
+	    pushd /vagrant/dev/.geoserver
 	    wget http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.3.8.v20160314/jetty-runner-9.3.8.v20160314.jar > /dev/null 2>&1
 	    popd
     fi
     if [ ! -f /vagrant/dev/.geoserver/geoserver.war ]; then
 	    echo "=> Downloading GeoServer web archive"
-	    pushd /vagrant/.geoserver
+	    pushd /vagrant/dev/.geoserver
 	    wget https://s3.amazonaws.com/boundlessps-public/mapstory/rc1a/geoserver.war > /dev/null 2>&1
 	    unzip geoserver.war -d geoserver
 	    popd
@@ -95,12 +95,12 @@ geoserver_setup()
     if [ -d /vagrant/dev/.geoserver/data ]; then
         rm -fr /vagrant/dev/.geoserver/data
     fi
-    cp -R /vagrant/dev/.geoserver/geoserver/data /vagrant/.geoserver
+    cp -R /vagrant/dev/.geoserver/geoserver/data /vagrant/dev/.geoserver
     sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://192.168.99.110:8000/</baseUrl>@' \
                /vagrant/dev/.geoserver/data/security/auth/geonodeAuthProvider/config.xml
     mkdir -p /vagrant/dev/.geoserver/data/geogig
     printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /vagrant/dev/.geoserver/data/geogig/.geogigconfig
-    chmod -R 755 /vagrant/.geoserver && chown -R vagrant.vagrant /vagrant/.geoserver
+    chmod -R 755 /vagrant/dev/.geoserver && chown -R vagrant.vagrant /vagrant/dev/.geoserver
 }
 
 database_setup()
@@ -143,8 +143,8 @@ gs-dev_init()
     service gs-dev restart > /dev/null 2>&1
 }
 
-yum_setup
-database_setup
-exchange_setup
+#yum_setup
+#database_setup
+#exchange_setup
 geoserver_setup
 gs-dev_init
