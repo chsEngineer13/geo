@@ -50,7 +50,7 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
+development.db
 
 # Sphinx documentation
 docs/_build/
@@ -60,3 +60,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#atom
+.tags
+
+#Vagrant Dev Setup
+.vagrant
+.venv
+dev/.geoserver/*
+dev/.django/*
+*.log

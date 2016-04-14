@@ -1,0 +1,12 @@
+--index-url https://pypi.python.org/simple/
+
+-e git://github.com/GeoNode/geonode.git@0f9c7d65cc0ebccf1654fd714222cfbb0e7e5985#egg=geonode
+django-tastypie==0.11.0
+django-classification-banner==0.1.5
+psycopg2==2.6.1
+python-ldap==2.4.25
+django-auth-ldap==1.2.7
+django-maploom==1.5.0
+GDAL==2.0.1
+supervisor==3.2.3
+gunicorn==19.4.5

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+set -e
+/bin/bash -c ". /vagrant/.venv/bin/activate; exec /bin/bash -i"
