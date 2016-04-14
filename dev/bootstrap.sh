@@ -143,8 +143,8 @@ gs-dev_init()
     service gs-dev restart > /dev/null 2>&1
 }
 
-#yum_setup
-#database_setup
-#exchange_setup
+yum_setup
+database_setup
+exchange_setup
 geoserver_setup
 gs-dev_init

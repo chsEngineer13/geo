@@ -7,7 +7,7 @@
 {% endblock %}
 {% block header %}
     {% if classification_banner_enabled %}
-        <link href="{{ STATIC_URL }}lib/css/django_classification_banner_overrides.css" rel="stylesheet"/>
+        <link href="{{ STATIC_URL }}css/django_classification_banner_overrides.css" rel="stylesheet"/>
         {% classification_banner %}
     {% endif %}
     {{ block.super }}
