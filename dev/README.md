@@ -17,8 +17,6 @@ rerun the steps to start in development mode.
 
 ## setup for maploom development
 
-__Note:__  if you provisioned the vm, you will need to rerun these steps.
-
 clone the maploom repo as a sibling of exchange-dev
 
 Example:
@@ -40,10 +38,22 @@ $ bower install
 $ grunt watch
 ```
 
+uncomment the following line in the Vagrantfile
+```
+# config.vm.synced_folder "../MapLoom", "/MapLoom"
+```
+
+provision the vm
 ```bash
+$ vagrant provision
+```
+
+```bash
+$ vagrant ssh
 $ cd /vagrant
 $ dev/setup_maploom_dev
 ```
+__Note:__  if you provisioned the vm, you will need to rerun the last step.
 
 ## manage geoserver service
 
