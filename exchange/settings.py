@@ -25,7 +25,7 @@ from geonode.settings import *  # noqa
 SITENAME = 'exchange'
 CLASSIFICATION_BANNER_ENABLED = False
 DEBUG = TEMPLATE_DEBUG = True
-CORS_ENABLED = False
+CORS_ENABLED = True
 LOCKDOWN_GEONODE = True
 REGISTRATION_OPEN = False
 SOCIAL_BUTTONS = False
@@ -33,27 +33,28 @@ SOCIAL_BUTTONS = False
 # Set to True to load non-minified versions of (static) client dependencies
 DEBUG_STATIC = False
 TIME_ZONE = 'America/Chicago'
-GEONODE_ROOT = os.path.abspath(os.path.abspath(geonode.__file__))
+WSGI_APPLICATION = "exchange.wsgi.application"
+ROOT_URLCONF = 'exchange.urls'
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-WSGI_APPLICATION = "exchange.wsgi.application"
-
+# static file settings
 STATICFILES_DIRS.append(
     os.path.join(LOCAL_ROOT, "static"),
 )
+#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(LOCAL_ROOT, 'static_root')
+STATIC_URL = '/static/'
 
+# media file storage
+#MEDIA_ROOT = os.path.join(LOCAL_ROOT, 'uploaded')
+MEDIA_URL = "/uploaded/"
+
+# template settings
 TEMPLATE_DIRS = (
     os.path.join(LOCAL_ROOT, "templates"),
 ) + TEMPLATE_DIRS
 
-ROOT_URLCONF = 'exchange.urls'
-
-LOCALE_PATHS = (
-    os.path.join(LOCAL_ROOT, 'locale'),
-    ) + LOCALE_PATHS
-
+# installed applications
 INSTALLED_APPS = (
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
@@ -61,6 +62,7 @@ INSTALLED_APPS = (
     'maploom'
 ) + INSTALLED_APPS
 
+# database settings
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -68,13 +70,11 @@ DATABASES = {
     }
 }
 
+# geoserver settings
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
         'LOCATION': 'http://localhost:8080/geoserver/',
-        # PUBLIC_LOCATION needs to be kept like this because in dev mode
-        # the proxy won't work and the integration tests will fail
-        # the entire block has to be overridden in the local_settings
         'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
@@ -123,8 +123,6 @@ MAP_BASELAYERS = [
     }
 ]
 
-SECRET_KEY = 'x-#u&4x2k*$0-60fywnm5&^+&a!pd-ajrx(z@twth%i7^+oskh'
-
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django_classification_banner.context_processors.classification',
     'exchange.core.context_processors.version',
@@ -142,6 +140,8 @@ if CORS_ENABLED:
     )
     CORS_ORIGIN_ALLOW_ALL = True
     CORS_ALLOW_METHODS = ('GET',)
+
+SECRET_KEY = 'x-#u&4x2k*$0-60fywnm5&^+&a!pd-ajrx(z@twth%i7^+oskh'
 
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
@@ -170,5 +170,12 @@ VAGRANT = os.environ.get('VAGRANT_ENABLED')
 if VAGRANT:
     try:
         from dev.settings import *
+    except ImportError:
+        pass
+
+CF_ENABLED = os.environ.get('CF_ENABLED')
+if CF_ENABLED:
+    try:
+        from cf.settings import *
     except ImportError:
         pass

@@ -18,10 +18,13 @@
 #
 #########################################################################
 
-import os
-from django.core.wsgi import get_wsgi_application
-from whitenoise.django import DjangoWhiteNoise
+from django.conf import settings
+from storages.backends.s3boto import S3BotoStorage
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exchange.settings")
-application = get_wsgi_application()
-application = DjangoWhiteNoise(application)
+
+class StaticStorage(S3BotoStorage):
+    location = settings.STATICFILES_LOCATION
+
+
+class MediaStorage(S3BotoStorage):
+    location = settings.MEDIAFILES_LOCATION

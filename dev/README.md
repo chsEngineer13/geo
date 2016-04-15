@@ -51,7 +51,7 @@ $ vagrant provision
 ```bash
 $ vagrant ssh
 $ cd /vagrant
-$ dev/setup_maploom_dev
+$ dev/setup_maploom_dev.sh
 ```
 __Note:__  if you provisioned the vm, you will need to rerun the last step.
 
