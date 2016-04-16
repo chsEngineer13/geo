@@ -81,17 +81,19 @@ OGC_SERVER = {
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
-        'GEOGIT_ENABLED': True,
+        'GEOGIG_ENABLED': True,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': True,
         'GEOSERVER_DATA_DIR': '/var/lib/geoserver_data',
-        'GEOGIT_DATASTORE_DIR': '/var/lib/geoserver_data/geogig',
+        'GEOGIG_DATASTORE_DIR': '/var/lib/geoserver_data/geogig',
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '',  # 'datastore',
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
+
+GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
 UPLOADER = {
     'BACKEND': 'geonode.rest',

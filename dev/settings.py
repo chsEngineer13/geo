@@ -51,12 +51,10 @@ DATABASES = {
     }
 }
 
-GEOSERVER_URL = 'http://192.168.99.110:8080/geoserver/'
-
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-        'LOCATION': 'http://localhost:8080/geoserver/',
+        'LOCATION': 'http://192.168.99.110:8080/geoserver/',
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
@@ -73,6 +71,29 @@ OGC_SERVER = {
         'TIMEOUT': 10
     }
 }
+
+GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION'] + "wms"
+
+MAP_BASELAYERS = [
+    {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": GEOSERVER_BASE_URL,
+            "restUrl": "/gs/rest",
+            "name": "local geoserver"
+        }
+    },
+    {
+        "source": {"ptype": "gxp_osmsource", "name": "OpenStreetMap"},
+        "type": "OpenLayers.Layer.OSM",
+        "name": "mapnik",
+        "title": "OpenStreetMap",
+        "args": ["OpenStreetMap"],
+        "visibility": True,
+        "fixed": True,
+        "group":"background"
+    }
+]
 
 UPLOADER = {
     'BACKEND': 'geonode.importer',
