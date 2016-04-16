@@ -2,8 +2,6 @@
 ```bash
 $ vagrant up
 $ vagrant ssh
-$ cd /vagrant
-$ dev/activate
 $ python manage.py runserver 0.0.0.0:8000
 ```
 
@@ -50,7 +48,6 @@ $ vagrant provision
 
 ```bash
 $ vagrant ssh
-$ cd /vagrant
 $ dev/setup_maploom_dev.sh
 ```
 __Note:__  if you provisioned the vm, you will need to rerun the last step.

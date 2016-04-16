@@ -20,7 +20,7 @@
 
 import os
 import geonode
-from geonode.settings import *  # noqa
+from geonode.settings import *
 
 SITENAME = 'exchange'
 CLASSIFICATION_BANNER_ENABLED = False

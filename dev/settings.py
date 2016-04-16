@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 
 SITEURL = 'http://192.168.99.110:8000/'
@@ -51,10 +52,12 @@ DATABASES = {
     }
 }
 
+GEOSERVER_URL = 'http://192.168.99.110:8080/geoserver/'
+
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-        'LOCATION': 'http://192.168.99.110:8080/geoserver/',
+        'LOCATION': GEOSERVER_URL,
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
