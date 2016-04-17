@@ -12,7 +12,7 @@
 set -a
 
 PREFIX=/vagrant/.venv
-APP=geoserver
+APP=exchange:*
 SUPERVISORD=$PREFIX/bin/supervisord
 SUPERVISORCTL=$PREFIX/bin/supervisorctl
 PIDFILE=/var/run/supervisor.pid

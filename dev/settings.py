@@ -52,7 +52,7 @@ DATABASES = {
     }
 }
 
-GEOSERVER_URL = 'http://192.168.99.110:8080/geoserver/'
+GEOSERVER_URL = 'http://192.168.99.110:8888/proxy/http://192.168.99.110:8080/geoserver/'
 
 OGC_SERVER = {
     'default': {

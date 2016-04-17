@@ -67,15 +67,13 @@ exchange_setup()
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
     pip install -r /vagrant/requirements.txt
+    pip install corsa==0.1.2
     python /vagrant/manage.py syncdb --noinput
     python /vagrant/manage.py collectstatic --noinput
     echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
     echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
     chmod -R 755 /vagrant/.venv && chown -R vagrant.vagrant /vagrant/.venv
-    pushd
-    python /vagrant/dev/default_accounts.py
-    popd
 }
 
 geoserver_setup()
