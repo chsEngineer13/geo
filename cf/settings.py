@@ -93,7 +93,8 @@ OGC_SERVER = {
         'GEOGIG_DATASTORE_DIR': '/var/lib/geoserver_data/geogig',
     }
 }
-
+DEFAULT_MAP_CRS = "EPSG:4326"
+GEOSERVER_URL = GS_URL
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 UPLOADER = {
     'BACKEND': 'geonode.importer',

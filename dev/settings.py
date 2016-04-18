@@ -53,6 +53,7 @@ DATABASES = {
 }
 
 GEOSERVER_URL = 'http://192.168.99.110:8888/proxy/http://192.168.99.110:8080/geoserver/'
+DEFAULT_MAP_CRS = "EPSG:4326"
 
 OGC_SERVER = {
     'default': {

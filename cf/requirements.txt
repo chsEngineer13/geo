@@ -2,12 +2,12 @@
 
 -e git://github.com/boundlessgeo/geonode.git@whitenoise_patch#egg=geonode
 -e git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
+-e git://github.com/ROGUE-JCTD/django-maploom.git@c2b0165882b22fed58dc9f3d550639188636abe9#egg=django-maploom
 whitenoise==2.0.6
 django-tastypie==0.11.0
 django-cors-headers==1.1.0
 django-classification-banner==0.1.5
 psycopg2==2.6.1
-django-maploom==1.5.0
 certifi==2015.11.20.1
 supervisor==3.2.3
 django-storages==1.1.8
