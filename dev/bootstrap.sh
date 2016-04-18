@@ -73,6 +73,15 @@ exchange_setup()
     echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
     echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
+    if ! grep -q 'django-runserver' /home/vagrant/.bashrc; then
+        printf "\nalias django-runserver='/vagrant/.venv/bin/python /vagrant/manage.py runserver 0.0.0.0:8000'" >> /home/vagrant/.bashrc
+    fi
+    if ! grep -q 'django-collectstatic' /home/vagrant/.bashrc; then
+        printf "\nalias django-collectstatic='/vagrant/.venv/bin/python /vagrant/manage.py collectstatic 0.0.0.0:8000'" >> /home/vagrant/.bashrc
+    fi
+    if ! grep -q 'django-syncdb' /home/vagrant/.bashrc; then
+        printf "\nalias django-syncdb='/vagrant/.venv/bin/python /vagrant/manage.py syncdb 0.0.0.0:8000'" >> /home/vagrant/.bashrc
+    fi
     chmod -R 755 /vagrant/.venv && chown -R vagrant.vagrant /vagrant/.venv
 }
 

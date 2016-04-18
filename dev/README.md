@@ -2,7 +2,7 @@
 ```bash
 $ vagrant up
 $ vagrant ssh
-$ python manage.py runserver 0.0.0.0:8000
+$ django-runserver
 ```
 
 ## provision the vm
@@ -49,8 +49,9 @@ $ vagrant provision
 ```bash
 $ vagrant ssh
 $ dev/setup_maploom_dev.sh
+$ django-collectstatic
 ```
-__Note:__  if you provisioned the vm, you will need to rerun the last step.
+__Note:__  each time you provision the vm, you will need to rerun the last steps above.
 
 ## manage geoserver service
 
