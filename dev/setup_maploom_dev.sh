@@ -24,10 +24,17 @@ maploom_dev()
   [ ! -d /MapLoom ] && echo 'Directory /Maploom not found. have you linked it to Maploom repo on host?'
   [ ! -f /MapLoom/build/maploom.html ] && echo '/MapLoom/build/maploom.html not found. have you built maploom? e.g. \"grunt watch\" '
 
-  rm -rf /vagrant/.venv/lib/python2.7/site-packages/maploom/static/maploom/*
-  ln -s /MapLoom/build/* /vagrant/.venv/lib/python2.7/site-packages/maploom/static/maploom/
-  rm /vagrant/.venv/lib/python2.7/site-packages/maploom/templates/maps/maploom.html
-  ln -s /MapLoom/build/maploom.html /vagrant/.venv/lib/python2.7/site-packages/maploom/templates/maps/maploom.html
+  if [ -d /vagrant/.venv/src/django-maploom ]; then
+    rm -rf /vagrant/.venv/src/django-maploom/maploom/static/maploom/*
+    ln -s /MapLoom/build/* /vagrant/.venv/src/django-maploom/maploom/static/maploom/
+    rm /vagrant/.venv/src/django-maploom/maploom/templates/maps/maploom.html
+    ln -s /MapLoom/build/maploom.html /vagrant/.venv/src/django-maploom/maploom/templates/maps/maploom.html
+  else
+    rm -rf /vagrant/.venv/lib/python2.7/site-packages/maploom/static/maploom/*
+    ln -s /MapLoom/build/* /vagrant/.venv/lib/python2.7/site-packages/maploom/static/maploom/
+    rm /vagrant/.venv/lib/python2.7/site-packages/maploom/templates/maps/maploom.html
+    ln -s /MapLoom/build/maploom.html /vagrant/.venv/lib/python2.7/site-packages/maploom/templates/maps/maploom.html
+  fi
 }
 
 maploom_dev
