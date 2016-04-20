@@ -41,12 +41,12 @@ LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 STATICFILES_DIRS.append(
     os.path.join(LOCAL_ROOT, "static"),
 )
-#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 STATIC_ROOT = os.path.join(LOCAL_ROOT, 'static_root')
 STATIC_URL = '/static/'
 
 # media file storage
-#MEDIA_ROOT = os.path.join(LOCAL_ROOT, 'uploaded')
+MEDIA_ROOT = os.path.join(LOCAL_ROOT, 'media')
 MEDIA_URL = "/uploaded/"
 
 # template settings
@@ -59,7 +59,8 @@ INSTALLED_APPS = (
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
-    'maploom'
+    'maploom',
+    'gsschema'
 ) + INSTALLED_APPS
 
 # database settings
@@ -94,6 +95,10 @@ OGC_SERVER = {
 }
 
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
+
+GSSCHEMA_CONFIG = {
+    'gsschema_dir': '/var/lib/geoserver_data/'
+}
 
 UPLOADER = {
     'BACKEND': 'geonode.rest',

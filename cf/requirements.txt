@@ -14,3 +14,4 @@ django-storages==1.1.8
 boto==2.38.0
 gunicorn==19.4.5
 dj-database-url==0.4.0
+django-gsschema==0.1b2
