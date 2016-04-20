@@ -41,7 +41,7 @@ LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 STATICFILES_DIRS.append(
     os.path.join(LOCAL_ROOT, "static"),
 )
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
 STATIC_ROOT = os.path.join(LOCAL_ROOT, 'static_root')
 STATIC_URL = '/static/'
 
