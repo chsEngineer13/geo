@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% load classification_banner i18n %}
+{% load solo_tags %}
 
 {% block extra_head %}
-      <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+  {% get_solo 'exchange.LogoImage' as logo %}
+  {% get_solo 'exchange.NavbarColor' as navcolor %}
+  <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+  <style>
+  {% if logo.logo_image %}
+    .navbar-brand {
+      background-image: url('uploaded/{{ logo.logo_image }}');
+    }
+  {% endif %}
+    .navbar-inverse {
+      background-color: {{ navcolor.color }};
+    }
+  </style>
 {% endblock %}
 {% block header %}
     {% if classification_banner_enabled %}

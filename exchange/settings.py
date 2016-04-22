@@ -56,10 +56,13 @@ TEMPLATE_DIRS = (
 
 # installed applications
 INSTALLED_APPS = (
+    'exchange',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
-    'maploom'
+    'maploom',
+    'solo',
+    'colorfield'
 ) + INSTALLED_APPS
 
 # database settings

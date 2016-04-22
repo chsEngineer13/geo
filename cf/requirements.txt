@@ -7,6 +7,8 @@ whitenoise==2.0.6
 django-tastypie==0.11.0
 django-cors-headers==1.1.0
 django-classification-banner==0.1.5
+django-solo==1.1.2
+django-colorfield==0.1.10
 psycopg2==2.6.1
 certifi==2015.11.20.1
 supervisor==3.2.3

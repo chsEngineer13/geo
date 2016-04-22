@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load base_tags %}
+{% load solo_tags %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -11,13 +12,31 @@
 {% block middle %}
 
   {% block hero %}
-  <div class="jumbotron">
+  {% get_solo 'exchange.BannerImage' as banner %}
+  {% get_solo 'exchange.SiteName' as site_name %}
+  {% get_solo 'exchange.IconImage' as icon %}
+  {% get_solo 'exchange.TagLine' as tag_line %}
+    {% if banner.banner_image %}
+      <div class="jumbotron" style="background: url('..{{banner.banner_image.url}}')">
+    {% else %}
+      <div class="jumbotron">
+    {% endif %}
+
     <div class="container">
-      <h1><img src="{% static "img/icon.png" %}"> <span class="title"> {% trans "Exchange" %} </span></h1>
-      <p>{% blocktrans %} A Platform for GeoSpatial Collaboration  {% endblocktrans %}</p>
+      <h1>
+        {% if icon.icon_image %}
+          <img src="{{icon.icon_image.url}}">
+        {% else %}
+          <img src="{% static "img/icon.png" %}">
+        {% endif %}
+        <span class="title"> {{ site_name.site_name }} </span>
+      </h1>
+      <p>
+        {{tag_line.tag_line}}
+      </p>
     </div>
-  </div>
   {% endblock %}
+  </div>
 
   {% block mainbody %}
   <div class="container">

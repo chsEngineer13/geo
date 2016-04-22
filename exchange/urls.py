@@ -22,12 +22,11 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from geonode.urls import *
+from . import views
 
 urlpatterns = patterns(
     '',
-    url(r'^/?$',
-        TemplateView.as_view(template_name='site_index.html'),
-        name='home'),
+    url(r'^/?$', views.HomeScreen, name='home')
  ) + urlpatterns
 
 urlpatterns += maploom_urls

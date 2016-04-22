@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
   # Example of share an additional folder to the guest VM.
-  # config.vm.synced_folder "../MapLoom", "/MapLoom"
+  #config.vm.synced_folder "../MapLoom", "/MapLoom"
 
 
   config.vm.provider :virtualbox do |vb|
