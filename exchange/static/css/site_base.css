@@ -11,28 +11,28 @@ body {
   height: 35px;
 }
 .navbar-inverse {
-  background-color: #0F1A2C; /* Change here for the banner color - Boundless (#29728C) */
+  background-color: #0F1A2C; /* Change here for the banner color - Boundless (#0F1A2C) */
 }
 .navbar-inverse .navbar-nav > li > a {
   color: #FFFFFF;
 }
 .navbar-inverse .navbar-nav > li > a:hover {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 body.layers li#nav_layers a {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 body.maps li#nav_maps a {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 body.documents li#nav_documents a {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 body.people li#nav_people a {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 body.groups li#nav_groups a {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 .title {
   line-height: 96px;
@@ -41,7 +41,7 @@ body.groups li#nav_groups a {
   border-top: 1px solid #cccccc;
   height: 60px;
   padding: 17px;
-  background: #0F1A2C; /* Change here for the banner color - Boundless (#29728C) */
+  background: #0F1A2C; /* Change here for the banner color - Boundless (#0F1A2C) */
   margin-top: 10px;
 }
 .footer .container .row {
@@ -51,7 +51,7 @@ body.groups li#nav_groups a {
   color: #000000;
 }
 a {
-  color: #37A6AD; /* Change here for the a tag color - Boundless (#FF6600) */
+  color: #37A6AD; /* Change here for the a tag color - Boundless (#37A6AD) */
 }
 a:hover{
   color: #009888;
