@@ -69,8 +69,8 @@ exchange_setup()
     pip install -r /vagrant/requirements.txt
     python /vagrant/manage.py syncdb --noinput
     python /vagrant/manage.py collectstatic --noinput
-    echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
-    echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
+    #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
+    #echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
     if ! grep -q 'django-runserver' /home/vagrant/.bashrc; then
         printf "\nalias django-runserver='/vagrant/.venv/bin/python /vagrant/manage.py runserver 0.0.0.0:8000'" >> /home/vagrant/.bashrc
