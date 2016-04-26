@@ -16,10 +16,10 @@
   {% get_solo 'core.SiteName' as site_name %}
   {% get_solo 'core.IconImage' as icon %}
   {% get_solo 'core.TagLine' as tag_line %}
-  <div class="jumbotron" style="background: url('..{{banner.banner_image.url}}'); background-size: cover;">
+  <div class="jumbotron" style="background: url('..{{ banner.banner_image.url }}'); background-size: cover;">
     <div class="container">
       <h1>
-        <img src="{{icon.icon_image.url}}">
+        <img src="{{ icon.icon_image.url }}">
         <span class="title"> {{ site_name.site_name }} </span>
       </h1>
       <p>

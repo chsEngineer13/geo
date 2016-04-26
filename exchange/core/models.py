@@ -54,7 +54,6 @@ class TagLine(SingletonModel):
 class BannerImage(SingletonModel):
     banner_image = models.ImageField(
         upload_to='static/img/',
-        default='static/img/boundless-background.png',
         help_text="Recommended dimensions: 1440px x 350px"
         )
 
@@ -90,7 +89,6 @@ class BannerImage(SingletonModel):
 class IconImage(SingletonModel):
     icon_image = models.ImageField(
         upload_to='static/img/',
-        default='static/img/boundless-icon.png',
         help_text="Recommended dimensions: 96px x 96px"
     )
 
@@ -126,7 +124,6 @@ class IconImage(SingletonModel):
 class LogoImage(SingletonModel):
     logo_image = models.ImageField(
         upload_to='static/img/',
-        default='static/img/boundless-logo.png',
         help_text="Must be 35px wide"
     )
 

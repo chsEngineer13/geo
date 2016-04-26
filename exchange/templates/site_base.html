@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% load classification_banner i18n %}
+{% load staticfiles %}
 {% load solo_tags %}
 
 {% block extra_head %}
@@ -10,7 +11,7 @@
   <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
   <style>
     .navbar-brand {
-      background-image: url('..{{ logo.logo_image }}');
+      background-image: url('{{ logo.logo_image.url }}');
     }
     .navbar-inverse {
       background-color: {{ navcolor.color }};

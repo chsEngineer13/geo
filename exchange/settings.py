@@ -62,7 +62,7 @@ INSTALLED_APPS = (
     'django_classification_banner',
     'maploom',
     'solo',
-    'colorfield'
+    'colorfield',
     'gsschema'
 ) + INSTALLED_APPS
 
