@@ -12,23 +12,14 @@
 {% block middle %}
 
   {% block hero %}
-  {% get_solo 'exchange.BannerImage' as banner %}
-  {% get_solo 'exchange.SiteName' as site_name %}
-  {% get_solo 'exchange.IconImage' as icon %}
-  {% get_solo 'exchange.TagLine' as tag_line %}
-    {% if banner.banner_image %}
-      <div class="jumbotron" style="background: url('..{{banner.banner_image.url}}')">
-    {% else %}
-      <div class="jumbotron">
-    {% endif %}
-
+  {% get_solo 'core.BannerImage' as banner %}
+  {% get_solo 'core.SiteName' as site_name %}
+  {% get_solo 'core.IconImage' as icon %}
+  {% get_solo 'core.TagLine' as tag_line %}
+  <div class="jumbotron" style="background: url('..{{banner.banner_image.url}}'); background-size: cover;">
     <div class="container">
       <h1>
-        {% if icon.icon_image %}
-          <img src="{{icon.icon_image.url}}">
-        {% else %}
-          <img src="{% static "img/icon.png" %}">
-        {% endif %}
+        <img src="{{icon.icon_image.url}}">
         <span class="title"> {{ site_name.site_name }} </span>
       </h1>
       <p>

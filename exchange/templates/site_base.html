@@ -4,17 +4,25 @@
 {% load solo_tags %}
 
 {% block extra_head %}
-  {% get_solo 'exchange.LogoImage' as logo %}
-  {% get_solo 'exchange.NavbarColor' as navcolor %}
+  {% get_solo 'core.LogoImage' as logo %}
+  {% get_solo 'core.NavbarColor' as navcolor %}
+  {% get_solo 'core.HyperlinkColor' as hyperlinkcolor %}
   <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
   <style>
-  {% if logo.logo_image %}
     .navbar-brand {
-      background-image: url('uploaded/{{ logo.logo_image }}');
+      background-image: url('..{{ logo.logo_image }}');
     }
-  {% endif %}
     .navbar-inverse {
       background-color: {{ navcolor.color }};
+    }
+    .footer {
+      background-color: {{ navcolor.color }};
+    }
+    a {
+      color: {{ hyperlinkcolor.color }};
+    }
+    a:hover {
+      color: {{ hyperlinkcolor.color }};
     }
   </style>
 {% endblock %}

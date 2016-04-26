@@ -1,0 +1,44 @@
+[
+    {
+        "pk": 1,
+        "model": "core.sitename",
+        "fields": {
+            "site_name": "Exchange"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.navbarcolor",
+        "fields": {
+            "color": "#0F1A2C"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.hyperlinkcolor",
+        "fields": {
+            "color": "#37A6AD"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.bannerimage",
+        "fields": {
+            "banner_image": "/static/img/geoint-background.png"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.iconimage",
+        "fields": {
+            "icon_image": "/static/img/geoint-icon.png"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.logoimage",
+        "fields": {
+            "logo_image": "/static/img/geoint-logo.png"
+        }
+    }
+]
