@@ -18,16 +18,15 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
-from django.views.generic import TemplateView
-from maploom.geonode.urls import urlpatterns as maploom_urls
-from geonode.urls import *
-from . import views
+from django.contrib import admin
+from solo.admin import SingletonModelAdmin
+from exchange.core.models import (SiteName, TagLine, BannerImage, IconImage,
+                                  LogoImage, NavbarColor, HyperLinkColor)
 
-urlpatterns = patterns(
-    '',
-    (r'^gsschema/', include('gsschema.urls')),
-    url(r'^/?$', views.HomeScreen, name='home')
- ) + urlpatterns
-
-urlpatterns += maploom_urls
+admin.site.register(SiteName, SingletonModelAdmin)
+admin.site.register(TagLine, SingletonModelAdmin)
+admin.site.register(BannerImage, SingletonModelAdmin)
+admin.site.register(IconImage, SingletonModelAdmin)
+admin.site.register(LogoImage, SingletonModelAdmin)
+admin.site.register(NavbarColor, SingletonModelAdmin)
+admin.site.register(HyperLinkColor, SingletonModelAdmin)

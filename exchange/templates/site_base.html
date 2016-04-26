@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% load classification_banner i18n %}
+{% load solo_tags %}
 
 {% block extra_head %}
-      <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+  {% get_solo 'core.LogoImage' as logo %}
+  {% get_solo 'core.NavbarColor' as navcolor %}
+  {% get_solo 'core.HyperlinkColor' as hyperlinkcolor %}
+  <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+  <style>
+    .navbar-brand {
+      background-image: url('..{{ logo.logo_image }}');
+    }
+    .navbar-inverse {
+      background-color: {{ navcolor.color }};
+    }
+    .footer {
+      background-color: {{ navcolor.color }};
+    }
+    a {
+      color: {{ hyperlinkcolor.color }};
+    }
+    a:hover {
+      color: {{ hyperlinkcolor.color }};
+    }
+  </style>
 {% endblock %}
 {% block header %}
     {% if classification_banner_enabled %}
