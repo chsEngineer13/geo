@@ -16,3 +16,4 @@ django-storages==1.1.8
 boto==2.38.0
 gunicorn==19.4.5
 dj-database-url==0.4.0
+python-resize-image==1.1.10
