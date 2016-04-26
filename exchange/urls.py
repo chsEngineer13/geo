@@ -26,6 +26,7 @@ from . import views
 
 urlpatterns = patterns(
     '',
+    (r'^gsschema/', include('gsschema.urls')),
     url(r'^/?$', views.HomeScreen, name='home')
  ) + urlpatterns
 

@@ -17,3 +17,4 @@ supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
+django-gsschema==0.1b2
