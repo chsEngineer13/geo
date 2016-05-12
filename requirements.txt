@@ -12,7 +12,7 @@ django-colorfield==0.1.10
 psycopg2==2.6.1
 python-ldap==2.4.25
 django-auth-ldap==1.2.7
-GDAL==2.1.0
+GDAL==2.0.1
 supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
