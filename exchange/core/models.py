@@ -25,6 +25,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from resizeimage import resizeimage
+from django import forms
 
 
 class SiteName(SingletonModel):
@@ -173,3 +174,14 @@ class HyperLinkColor(SingletonModel):
 
     class Meta:
         verbose_name = "Hyperlink Color"
+
+class ThumbnailImage(SingletonModel):
+    thumbnail_image = models.ImageField(
+        upload_to='static/img/thumbnails',
+        help_text="Must be 35px wide"
+    )
+
+class ThumbnailImageForm(forms.Form):
+    thumbnail_image = forms.FileField(
+        label='Select a file',
+    )
