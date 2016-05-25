@@ -1,3 +1,4 @@
+import exchange
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.conf import settings
@@ -5,6 +6,7 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm
+import shutil
 import os
 
 
@@ -14,6 +16,20 @@ def HomeScreen(request):
 
 def layer_metadata_detail(request, layername,
                           template='layers/metadata_detail.html'):
+
+    layer = _resolve_layer(request, layername, 'view_resourcebase',
+                           _PERMISSION_MSG_METADATA)
+
+    if ThumbnailImage.objects.all()[0] is None:
+        no_custom_thumb = True
+
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    default_thumbnail_array = layer.get_thumbnail_url().split('/')
+    default_thumbnail_name = default_thumbnail_array[
+        len(default_thumbnail_array) - 1
+    ]
+    default_thumbnail = os.path.join(thumbnail_dir, default_thumbnail_name)
+
     if request.method == 'POST':
         thumb_form = ThumbnailImageForm(request.POST, request.FILES)
         if thumb_form.is_valid():
@@ -21,28 +37,25 @@ def layer_metadata_detail(request, layername,
                 thumbnail_image=request.FILES['thumbnail_image']
             )
             new_img.save()
+            user_upload_thumbnail = ThumbnailImage.objects.all()[0]
+            user_upload_thumbnail_url = str(user_upload_thumbnail.thumbnail_image)
+            user_upload_array = user_upload_thumbnail_url.split('/')
+            user_upload_file_name = user_upload_array[
+                len(user_upload_array) - 1
+            ]
+            shutil.copy(user_upload_thumbnail_url, thumbnail_dir)
+            user_upload_new = os.path.join(thumbnail_dir, user_upload_file_name)
+            if no_custom_thumb is True:
+                os.rename(default_thumbnail, default_thumbnail_name + '.bak')
+            os.rename(user_upload_new, default_thumbnail_name)
 
-            # Redirect to the document list after POST
-            return HttpResponseRedirect(reverse('views.layer_metadata_detail'))
+            return HttpResponseRedirect(
+                reverse('layer_metadata_detail', args=[layername])
+            )
     else:
         thumb_form = ThumbnailImageForm()
 
-    layer = _resolve_layer(request, layername, 'view_resourcebase',
-                           _PERMISSION_MSG_METADATA)
-    default_thumbnail_array = layer.get_thumbnail_url().split('/')
-    default_thumbnail_name = default_thumbnail_array[
-        len(default_thumbnail_array) - 1
-    ]
-    custom_thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-    custom_thumbnail_name = 'custom_' + default_thumbnail_name
-    custom_thumbnail = os.path.join(custom_thumbnail_dir,
-                                    custom_thumbnail_name)
-    if not os.path.exists(custom_thumbnail_dir):
-        os.makedirs(custom_thumbnail_dir)
-    if os.path.isfile(custom_thumbnail):
-        thumbnail = '/uploaded/thumbs/' + custom_thumbnail_name
-    else:
-        thumbnail = layer.get_thumbnail_url
+    thumbnail = layer.get_thumbnail_url
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1],
