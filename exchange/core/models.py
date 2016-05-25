@@ -21,11 +21,13 @@
 from django.db import models
 from solo.models import SingletonModel
 from colorfield.fields import ColorField
+from django.conf import settings
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from resizeimage import resizeimage
 from django import forms
+import os
 
 
 class SiteName(SingletonModel):
@@ -166,6 +168,7 @@ class NavbarColor(SingletonModel):
     class Meta:
         verbose_name = "Navigation Bar Color"
 
+
 class HyperLinkColor(SingletonModel):
     color = ColorField(default='#FF6600')
 
@@ -175,11 +178,34 @@ class HyperLinkColor(SingletonModel):
     class Meta:
         verbose_name = "Hyperlink Color"
 
+
 class ThumbnailImage(SingletonModel):
     thumbnail_image = models.ImageField(
-        upload_to='static/img/thumbnails',
-        help_text="Must be 35px wide"
+        upload_to=os.path.join(settings.MEDIA_ROOT, 'thumbs'),
     )
+
+    def save(self, *args, **kwargs):
+        pil_image_obj = Image.open(self.thumbnail_image)
+        new_image = resizeimage.resize_width(
+            pil_image_obj,
+            250,
+            validate=False
+        )
+
+        new_image_io = BytesIO()
+        new_image.save(new_image_io, format='PNG')
+
+        temp_name = self.thumbnail_image.name
+        self.thumbnail_image.delete(save=False)
+
+        self.thumbnail_image.save(
+            temp_name,
+            content=ContentFile(new_image_io.getvalue()),
+            save=False
+        )
+
+        super(ThumbnailImage, self).save(*args, **kwargs)
+
 
 class ThumbnailImageForm(forms.Form):
     thumbnail_image = forms.FileField(
