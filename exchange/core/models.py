@@ -186,9 +186,9 @@ class ThumbnailImage(SingletonModel):
 
     def save(self, *args, **kwargs):
         pil_image_obj = Image.open(self.thumbnail_image)
-        new_image = resizeimage.resize_width(
+        new_image = resizeimage.resize_cover(
             pil_image_obj,
-            250,
+            [250, 150],
             validate=False
         )
 
