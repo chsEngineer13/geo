@@ -100,7 +100,7 @@ MAP_BASELAYERS = [
 ]
 
 UPLOADER = {
-    'BACKEND': 'geonode.rest',
+    'BACKEND': 'geonode.importer',
     'OPTIONS': {
         'TIME_ENABLED': True,
         'GEOGIG_ENABLED': True,

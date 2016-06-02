@@ -34,6 +34,8 @@ urlpatterns = patterns(
     url(r'^/?$', views.HomeScreen, name='home'),
     url(r'^layers/(?P<layername>[^/]*)/metadata_detail$',
         views.layer_metadata_detail, name='layer_metadata_detail'),
+    url(r'^maps/(?P<mapid>[^/]*)/metadata_detail$', views.map_metadata_detail,
+        name='map_metadata_detail')
  ) + urlpatterns
 
 urlpatterns += maploom_urls
