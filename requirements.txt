@@ -1,10 +1,9 @@
 --index-url https://pypi.python.org/simple/
 
--e git://github.com/boundlessgeo/geonode.git@whitenoise_patch#egg=geonode
+-e git://github.com/GeoNode/geonode.git@master#egg=geonode
 -e git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
 -e git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
 whitenoise==2.0.6
-django-tastypie==0.11.0
 django-cors-headers==1.1.0
 django-classification-banner==0.1.5
 django-solo==1.1.2
