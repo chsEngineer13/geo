@@ -67,7 +67,8 @@ exchange_setup()
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
     pip install -r /vagrant/requirements.txt
-    python /vagrant/manage.py syncdb --noinput
+    python /vagrant/manage.py makemigrations
+    python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
     #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
     #echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
@@ -78,8 +79,8 @@ exchange_setup()
     if ! grep -q 'django-collectstatic' /home/vagrant/.bashrc; then
         printf "\nalias django-collectstatic='/vagrant/.venv/bin/python /vagrant/manage.py collectstatic'" >> /home/vagrant/.bashrc
     fi
-    if ! grep -q 'django-syncdb' /home/vagrant/.bashrc; then
-        printf "\nalias django-syncdb='/vagrant/.venv/bin/python /vagrant/manage.py syncdb'" >> /home/vagrant/.bashrc
+    if ! grep -q 'django-migrate' /home/vagrant/.bashrc; then
+        printf "\nalias django-migrate='/vagrant/.venv/bin/python /vagrant/manage.py migrate'" >> /home/vagrant/.bashrc
     fi
     chmod -R 755 /vagrant/.venv && chown -R vagrant.vagrant /vagrant/.venv
 }
