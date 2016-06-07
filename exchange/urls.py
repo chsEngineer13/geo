@@ -24,10 +24,18 @@ from maploom.geonode.urls import urlpatterns as maploom_urls
 from geonode.urls import *
 from . import views
 
+js_info_dict = {
+    'packages': ('geonode.layers',),
+}
+
 urlpatterns = patterns(
     '',
     (r'^gsschema/', include('gsschema.urls')),
-    url(r'^/?$', views.HomeScreen, name='home')
+    url(r'^/?$', views.HomeScreen, name='home'),
+    url(r'^layers/(?P<layername>[^/]*)/metadata_detail$',
+        views.layer_metadata_detail, name='layer_metadata_detail'),
+    url(r'^maps/(?P<mapid>[^/]*)/metadata_detail$', views.map_metadata_detail,
+        name='map_metadata_detail')
  ) + urlpatterns
 
 urlpatterns += maploom_urls
