@@ -67,12 +67,6 @@ exchange_setup()
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
     pip install -r /vagrant/requirements.txt
-    pip install git+https://github.com/GeoNode/geonode-announcements --upgrade
-    pip install git+https://github.com/GeoNode/geonode-avatar --upgrade
-    pip install git+https://github.com/GeoNode/geonode-dialogos --upgrade
-    pip install git+https://github.com/GeoNode/geonode-ratings --upgrade
-    pip install git+https://github.com/GeoNode/geonode-user-accounts --upgrade
-    pip install git+https://github.com/GeoNode/geonode-user-messages --upgrade
     python /vagrant/manage.py makemigrations
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput

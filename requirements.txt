@@ -1,5 +1,11 @@
 --index-url https://pypi.python.org/simple/
 
+-e git://github.com/GeoNode/geonode-announcements@master#egg=geonode-announcements
+-e git://github.com/GeoNode/geonode-avatar@master#egg=geonote-avatar
+-e git://github.com/GeoNode/geonode-dialogos.git@master#egg=geonode-dialogos
+-e git://github.com/GeoNode/geonode-ratings.git@master#egg=geonode-ratings
+-e git://github.com/GeoNode/geonode-user-accounts.git@master#egg=geonode-user-accounts
+-e git://github.com/GeoNode/geonode-user-messages.git@master#egg=geonode-user-messages
 -e git://github.com/GeoNode/geonode.git@master#egg=geonode
 -e git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
 -e git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
