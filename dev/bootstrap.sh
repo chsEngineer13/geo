@@ -74,6 +74,7 @@ exchange_setup()
     pip install git+https://github.com/GeoNode/geonode-user-accounts --upgrade
     pip install git+https://github.com/GeoNode/geonode-user-messages --upgrade
     python /vagrant/manage.py makemigrations
+    python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
     #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
