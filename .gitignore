@@ -70,6 +70,7 @@ target/
 dev/.geoserver/*
 dev/.django/*
 *.log
+.storage/*
 
 exchange/migrations/
 .DS_Store

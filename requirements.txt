@@ -1,15 +1,23 @@
 --index-url https://pypi.python.org/simple/
 
--e git://github.com/GeoNode/geonode-announcements@master#egg=geonode-announcements
--e git://github.com/GeoNode/geonode-avatar@master#egg=geonote-avatar
--e git://github.com/GeoNode/geonode-dialogos.git@master#egg=geonode-dialogos
--e git://github.com/GeoNode/geonode-ratings.git@master#egg=geonode-ratings
--e git://github.com/GeoNode/geonode-user-accounts.git@master#egg=geonode-user-accounts
--e git://github.com/GeoNode/geonode-user-messages.git@master#egg=geonode-user-messages
--e git://github.com/GeoNode/geonode.git@master#egg=geonode
--e git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
--e git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
-whitenoise==2.0.6
+#-e git://github.com/GeoNode/geonode.git@master#egg=geonode
+-e git://github.com/BerryDaniel/geonode.git@geonode_2508#egg=geonode
+git+git://github.com/GeoNode/geonode-announcements@master#egg=geonode-announcements
+git+git://github.com/GeoNode/geonode-avatar@master#egg=geonote-avatar
+git+git://github.com/GeoNode/geonode-dialogos.git@master#egg=geonode-dialogos
+git+git://github.com/GeoNode/geonode-ratings.git@master#egg=geonode-ratings
+git+git://github.com/GeoNode/geonode-user-accounts.git@master#egg=geonode-user-accounts
+git+git://github.com/GeoNode/geonode-user-messages.git@master#egg=geonode-user-messages
+git+git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
+git+git://github.com/boundlessgeo/gsconfig.git@5277920229d774efd208877d44b5b53acb00971f#egg=gsconfig
+git+git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
+git+git://github.com/terranodo/HHypermap.git@terranodo#egg=HHyperMap
+pycsw==2.0.0a1
+dj-database-url==0.4.1
+django-storages==1.1.8
+boto==2.38.0
+waitress==0.9.0
+whitenoise==3.2
 django-cors-headers==1.1.0
 django-classification-banner==0.1.5
 django-solo==1.1.2
@@ -22,4 +30,3 @@ supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
-django-gsschema==0.1b2

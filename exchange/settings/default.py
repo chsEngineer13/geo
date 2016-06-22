@@ -29,6 +29,7 @@ CORS_ENABLED = True
 LOCKDOWN_GEONODE = True
 REGISTRATION_OPEN = False
 SOCIAL_BUTTONS = False
+SECRET_KEY = 'exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
 
 # Set to True to load non-minified versions of (static) client dependencies
 DEBUG_STATIC = False
@@ -38,21 +39,35 @@ ROOT_URLCONF = 'exchange.urls'
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # static file settings
+# need to fix all the missing files in geonode
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+APP_ROOT = os.path.join(os.path.join(LOCAL_ROOT, os.pardir))
+PROJECT_ROOT = os.path.join(os.path.join(APP_ROOT, os.pardir))
 STATICFILES_DIRS.append(
-    os.path.join(LOCAL_ROOT, "static"),
+    os.path.join(APP_ROOT, "static"),
 )
-
-STATIC_ROOT = os.path.join(LOCAL_ROOT, 'static_root')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, '.storage/static_root')
 STATIC_URL = '/static/'
 
 # media file storage
-MEDIA_ROOT = os.path.join(LOCAL_ROOT, 'media')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, '.storage/media')
 MEDIA_URL = "/uploaded/"
 
 # template settings
 TEMPLATE_DIRS = (
-    os.path.join(LOCAL_ROOT, "templates"),
+    os.path.join(APP_ROOT, "templates"),
 ) + TEMPLATE_DIRS
+
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'django_classification_banner.context_processors.classification',
+    'exchange.core.context_processors.version',
+)
+
+# middlware
+MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+)
 
 # installed applications
 INSTALLED_APPS = (
@@ -63,8 +78,13 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'colorfield',
-    'gsschema'
+    'haystack',
+    'corsheaders'
 ) + INSTALLED_APPS
+
+# cors settings
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = ('GET',)
 
 # database settings
 DATABASES = {
@@ -78,8 +98,8 @@ DATABASES = {
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-        'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/',
+        'LOCATION': 'http://127.0.0.1:8080/geoserver/',
+        'PUBLIC_LOCATION': 'http://127.0.0.1:8080/geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'MAPFISH_PRINT_ENABLED': True,
@@ -89,69 +109,23 @@ OGC_SERVER = {
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': True,
+        'LOG_FILE': '/var/lib/geoserver_data/logs/geoserver.log',
         'GEOSERVER_DATA_DIR': '/var/lib/geoserver_data',
         'GEOGIG_DATASTORE_DIR': '/var/lib/geoserver_data/geogig',
-        # Set to name of database in DATABASES dictionary to enable
-        'DATASTORE': '',  # 'datastore',
-        'TIMEOUT': 10  # number of seconds to allow for HTTP requests
+        'DATASTORE': '',
+        'TIMEOUT': 10
     }
 }
 
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
-GSSCHEMA_CONFIG = {
-    'gsschema_dir': '/var/lib/geoserver_data/'
-}
-
 UPLOADER = {
-    'BACKEND': 'geonode.rest',
+    'BACKEND': 'geonode.importer',
     'OPTIONS': {
-        'TIME_ENABLED': False,
+        'TIME_ENABLED': True,
         'GEOGIT_ENABLED': True,
     }
 }
-
-
-MAP_BASELAYERS = [
-    {
-        "source": {
-            "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['LOCATION'] + "wms",
-            "restUrl": "/gs/rest",
-            "name": "local geoserver"
-        }
-    },
-    {
-        "source": {"ptype": "gxp_osmsource", "name": "OpenStreetMap"},
-        "type": "OpenLayers.Layer.OSM",
-        "name": "mapnik",
-        "title": "OpenStreetMap",
-        "args": ["OpenStreetMap"],
-        "visibility": True,
-        "fixed": True,
-        "group":"background"
-    }
-]
-
-TEMPLATE_CONTEXT_PROCESSORS += (
-    'django_classification_banner.context_processors.classification',
-    'exchange.core.context_processors.version',
-)
-
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-        'geonode.security.middleware.LoginRequiredMiddleware',
-    )
-
-if CORS_ENABLED:
-    INSTALLED_APPS = ('corsheaders',) + INSTALLED_APPS
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-        'corsheaders.middleware.CorsMiddleware',
-    )
-    CORS_ORIGIN_ALLOW_ALL = True
-    CORS_ALLOW_METHODS = ('GET',)
-
-SECRET_KEY = 'exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
 
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
@@ -171,21 +145,45 @@ DOWNLOAD_FORMATS_RASTER = [
     'GZIP'
 ]
 
+# haystack settings
+ES_ENGINE = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': ES_ENGINE,
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'exchange',
+    },
+}
+
+# amqp settings
+BROKER_URL = 'amqp://guest@127.0.0.1:5672'
+CELERY_ALWAYS_EAGER = False
+NOTIFICATION_QUEUE_ALL = not CELERY_ALWAYS_EAGER
+NOTIFICATION_LOCK_LOCATION = LOCAL_ROOT
+
+# openlayers settings
+#MAP_BASELAYERS = [
+#    {
+#        "source": {
+#            "ptype": "gxp_wmscsource",
+#            "url": OGC_SERVER['default']['LOCATION'] + "wms",
+#            "restUrl": "/gs/rest",
+#            "name": "local geoserver"
+#        }
+#    },
+#    {
+#        "source": {"ptype": "gxp_osmsource", "name": "OpenStreetMap"},
+#        "type": "OpenLayers.Layer.OSM",
+#        "name": "mapnik",
+#        "title": "OpenStreetMap",
+#        "args": ["OpenStreetMap"],
+#        "visibility": True,
+#        "fixed": True,
+#        "group":"background"
+#    }
+#]
+
 try:
     from local_settings import *  # noqa
 except ImportError:
     pass
-
-VAGRANT = os.environ.get('VAGRANT_ENABLED')
-if VAGRANT:
-    try:
-        from dev.settings import *
-    except ImportError:
-        pass
-
-CF_ENABLED = os.environ.get('CF_ENABLED')
-if CF_ENABLED:
-    try:
-        from cf.settings import *
-    except ImportError:
-        pass
