@@ -1,7 +1,8 @@
 --index-url https://pypi.python.org/simple/
 
-git+https://github.com/geonode/geonode.git@master#egg=geonode
-git+https://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
+-e git://github.com/boundlessgeo/geonode.git@whitenoise_patch#egg=geonode
+-e git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
+-e git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
 
 #TODO: Remove this line and download hhypermap/registry direclty from Pypi.
 -e git+https://github.com/cga-harvard/HHypermap@registry#egg=django-hhypermap
@@ -22,3 +23,4 @@ gunicorn==19.4.5
 dj-database-url==0.4.0
 python-resize-image==1.1.10
 django-gsschema==0.1b2
+django-polymorphic==0.8.1

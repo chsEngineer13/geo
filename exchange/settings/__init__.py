@@ -18,15 +18,54 @@
 #
 #########################################################################
 
+
 import dj_database_url
 import json
-import os
 from .default import *  # noqa
+from datetime import timedelta
+
+#####
+BASE_URL = os.getenv('BASE_URL', 'localhost')
+BASE_PORT = os.getenv('PORT', '8000')
+
+SITE_URL = 'http://%s:%s' % (BASE_URL, BASE_PORT)
+
+ALLOWED_HOSTS = [BASE_URL, ]
+
+CELERYBEAT_SCHEDULE = {
+    'Check All Services': {
+        'task': 'aggregator.tasks.check_all_services',
+        'schedule': timedelta(minutes=15)
+    },
+}
+
+CLOUD_FOUNDRY = os.getenv('CLOUD_FOUNDRY', None)
+
+#TODO:
+# - Enable postgis settings.
+# - Lockdown geonode.
+
+if CLOUD_FOUNDRY is not None:
+    vcap_service_config = os.environ.get('VCAP_SERVICES')
+    decoded_config = json.loads(vcap_service_config)    
+
+    vcap_app_config = os.environ.get('VCAP_APPLICATION')
+    # Use postgres
+    DATABASES = {'default': dj_database_url.config()}
+
+    # use rabbit
+    if 'cloudamqp' in decoded_config:
+        BROKER_URL = decoded_config['cloudamqp'][0]['credentials']['uri']
+
+    SEARCH_ENABLED = True
+    SEARCH_TYPE = 'elasticsearch'
+    SEARCH_URL = decoded_config['searchly'][0]['credentials']['sslUri']
+
+    SKIP_CELERY_TASK = False
+
+    print 'auth_user = %s' % (AUTH_USER_MODEL)
 
 VARIABLES = []
-
-SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
-ALLOWED_HOSTS = [SITE_URL, ]
 
 LOCKDOWN_GEONODE = os.getenv('LOCKDOWN_GEONODE', None)
 if LOCKDOWN_GEONODE is not None:
@@ -36,28 +75,8 @@ if LOCKDOWN_GEONODE is not None:
 else:
     VARIABLES.append('$LOCKDOWN_GEONODE')
 
-# Django Database Settings
-DATABASE_URL = os.getenv('DATABASE_URL', None)
-if DATABASE_URL is not None:
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-else:
-    VARIABLES.append('$DATABASE_URL')
-
-# PostGIS Database Settings
-POSTGIS_URL = os.environ.get('POSTGIS_URL', None)
-if POSTGIS_URL is not None:
-    DATABASES['exchange_imports'] = dj_database_url.parse(POSTGIS_URL,
-                                                          conn_max_age=600)
-    OGC_SERVER['default']['DATASTORE'] = 'exchange_imports'
-else:
-    VARIABLES.append('$POSTGIS_URL')
-
 # Service Settings
-WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
-if WGS84_MAP_CRS is not None:
-    DEFAULT_MAP_CRS = "EPSG:4326"
-else:
-    VARIABLES.append('$WGS84_MAP_CRS')
+WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', "EPSG:4326")
 
 GEOSERVER_URL = os.environ.get('GEOSERVER_URL', None)
 if GEOSERVER_URL is not None:
@@ -80,18 +99,6 @@ if GEOSERVER_URL is not None:
 GEOSERVER_LOG = os.environ.get('GEOSERVER_LOG', None)
 if GEOSERVER_LOG is not None:
     OGC_SERVER['default']['LOG_FILE'] = GEOSERVER_LOG
-
-ES_URL = os.environ.get('ES_URL', None)
-if ES_URL is not None:
-    HAYSTACK_CONNECTIONS['default']['URL'] = ES_URL
-else:
-    VARIABLES.append('$ES_URL')
-
-AMQP_URL = os.environ.get('AMQP_URL', None)
-if ES_URL is not None:
-    BROKER_URL = AMQP_URL
-else:
-    VARIABLES.append('$AMQP_URL')
 
 # Authentication Settings
 AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
