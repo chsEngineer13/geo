@@ -35,7 +35,9 @@ urlpatterns = patterns(
     url(r'^layers/(?P<layername>[^/]*)/metadata_detail$',
         views.layer_metadata_detail, name='layer_metadata_detail'),
     url(r'^maps/(?P<mapid>[^/]*)/metadata_detail$', views.map_metadata_detail,
-        name='map_metadata_detail')
+        name='map_metadata_detail'),
+    url(r'^wfsproxy/', views.geoserver_reverse_proxy,
+            name='geoserver_reverse_proxy')
  ) + urlpatterns
 
 urlpatterns += maploom_urls

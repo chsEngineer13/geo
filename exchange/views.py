@@ -6,11 +6,12 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.conf import settings
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
-from django.http import HttpResponseRedirect
+from geonode.utils import resolve_object
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm
 from geonode.maps.views import _resolve_map
-
+import requests
 
 def HomeScreen(request):
     return render(request, 'site_index.html')
@@ -106,3 +107,14 @@ def map_metadata_detail(request, mapid,
         "thumbnail": thumbnail,
         "thumb_form": thumb_form
     }))
+
+
+def geoserver_reverse_proxy(request):
+    url = settings.OGC_SERVER['default']['LOCATION'] + 'wfs/WfsDispatcher'
+    data = request.body
+    headers = {'Content-Type': 'application/xml',
+               'Data-Type': 'xml'}
+
+    req = requests.post(url, data=data, headers=headers,
+                        cookies=request.COOKIES)
+    return HttpResponse(req.content, content_type='application/xml')
