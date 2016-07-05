@@ -245,7 +245,7 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
 # registry
 REGISTRY = os.environ.get('REGISTRY', None)
 if REGISTRY is not None:
-    from hypermap.settings import HYPERMAP_PYCSW
+    from hypermap.settings import REGISTRY_PYCSW
     SEARCH_ENABLED = True
     SEARCH_TYPE = 'elasticsearch'
     SEARCH_URL = ES_URL
@@ -258,9 +258,9 @@ if REGISTRY is not None:
     ) + INSTALLED_APPS
     MAPPROXY_CONFIG = os.path.join(MEDIA_ROOT, 'mapproxy_config')
 
-    HYPERMAP_PYCSW['server']['url'] = SITE_URL.rstrip('/')
+    REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/')
 
-    HYPERMAP_PYCSW['metadata:main'] = {
+    REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
         'identification_abstract': 'Registry, a Harvard Hypermap project, is an application that manages ' \
         'OWS, Esri REST, and other types of map service harvesting, and maintains uptime statistics for ' \
