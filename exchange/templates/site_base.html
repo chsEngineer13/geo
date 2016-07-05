@@ -9,15 +9,16 @@
   {% get_solo 'core.NavbarColor' as navcolor %}
   {% get_solo 'core.HyperlinkColor' as hyperlinkcolor %}
   <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+  <link href="{{ STATIC_URL }}font-exchange/style.css" rel="stylesheet"/>
   <style>
     .navbar-brand {
       background-image: url('{{ logo.logo_image.url }}');
     }
     .navbar-inverse {
-      background-color: {{ navcolor.color }};
+      background-image: -webkit-gradient(linear,left top,left bottom,from({{ navcolor.color }}),to(#222));;
     }
     .footer {
-      background-color: {{ navcolor.color }};
+      background-image: -webkit-gradient(linear,left top,left bottom,from({{ navcolor.color }}),to(#222));;
     }
     a {
       color: {{ hyperlinkcolor.color }};
@@ -34,32 +35,3 @@
     {% endif %}
     {{ block.super }}
 {% endblock %}
-
-{% block footer %}
-    <footer class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8 small-text">
-            <b>{% trans "Powered by" %} <a href="http://boundlessgeo.com" target="_new">{% trans "Boundless Spatial" %}</a> {% trans "version" %} {{ VERSION }}</b> |
-            <a href="/docs">{% trans "Documentation" %}</a>
-          </div>
-          <div class="col-md-4 pull-right">
-            {% if csrf_token != "NOTPROVIDED" %}
-            {% get_current_language as LANGUAGE %}
-            <form class="form-inline" action="/i18n/setlang/" method="post">
-              <label>{% trans "Language" %}</label>
-            {% csrf_token %}
-              <select name="language" onchange="javascript:form.submit()">
-                {% for lang in LANGUAGES %}
-                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                  {{ lang.1 }}
-                </option>
-                {% endfor %}
-              </select>
-            </form>
-          {% endif %}
-          </div> <!-- /.pull-right -->
-        </div>
-      </div> <!-- /.container -->
-    </footer>
-{% endblock footer %}

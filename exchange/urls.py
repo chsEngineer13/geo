@@ -21,6 +21,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from maploom.geonode.urls import urlpatterns as maploom_urls
+from hypermap.urls import urlpatterns as hypermap_urls
 from geonode.urls import *
 from . import views
 
@@ -34,7 +35,8 @@ urlpatterns = patterns(
     url(r'^layers/(?P<layername>[^/]*)/metadata_detail$',
         views.layer_metadata_detail, name='layer_metadata_detail'),
     url(r'^maps/(?P<mapid>[^/]*)/metadata_detail$', views.map_metadata_detail,
-        name='map_metadata_detail')
+        name='map_metadata_detail'),
  ) + urlpatterns
 
 urlpatterns += maploom_urls
+urlpatterns += hypermap_urls

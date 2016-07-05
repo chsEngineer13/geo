@@ -42,7 +42,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*,cover
+*.cover
 .hypothesis/
 
 # Translations
@@ -67,10 +67,10 @@ target/
 #Vagrant Dev Setup
 .vagrant
 .venv
-dev/.geoserver/*
-dev/.django/*
+dev/.geoserver/
+dev/.django/
 *.log
-.storage/*
+
 
 exchange/migrations/
 .DS_Store
