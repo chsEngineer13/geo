@@ -119,7 +119,7 @@ GEOGIG_DATASTORE_DIR = os.environ.get('GEOSERVER_DATA_DIR',
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-        'LOCATION': 'http://localhost:8080/geoserver/',
+        'LOCATION': GEOSERVER_URL,
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': GEOSERVER_USER,
         'PASSWORD': GEOSERVER_PASSWORD,
@@ -140,14 +140,7 @@ OGC_SERVER = {
 
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
-MAP_BASELAYERS[0] = {
-    'source': {
-        'ptype': 'gxp_wmscsource',
-        'url': OGC_SERVER['default']['LOCATION'] + 'wms',
-        'restUrl': '/gs/rest',
-        'name': 'local geoserver'
-    }
-}
+MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
 
 # database settings
 SQLITEDB = "sqlite:///%s" % os.path.join(LOCAL_ROOT,'development.db')
