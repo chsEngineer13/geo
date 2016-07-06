@@ -25,8 +25,8 @@ supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
-git+git://github.com/terranodo/django-mapproxy.git@bda52b3625ba7ea24c7ac0cdc97a126002441cde#egg=django-mapproxy
-git+git://github.com/cga-harvard/HHypermap.git@f0786271772d8c26f20a7630dd767f653f0973c0#egg=hypermap
-git+git://github.com/terranodo/mapproxy.git@3b590b82ad36508a77ca6aa9734abf5407a9249c#egg=mapproxy
-git+git://github.com/geopython/pycsw.git@f46b398d511c44918e1fbe9584565a686ff5b08a#egg=pycsw
+git+git://github.com/terranodo/django-mapproxy.git@registry#egg=django-mapproxy
+git+git://github.com/cga-harvard/HHypermap.git@registry#egg=hypermap
+git+git://github.com/terranodo/mapproxy.git@master#egg=mapproxy
+git+git://github.com/geopython/pycsw.git@master#egg=pycsw
 pdb
