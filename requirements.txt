@@ -1,6 +1,6 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/GeoNode/geonode.git@01d30101d3884a0f1063cab2ef91f72ed5b61026#egg=geonode
+git+git://github.com/GeoNode/geonode.git@1e213e77a55fd12c3dcdfcc64003393e04aff365#egg=geonode
 git+git://github.com/GeoNode/geonode-announcements@35501726a65046314ccf696ecc6a40e5b0c57335#egg=geonode-announcements
 git+git://github.com/GeoNode/geonode-avatar@1c043e5d6e7abd66100ddd7e6084b160fff55496#egg=geonote-avatar
 git+git://github.com/GeoNode/geonode-dialogos.git@4779a4aa84012d0326a4bfd896d0ad503407f5f9#egg=geonode-dialogos

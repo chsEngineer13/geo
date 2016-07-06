@@ -13,5 +13,5 @@ export GEOSERVER_URL='http://192.168.99.110:8888/proxy/http://192.168.99.110:808
 export GEOSERVER_DATA_DIR='/vagrant/dev/.geoserver/data'
 export GEOSERVER_LOG='/vagrant/dev/.geoserver/data/logs/geoserver.log'
 export GEOGIG_DATASTORE_DIR='/vagrant/dev/.geoserver/data/geogig'
-export WGS84_MAP_CRS=True
+# export WGS84_MAP_CRS=True
 export REGISTRY=True
