@@ -1,0 +1,57 @@
+---
+#TODO:
+# - Test with the latest buildpack version.
+# - Deploy with exchange same push. 
+buildpack: https://github.com/boundlessgeo/geonode-python-buildpack
+domain: cfapps.io
+instances: 1
+memory: 512M
+disk_quota: 2G
+
+applications:
+- name: exchange-test
+  command: cf/django.sh
+  services:
+    - exchange-database
+    - exchange-elasticsearch
+    - exchange-rabbitmq
+
+  env:
+    SECRET_KEY: 'aadc-t8j*i5a7^y9@d^$at#g0!j_h=h++5stj=nb7z8u#l_y#&'
+    CLOUD_FOUNDRY: 'True'
+
+- name: exchange-test-celery
+  command: celery worker --app=exchange.celeryapp:app -B -l INFO
+  health-check-type: none
+  no-route: true
+  services:
+    - exchange-rabbitmq
+    - exchange-elasticsearch
+    - exchange-database
+
+# - name: registry-test
+#   command: cf/hypermap_init.sh
+#   services:
+#     - registry-database
+#     - registry-rabbitmq
+#     - registry-elasticsearch
+#   env:
+#     #TODO: Make an env variable on the CF side with a different key.
+#     # this one is exposed.
+#     SECRET_KEY: 'il%c@@m#*b@g%6s)!!pme9eog$j)!kq^7u8@3l(&)kprsi3$$x'
+#     DEBUG: 'True'
+#     DJANGO_SETTINGS_MODULE: 'hypermap.settings'
+#     CLOUD_FOUNDRY: 'True'
+
+# - name: registry-celery
+#   command: celery worker --app=hypermap.celeryapp:app -B -l INFO
+#   health-check-type: none
+#   no-route: true
+#   services:
+#     - registry-database
+#     - registry-rabbitmq
+#     - registry-elasticsearch
+#   env:
+#     DJANGO_SETTINGS_MODULE: 'hypermap.settings'
+#     CLOUD_FOUNDRY: 'True'    
+

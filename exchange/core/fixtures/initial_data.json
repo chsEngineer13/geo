@@ -10,14 +10,14 @@
         "pk": 1,
         "model": "core.navbarcolor",
         "fields": {
-            "color": "#29728C"
+            "color": "#0F1A2C"
         }
     },
     {
         "pk": 1,
         "model": "core.hyperlinkcolor",
         "fields": {
-            "color": "#FF6600"
+            "color": "#29748F"
         }
     },
     {

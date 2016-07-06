@@ -2,6 +2,9 @@ html,
 body {
   height: 100%;
 }
+.jumbotron .container {
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
 .navbar-brand {
   margin-top: 10px;
   overflow: hidden;

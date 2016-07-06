@@ -40,20 +40,20 @@ yum_setup()
         unzip \
         wget \
         git \
-        postgis-postgresql95
+        postgis-postgresql95 \
+        elasticsearch \
+        rabbitmq-server-3.6.1
 
-    if [ -f /etc/profile.d/vagrant.sh ]; then
-        rm -f /etc/profile.d/vagrant.sh
+    if [ -f /etc/profile.d/settings.sh ]; then
+        rm -fr /etc/profile.d/settings.sh
     fi
-
-    echo 'export PATH="/usr/pgsql-9.5/bin":$PATH'  > /etc/profile.d/vagrant.sh
-    echo 'export VAGRANT_ENABLED="YES"'  >> /etc/profile.d/vagrant.sh
-    source /etc/profile.d/vagrant.sh
+    cp /vagrant/dev/settings.sh /etc/profile.d/settings.sh
+    source /etc/profile.d/settings.sh
 }
-
 
 exchange_setup()
 {
+    rm -fr /vagrant/.storage/*
     if [ -d /vagrant/.venv ]; then
         rm -fr /vagrant/.venv
     fi
@@ -71,6 +71,8 @@ exchange_setup()
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
+    #hotfix, need to find out why it is not importing the categories
+    python /vagrant/manage.py loaddata initial_data
     #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
     #echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
@@ -117,6 +119,9 @@ geoserver_setup()
 
 database_setup()
 {
+    if [ -f /etc/init.d/gs-dev ]; then
+        service gs-dev stop > /dev/null 2>&1
+    fi
     if [ ! -d /var/lib/pgsql/9.5/data/base ]; then
         service postgresql-9.5 initdb
         chkconfig postgresql-9.5 on
@@ -155,8 +160,20 @@ gs-dev_init()
     service gs-dev restart > /dev/null 2>&1
 }
 
+service_setup()
+{
+  service elasticsearch restart
+  sleep 10
+  curl -XDELETE 'http://localhost:9200/hypermap/'
+  service rabbitmq-server restart
+  rabbitmqctl stop_app
+  rabbitmqctl reset
+  rabbitmqctl start_app
+}
+
 yum_setup
 database_setup
 exchange_setup
 geoserver_setup
 gs-dev_init
+service_setup

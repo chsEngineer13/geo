@@ -119,5 +119,5 @@ NOTIFICATION_QUEUE_ALL = not CELERY_ALWAYS_EAGER
 
 INSTALLED_APPS += (
     'storages',
-    'haystack',
+    'haystack'
 )

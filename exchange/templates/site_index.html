@@ -19,6 +19,7 @@
   <div class="jumbotron" style="background: url('..{{ banner.banner_image.url }}'); background-size: cover;">
     <div class="container">
       <h1>
+        <!--<span class="icon-exchange">-->
         <img src="{{ icon.icon_image.url }}">
         <span class="title"> {{ site_name.site_name }} </span>
       </h1>
@@ -46,24 +47,33 @@
             </span>
           </p>
           <h2 class="text-center stacked">{{ facets.layer|default:"No" }} Layer{{ facets.layer|pluralize }}</h2>
-          <p class="text-center blurb">{% trans "Search for geospatial data published by others and public sources. Download them in the format you need." %}</p>
-          <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore Layers" %} &raquo;</a></p>
+          <p class="text-center blurb">{% trans "Browse or upload geospatial data into an Exchange layer. Download them in the format you need." %}</p>
+          <p class="text-center">
+              <a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Browse" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Upload" %} &raquo;</a>
+          </p>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="info-blurb" href="{% url "document_browse" %}">
+          <p class="text-center"><i class="fa fa-files-o fa-5x"></i></p>
+          <h2 class="text-center">{{ facets.document|default:"No" }} Document{{ facets.document|pluralize }}</h2>
+          <p class="text-center blurb">{% trans "Browse or upload non geospatial data and associate your data to a layer or map." %}</p>
+          <p class="text-center">
+              <a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Browse" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "document_upload" %}" role="button">{% trans "Upload" %} &raquo;</a>
+          </p>
         </a>
       </div>
       <div class="col-md-4">
         <a class="info-blurb" href="{% url "maps_browse" %}">
           <p class="text-center"><i class="fa fa-map fa-5x"></i></p>
           <h2 class="text-center">{{ facets.map|default:"No" }} Map{{ facets.map|pluralize }}</h2>
-          <p class="text-center blurb">{% trans "Aggregate and style geospatial data into maps and share them publicly or restrict access to specific users.<!--Or make a report, spreadsheet, app or dashboard.-->" %}</p>
-          <p class="text-center"><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a class="info-blurb" href="{% url "layer_upload" %}">
-          <p class="text-center"><i class="fa fa-cloud-upload fa-5x"></i></p>
-          <h2 class="text-center">{{ facets.user|default:"No" }} User{{ facets.user|pluralize }}</h2>
-          <p class="text-center blurb">{% trans "Exchange allows registered users to easily upload geospatial data, search for data and make maps." %}</p>
-          <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Share data" %} &raquo;</a></p>
+          <p class="text-center blurb">{% trans "Browse or create a map and allow others to collaborate on your map with comments or edits." %}</p>
+          <p class="text-center">
+              <a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Browse" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create" %} &raquo;</a>
+          </p>
         </a>
       </div>
     {% endwith %}

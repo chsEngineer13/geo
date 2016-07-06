@@ -1,0 +1,173 @@
+{% extends "aggregator/base.html" %}
+
+{% load pagination_tags %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Service details for: {{ service.title|truncatechars:40 }}</h1>
+</div>
+
+{% if user.is_superuser %}
+  {% include "aggregator/publish.html" with csw_resourcetype=service.csw_resourcetype csw_source=service.url publish_type='Service' %}
+{% endif %}
+
+<div class="row">
+  <div class="col-md-6">
+    {% if user.is_superuser %}
+    <ul>
+      <button type="button" class="btn btn-success btn-circle btn nohover" data-toggle="modal" data-target="#publish-modal">Publish</button>
+    </ul>
+    {% endif %}
+    <ul>
+      <li><a href="{% url 'service_checks' service.id %}">See full check stats</a></li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    {% if user.is_superuser %}
+    Administrative actions:
+    <form action="{% url 'service_detail' service.id %}" method="post">
+      {% csrf_token %}
+      <input type="submit" name="check" value="Check now">
+      <input type="submit" name="remove" value="Remove checks">
+      <input type="submit" name="index" value="Index">
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td><strong>Type</strong></td>
+          <td>{{ service.get_type_display }}</td>
+        </tr>
+        <tr>
+          <td><strong>Name</strong></td>
+          <td>{{ service.title }}</td>
+        </tr>
+        <tr>
+          <td><strong>Abstract</strong></td>
+          <td>{{ service.abstract }}</td>
+        </tr>
+        {% if user.is_superuser %}
+          <tr>
+            <td><strong>URL</strong></td>
+            <td>
+              <ul>
+                <li>EndPoint: <a id="resource-url" href="{{ service.url }}">{{ service.url|truncatechars:80 }}</a></li>
+                <li>Search:
+                    {% if SEARCH_TYPE == 'elasticsearch' %}
+                    <a href="{{SEARCH_URL}}/hypermap/_search?q=ServiceId:{{service.id}}" target="new">{{SEARCH_URL}}/hypermap/_search?q=ServiceId:{{ service.id }}</a>
+                    {% elif SEARCH_TYPE == 'solr' %}
+                    <a href="{{SEARCH_URL}}/select?q=ServiceId:{{service.id}}&wt=json&indent=true" target="new">{{SEARCH_URL}}/select?q=ServiceId:{{service.id}}&wt=json&indent=true</a>
+                    {% endif %}
+                </li>
+                <li>Metadata: <a href="{{SITE_URL}}/registry/search/csw?service=CSW&version=2.0.2&request=GetRepositoryItem&id={{service.id}}" target="new">{{SITE_URL}}/registry/search/csw?service=CSW&version=2.0.2&request=GetRepositoryItem&id={{service.id}}</a></li>
+              </ul>
+            </td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td><strong>Monitoring Period</strong></td>
+          <td>
+            {% if service.checks_count > 0 %}
+            <ul>
+              <li>First Check: {{ service.first_check }}</li>
+              <li>Last Check: {{ service.last_check }}</li>
+              <li>Total Checks: {{ service.checks_count }}</li>
+              <li>Reliability: {{ service.reliability }}</li>
+            </ul>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div id="run-chart" class="run-chart"></div>
+
+<h2>Layers ({{ service.layer_set.all.count }})</h2>
+
+{% with service.layer_set.all as layer_set %}
+{% if layer_set %}
+  {% autopaginate layer_set 10 %}
+  {% paginate %}
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Info</th>
+              <th>Last Check</th>
+              <th>Status</th>
+              <th>Response Times</th>
+              <th>Reliability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for layer in layer_set %}
+                <tr>
+                  <td>
+                    {% if layer.thumbnail %}
+                    <a href="{% url 'layer_detail' layer.id %}"><img src="{{ MEDIA_URL }}{{ layer.thumbnail }}" width="50" /></a>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <ul>
+                      <li>Name: <a href="{% url 'layer_detail' layer.id %}">{{ layer.name }}</a></li>
+                      <li>Title: {{ layer.title }}</li>
+                      <li>Abstract: {{ layer.abstract|truncatewords:20 }}</li>
+                    </ul>
+                  </td>
+                  <td>
+                    {% if layer.checks_count > 0 %}
+                    <ul>
+                      <li>{{ layer.last_updated }}</li>
+                      <li>{{ layer.last_response_time|floatformat:2 }}s</li>
+                    </ul>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if layer.checks_count > 0 %}
+                      <a href="{% url 'layer_detail' layer.id %}">
+                      {% if layer.last_status %}
+                        <button type="button" class="btn btn-success btn-circle btn nohover"><i class="fa fa-check"></i></button>
+                      {% else %}
+                        <button type="button" class="btn btn-danger btn-circle btn nohover"><i class="fa fa-check"></i></button>
+                      {% endif %}
+                      </a>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <ul>
+                      <li>Min: {{ layer.min_response_time|floatformat:2 }}s</li>
+                      <li>Average: {{ layer.average_response_time|floatformat:2 }}s</li>
+                      <li>Max: {{ layer.max_response_time|floatformat:2 }}s</li>
+                    </ul>
+                  </td>
+                  <td>
+                    {% if layer.checks_count > 0 %}
+                      {% if layer.reliability > 97 %}
+                        <button type="button" class="btn btn-success btn-block nohover">{{ layer.reliability|floatformat:2 }}%</button>
+                      {% else %}
+                        <button type="button" class="btn btn-danger btn-block nohover">{{ layer.reliability|floatformat:2 }}%</button>
+                      {% endif %}
+                     {% endif %}
+                  </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+{% else %}
+    <p>No layers are available.</p>
+{% endif %}
+{% endwith %}
+
+{% endblock %}
