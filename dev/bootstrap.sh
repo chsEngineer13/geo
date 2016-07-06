@@ -71,6 +71,8 @@ exchange_setup()
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
+    #hotfix, need to find out why it is not importing the categories
+    python /vagrant/manage.py loaddata initial_data
     #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
     #echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile

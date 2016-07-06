@@ -1,14 +1,12 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/GeoNode/geonode.git@master#egg=geonode
-git+git://github.com/GeoNode/geonode-announcements@master#egg=geonode-announcements
-git+git://github.com/GeoNode/geonode-avatar@master#egg=geonote-avatar
-git+git://github.com/GeoNode/geonode-dialogos.git@master#egg=geonode-dialogos
-git+git://github.com/GeoNode/geonode-ratings.git@master#egg=geonode-ratings
-git+git://github.com/GeoNode/geonode-user-accounts.git@master#egg=geonode-user-accounts
-git+git://github.com/GeoNode/geonode-user-messages.git@master#egg=geonode-user-messages
-git+git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
-git+git://github.com/boundlessgeo/gsconfig.git@5277920229d774efd208877d44b5b53acb00971f#egg=gsconfig
+git+git://github.com/GeoNode/geonode.git@01d30101d3884a0f1063cab2ef91f72ed5b61026#egg=geonode
+git+git://github.com/GeoNode/geonode-announcements@35501726a65046314ccf696ecc6a40e5b0c57335#egg=geonode-announcements
+git+git://github.com/GeoNode/geonode-avatar@1c043e5d6e7abd66100ddd7e6084b160fff55496#egg=geonote-avatar
+git+git://github.com/GeoNode/geonode-dialogos.git@4779a4aa84012d0326a4bfd896d0ad503407f5f9#egg=geonode-dialogos
+git+git://github.com/GeoNode/geonode-ratings.git@1190af087157e91bb873e624f161b1e13fa7bfab#egg=geonode-ratings
+git+git://github.com/GeoNode/geonode-user-accounts.git@475bf0875658dc4dc66120e3322643ad7cc54973#egg=geonode-user-accounts
+git+git://github.com/GeoNode/geonode-user-messages.git@c0167cb2d956d84119ec5468ab3ceb398576f871#egg=geonode-user-messages
 git+git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
 dj-database-url==0.4.1
 django-storages==1.1.8
@@ -27,8 +25,8 @@ supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
-git+git://github.com/terranodo/django-mapproxy.git@registry#egg=django-mapproxy
-git+git://github.com/BerryDaniel/HHypermap.git@registry#egg=hypermap
+git+git://github.com/terranodo/django-mapproxy.git@bda52b3625ba7ea24c7ac0cdc97a126002441cde#egg=django-mapproxy
+git+git://github.com/cga-harvard/HHypermap.git@f0786271772d8c26f20a7630dd767f653f0973c0#egg=hypermap
 git+git://github.com/terranodo/mapproxy.git@3b590b82ad36508a77ca6aa9734abf5407a9249c#egg=mapproxy
-git+git://github.com/geopython/pycsw.git@master#egg=pycsw
-django-polymorphic==0.9.2
+git+git://github.com/geopython/pycsw.git@f46b398d511c44918e1fbe9584565a686ff5b08a#egg=pycsw
+pdb
