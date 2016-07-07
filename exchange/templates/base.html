@@ -206,6 +206,11 @@
           </div>
           <div class="modal-body">
             <ul class="list-unstyled">
+              {% if REGISTRY %}
+              <li><a href="/registry/search/csw?service=CSW&version=2.0.2&request=GetCapabilities"><i class="fa fa-globe"></i> {% trans "Registry CSW Endpoint" %}</a></li>
+              {% endif %}
+              <li><a href="/catalogue/search/csw?service=CSW&version=2.0.2&request=GetCapabilities"><i class="fa fa-globe"></i> {% trans "Exchange CSW Endpoint" %}</a></li>
+              <li class="modal-divider"></li>
               <li><a href="{{ user.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
               <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
               <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>

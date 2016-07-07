@@ -251,7 +251,7 @@ if REGISTRY is not None:
     ) + INSTALLED_APPS
     MAPPROXY_CONFIG = os.path.join(MEDIA_ROOT, 'mapproxy_config')
 
-    REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/')
+    REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
 
     REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
