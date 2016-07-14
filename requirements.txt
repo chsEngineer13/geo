@@ -1,12 +1,6 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/GeoNode/geonode.git@1e213e77a55fd12c3dcdfcc64003393e04aff365#egg=geonode
-git+git://github.com/GeoNode/geonode-announcements@35501726a65046314ccf696ecc6a40e5b0c57335#egg=geonode-announcements
-git+git://github.com/GeoNode/geonode-avatar@1c043e5d6e7abd66100ddd7e6084b160fff55496#egg=geonote-avatar
-git+git://github.com/GeoNode/geonode-dialogos.git@4779a4aa84012d0326a4bfd896d0ad503407f5f9#egg=geonode-dialogos
-git+git://github.com/GeoNode/geonode-ratings.git@1190af087157e91bb873e624f161b1e13fa7bfab#egg=geonode-ratings
-git+git://github.com/GeoNode/geonode-user-accounts.git@475bf0875658dc4dc66120e3322643ad7cc54973#egg=geonode-user-accounts
-git+git://github.com/GeoNode/geonode-user-messages.git@c0167cb2d956d84119ec5468ab3ceb398576f871#egg=geonode-user-messages
+git+git://github.com/GeoNode/geonode.git@master#egg=geonode
 git+git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
 dj-database-url==0.4.1
 django-storages==1.1.8
