@@ -1,7 +1,7 @@
 --index-url https://pypi.python.org/simple/
 
 git+git://github.com/GeoNode/geonode.git@master#egg=geonode
-git+git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
+git+git://github.com/boundlessgeo/django-exchange-maploom.git@master#egg=django-maploom
 dj-database-url==0.4.1
 django-storages==1.1.8
 boto==2.38.0

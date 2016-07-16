@@ -21,17 +21,15 @@
 from django.conf import settings
 from exchange.version import get_version
 
-def version(request):
-    """ Returns the exchange version """
 
-    return dict(VERSION=get_version())
+def resource_variables(request):
+    """Global exchange values to pass to templates"""
+    defaults = dict(
+        VERSION=get_version(),
+        REGISTRY=getattr(settings, 'REGISTRY', False),
+        REGISTRYURL=getattr(settings,'REGISTRYURL', None),
+        CATALOGLIST=getattr(settings, 'CATALOGLIST', None),
+        MAP_CRS=settings.DEFAULT_MAP_CRS,
+    )
 
-def registry(request):
-    """ Registry variable to pass to templates"""
-
-    return {'REGISTRY': settings.REGISTRY}
-
-def map_crs(request):
-    """ Map CRS variable to pass to templates"""
-
-    return {'MAP_CRS': settings.DEFAULT_MAP_CRS}
+    return defaults

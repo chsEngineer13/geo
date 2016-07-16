@@ -74,9 +74,7 @@ TEMPLATE_DIRS = (
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django_classification_banner.context_processors.classification',
-    'exchange.core.context_processors.version',
-    'exchange.core.context_processors.registry',
-    'exchange.core.context_processors.map_crs',
+    'exchange.core.context_processors.resource_variables',
 )
 
 # middlware
@@ -240,6 +238,15 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
 REGISTRY = os.environ.get('REGISTRY', None)
 if REGISTRY is not None:
     from hypermap.settings import REGISTRY_PYCSW
+
+    REGISTRY = True # ensure the value is True
+    REGISTRYURL = SITE_URL.rstrip('/')
+    CATALOGLIST = [
+        {
+            'name': 'local registry',
+            'url': '%s/registry/search/' % REGISTRYURL
+        },
+    ]
     SEARCH_ENABLED = True
     SEARCH_TYPE = 'elasticsearch'
     SEARCH_URL = ES_URL
