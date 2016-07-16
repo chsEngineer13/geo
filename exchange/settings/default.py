@@ -240,11 +240,11 @@ if REGISTRY is not None:
     from hypermap.settings import REGISTRY_PYCSW
 
     REGISTRY = True # ensure the value is True
-    REGISTRYURL = SITE_URL.rstrip('/')
+    REGISTRYURL = '%s/registry' % SITE_URL.rstrip('/')
     CATALOGLIST = [
         {
             'name': 'local registry',
-            'url': '%s/registry/search/' % REGISTRYURL
+            'url': '%s/hypermap/' % SITE_URL.rstrip('/')
         },
     ]
     SEARCH_ENABLED = True
