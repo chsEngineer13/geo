@@ -1,0 +1,4 @@
+[submodule "exchange/static/docs"]
+	path = exchange/static/docs
+	url = https://github.com/boundlessgeo/exchange-documentation.git
+	branch = gh-pages
