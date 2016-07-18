@@ -124,6 +124,11 @@ nav.filter h4 a.toggle {
   -webkit-transform:rotate(50deg) skewX(24deg) skewY(12deg);
   -ms-transform:rotate(50deg) skewX(24deg) skewY(12deg);
 }
+.fa-hero {
+  top: 25px;
+  vertical-align: inherit;
+
+}
 .stacked {
   margin-top: 28px;
 }
