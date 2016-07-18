@@ -54,21 +54,21 @@
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
-              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+              <a href="{% url "layer_browse" %}?limit=100&offset=0">{% trans "Layers" %}</a>
             </li>
             <li id="nav_maps">
-              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+              <a href="{% url "maps_browse" %}?limit=100&offset=0">{% trans "Maps" %}</a>
             </li>
             <li id="nav_documents">
-              <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
+              <a href="{% url "document_browse" %}?limit=100&offset=0">{% trans "Documents" %}</a>
             </li>
            {% block extra_tab %}
            {% endblock %}
             <li id="nav_people">
-              <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
+              <a href="{% url "profile_browse" %}?limit=100&offset=0">{% trans "People" %}</a>
             </li>
             <li id="nav_groups">
-              <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
+              <a href="{% url "group_list" %}?limit=100&offset=0">{% trans "Groups" %}</a>
             </li>
             {% endblock %}
           </ul>
