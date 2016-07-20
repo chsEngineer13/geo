@@ -30,6 +30,7 @@ def resource_variables(request):
         REGISTRYURL=getattr(settings,'REGISTRYURL', None),
         CATALOGLIST=getattr(settings, 'CATALOGLIST', None),
         MAP_CRS=settings.DEFAULT_MAP_CRS,
+        BOUNDLESS_URL=settings.BOUNDLESS_URL,
     )
 
     return defaults
