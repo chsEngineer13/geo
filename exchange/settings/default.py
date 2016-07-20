@@ -243,8 +243,8 @@ if REGISTRY is not None:
     REGISTRYURL = '%s/registry' % SITE_URL.rstrip('/')
     CATALOGLIST = [
         {
-            'name': 'local registry',
-            'url': '%s/hypermap/' % SITE_URL.rstrip('/')
+            "name": "local registry",
+            "url": "%s/hypermap/" % SITE_URL.rstrip("/")
         },
     ]
     SEARCH_ENABLED = True
