@@ -19,7 +19,7 @@
 #########################################################################
 
 import os
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 def read(*rnames):
@@ -40,7 +40,7 @@ setup(
     license="BSD",
     keywords="exchange geonode django",
     url='https://github.com/boundlessgeo/exchange',
-    packages=['exchange', ],
+    packages=find_packages('.'),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
