@@ -132,6 +132,7 @@ OGC_SERVER = {
         'GEOSERVER_DATA_DIR': GEOSERVER_DATA_DIR,
         'GEOGIG_DATASTORE_DIR': GEOGIG_DATASTORE_DIR,
         'DATASTORE': '',
+        'PG_GEOGIG': False,
         'TIMEOUT': 10
     }
 }
