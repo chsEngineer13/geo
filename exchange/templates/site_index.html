@@ -36,7 +36,7 @@
     {% with facet_type='home' %}
      {% facets as facets %}
       <div class="col-md-4">
-        <a class="info-blurb" href="{% url "layer_browse" %}">
+       <a class="info-blurb" href="{% url "layer_browse" %}?limit=100&offset=0">
           <p class="text-center">
             <span class="fa-stack fa-hero fa-rotate-90 fa-2x" >
               <i class="fa fa-stop fa-layers fa-stack-1x fa-2x" style="left: 0;"></i>
@@ -49,29 +49,29 @@
           <h2 class="text-center stacked">{{ facets.layer|default:"No" }} Layer{{ facets.layer|pluralize }}</h2>
           <p class="text-center blurb">{% trans "Browse or upload geospatial data into an Exchange layer. Download them in the format you need." %}</p>
           <p class="text-center">
-              <a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Browse" %} &raquo;</a>
-              <a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Upload" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "layer_browse" %}?limit=100&offset=0" role="button">{% trans "Browse" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "layer_upload" %}"  role="button">{% trans "Upload" %} &raquo;</a>
           </p>
         </a>
       </div>
       <div class="col-md-4">
-        <a class="info-blurb" href="{% url "document_browse" %}">
+        <a class="info-blurb" href="{% url "document_browse" %}?limit=100&offset=0">
           <p class="text-center"><i class="fa fa-files-o fa-5x"></i></p>
           <h2 class="text-center">{{ facets.document|default:"No" }} Document{{ facets.document|pluralize }}</h2>
           <p class="text-center blurb">{% trans "Browse or upload non geospatial data and associate your data to a layer or map." %}</p>
           <p class="text-center">
-              <a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Browse" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "document_browse" %}?limit=100&offset=0" role="button">{% trans "Browse" %} &raquo;</a>
               <a class="btn btn-default" href="{% url "document_upload" %}" role="button">{% trans "Upload" %} &raquo;</a>
           </p>
         </a>
       </div>
       <div class="col-md-4">
-        <a class="info-blurb" href="{% url "maps_browse" %}">
+        <a class="info-blurb" href="{% url "maps_browse" %}?limit=100&offset=0">
           <p class="text-center"><i class="fa fa-map fa-5x"></i></p>
           <h2 class="text-center">{{ facets.map|default:"No" }} Map{{ facets.map|pluralize }}</h2>
           <p class="text-center blurb">{% trans "Browse or create a map and allow others to collaborate on your map with comments or edits." %}</p>
           <p class="text-center">
-              <a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Browse" %} &raquo;</a>
+              <a class="btn btn-default" href="{% url "maps_browse" %}?limit=100&offset=0" role="button">{% trans "Browse" %} &raquo;</a>
               <a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create" %} &raquo;</a>
           </p>
         </a>
