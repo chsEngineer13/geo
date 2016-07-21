@@ -100,7 +100,6 @@ INSTALLED_APPS = (
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = ('GET',)
 
-
 # geoserver settings
 GEOSERVER_URL = os.environ.get('GEOSERVER_URL',
                                'http://127.0.0.1:8080/geoserver/')
@@ -109,11 +108,14 @@ GEOSERVER_USER = os.environ.get('GEOSERVER_USER',
 GEOSERVER_PASSWORD = os.environ.get('GEOSERVER_PASSWORD',
                                     'geoserver')
 GEOSERVER_LOG = os.environ.get('GEOSERVER_LOG',
-                               '/var/lib/geoserver_data/logs/geoserver.log')
+                               '/opt/boundless/exchange/geoserver_data'
+                               '/logs/geoserver.log')
 GEOSERVER_DATA_DIR = os.environ.get('GEOSERVER_DATA_DIR',
-                                    '/var/lib/geoserver_data')
+                                    '/opt/boundless/exchange/geoserver_data')
 GEOGIG_DATASTORE_DIR = os.environ.get('GEOSERVER_DATA_DIR',
-                                      '/var/lib/geoserver_data/geogig')
+                                      '/opt/boundless/exchange/geoserver_data'
+                                      '/geogig')
+
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
@@ -289,7 +291,7 @@ if REGISTRY is not None:
         'contact_role': 'Point of Contact'
     }
     TAGGIT_CASE_INSENSITIVE = True
-
+    AUTH_EXEMPT_URLS = ('/registry/search/csw',)
 
 try:
     from local_settings import *  # noqa
