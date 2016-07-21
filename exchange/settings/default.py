@@ -54,8 +54,8 @@ WSGI_APPLICATION = "exchange.wsgi.application"
 ROOT_URLCONF = 'exchange.urls'
 
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
-APP_ROOT = os.path.join(os.path.join(LOCAL_ROOT, os.pardir))
-PROJECT_ROOT = os.path.join(os.path.join(APP_ROOT, os.pardir))
+APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
+PROJECT_ROOT = os.path.join(APP_ROOT, os.pardir)
 
 # static files storage
 STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
