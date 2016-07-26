@@ -31,6 +31,7 @@ def resource_variables(request):
         CATALOGLIST=getattr(settings, 'CATALOGLIST', None),
         MAP_CRS=settings.DEFAULT_MAP_CRS,
         BOUNDLESS_URL=settings.BOUNDLESS_URL,
+        BOUNDLESS_LINKTEXT=settings.BOUNDLESS_LINKTEXT,
     )
 
     return defaults

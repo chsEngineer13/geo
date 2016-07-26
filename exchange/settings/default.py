@@ -27,6 +27,7 @@ from datetime import timedelta
 
 SITEURL = SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
 BOUNDLESS_URL = os.getenv('BOUNDLESS_URL', 'http://boundlessgeo.com')
+BOUNDLESS_LINKTEXT = os.getenv('BOUNDLESS_LINKTEXT', 'Boundless Spatial')
 ALLOWED_HOSTS = [SITE_URL, ]
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
