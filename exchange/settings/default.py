@@ -184,6 +184,9 @@ DOWNLOAD_FORMATS_RASTER = [
     'GZIP'
 ]
 
+# local pycsw
+CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITE_URL.rstrip('/')
+
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
 ES_ENGINE = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
@@ -260,7 +263,7 @@ if REGISTRY is not None:
         'hypermap.search',
         'hypermap',
     ) + INSTALLED_APPS
-    MAPPROXY_CONFIG = os.path.join(MEDIA_ROOT, 'mapproxy_config')
+    FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
 
     REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
 
