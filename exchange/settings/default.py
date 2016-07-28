@@ -25,6 +25,9 @@ import dj_database_url
 from geonode.settings import *
 from datetime import timedelta
 
+def str2bool(v):
+    return v.lower() in ("yes", "true", "t", "1")
+
 SITEURL = SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
 ALLOWED_HOSTS = [SITE_URL, ]
 LANGUAGE_CODE = 'en-us'
@@ -154,13 +157,13 @@ if POSTGIS_URL is not None:
                                                           conn_max_age=600)
     OGC_SERVER['default']['DATASTORE'] = 'exchange_imports'
 
-UPLOADER = {
-    'BACKEND': 'geonode.importer',
-    'OPTIONS': {
-        'TIME_ENABLED': True,
-        'GEOGIT_ENABLED': True,
+    UPLOADER = {
+        'BACKEND': 'geonode.importer',
+        'OPTIONS': {
+            'TIME_ENABLED': True,
+            'GEOGIT_ENABLED': True,
+        }
     }
-}
 
 WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
@@ -250,7 +253,7 @@ if REGISTRY is not None:
     CATALOGLIST = [
         {
             "name": "local registry",
-            "url": "%s/hypermap/" % SITE_URL.rstrip("/")
+            "url": "http://192.168.99.110:9200/hypermap/" 
         },
     ]
     SEARCH_ENABLED = True
@@ -264,7 +267,10 @@ if REGISTRY is not None:
         'hypermap',
     ) + INSTALLED_APPS
     FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
-
+    # if DEBUG_SERVICES is set to True, only first DEBUG_LAYERS_NUMBER layers
+    # for each service are updated and checked
+    DEBUG_SERVICES = str2bool(os.getenv('DEBUG_SERVICES', 'False'))
+    DEBUG_LAYERS_NUMBER = int(os.getenv('DEBUG_LAYERS_NUMBER', '10'))
     REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
 
     REGISTRY_PYCSW['metadata:main'] = {
