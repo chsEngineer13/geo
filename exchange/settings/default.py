@@ -253,7 +253,7 @@ if REGISTRY is not None:
     CATALOGLIST = [
         {
             "name": "local registry",
-            "url": "http://192.168.99.110:9200/hypermap/" 
+            "url": "%s/hypermap/" % SITE_URL.rstrip("/")
         },
     ]
     SEARCH_ENABLED = True
