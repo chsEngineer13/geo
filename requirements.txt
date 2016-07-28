@@ -20,7 +20,7 @@ gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
 mapproxy==1.9.0
-git+git://github.com/terranodo/django-mapproxy.git@registry-djmp-1.0#egg=djmp
-git+git://github.com/cga-harvard/HHypermap.git@registry#egg=django-registry
+git+git://github.com/terranodo/django-mapproxy.git@2016-07-27#egg=djmp
+git+git://github.com/cga-harvard/HHypermap.git@2016-07-27#egg=django-registry
 git+git://github.com/geopython/pycsw.git@1525e70d36e363a856f03988ceb1598ba00d87f0#egg=pycsw
 pdb
