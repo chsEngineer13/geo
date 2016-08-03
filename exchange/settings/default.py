@@ -308,3 +308,8 @@ try:
     from local_settings import *  # noqa
 except ImportError:
     pass
+
+# Uploaded resources should be private and not downloadable by default
+# Overwrite the default of True found in the base Geonode settings
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = False
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = False
