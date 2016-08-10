@@ -313,3 +313,6 @@ except ImportError:
 # Overwrite the default of True found in the base Geonode settings
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = False
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = False
+
+# Use https:// scheme in Gravatar URLs
+AVATAR_GRAVATAR_SSL = True
