@@ -1,4 +1,4 @@
-{% load i18n avatar_tags %}
+            {% load i18n avatar_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -208,10 +208,7 @@
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
               {% endif %}
               {% if REGISTRY %}
-              <li><a href="/registry"><i class="fa fa-server"></i> {% trans "Registry" %}</a></li>
-              {% endif %}
-              {% if REGISTRY %}
-              <li><a href="/registry/search/csw?service=CSW&version=2.0.2&request=GetCapabilities" target="_blank"><i class="fa fa-globe"></i> {% trans "Registry CSW" %}</a></li>
+              <li><a href="/registry/"><i class="fa fa-server"></i> {% trans "Registry" %}</a></li>
               {% endif %}
               <li><a href="/catalogue/csw?service=CSW&version=2.0.2&request=GetCapabilities" target="_blank"><i class="fa fa-globe"></i> {% trans "Exchange CSW" %}</a></li>
               {% if user.is_staff %}
