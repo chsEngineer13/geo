@@ -22,6 +22,7 @@ import os
 import geonode
 import hypermap
 import dj_database_url
+import copy
 from geonode.settings import *
 from datetime import timedelta
 
@@ -222,6 +223,41 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 CELERY_TIMEZONE = 'UTC'
+
+# Logging settings
+# 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'ERROR')
+
+installed_apps_conf = {
+    'handlers': ['console'],
+    'level': DJANGO_LOG_LEVEL,
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format':
+                ('%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d'
+                 ' %(message)s'),
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': DJANGO_LOG_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        }
+    },
+    'loggers': {
+        app: copy.deepcopy(installed_apps_conf) for app in INSTALLED_APPS
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': DJANGO_LOG_LEVEL
+    }
+}
 
 # Authentication Settings
 AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
