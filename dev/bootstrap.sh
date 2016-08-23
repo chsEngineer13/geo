@@ -131,18 +131,18 @@ database_setup()
         service postgresql-9.5 restart > /dev/null 2>&1
     fi
     PGUSER=$(psql -U postgres -c '\du' | cut -d \| -f 1 | grep -w exchange | wc -l)
-    if [ $PGUSER == 0 ]; then
+    if [ "${PGUSER}" -eq 0 ]; then
         psql -U postgres -c "CREATE USER exchange WITH PASSWORD 'boundless';"
     else
         psql -U postgres -c "ALTER USER exchange WITH PASSWORD 'boundless';"
     fi
     EXCHANGE_DB=$(psql -U postgres -lqt | cut -d \| -f 1 | grep -w exchange | wc -l)
-    if [ $EXCHANGE_DB == 1 ]; then
+    if [ "${EXCHANGE_DB}" -eq 1 ]; then
         psql -U postgres -c "DROP DATABASE exchange;"
     fi
     psql -U postgres -c "CREATE DATABASE exchange OWNER exchange;"
     EXCHANGE_DATA_DB=$(psql -U postgres -lqt | cut -d \| -f 1 | grep -w exchange_data | wc -l)
-    if [ $EXCHANGE_DATA_DB == 1 ]; then
+    if [ "${EXCHANGE_DATA_DB}" -eq 1 ]; then
         psql -U postgres -c "DROP DATABASE exchange_data;"
     fi
     psql -U postgres -c "CREATE DATABASE exchange_data OWNER exchange;"
