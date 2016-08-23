@@ -19,6 +19,8 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from hypermap.urls import urlpatterns as hypermap_urls
 from geonode.urls import urlpatterns as geonode_urls
@@ -41,6 +43,21 @@ urlpatterns = patterns(
     url(r'^help/$', views.documentation_page, name='help'),
     url(r'^developer/$', views.documentation_page, name='developer')
 )
+
+# If django-osgeo-importer is enabled...
+if 'osgeo_importer' in settings.INSTALLED_APPS:
+    # Replace the default Exchange 'layers/upload'
+    from osgeo_importer.views import FileAddView
+    urlpatterns += [
+        url(
+            r'^layers/upload$',
+            login_required(FileAddView.as_view()),
+            name='layer_upload'
+        )
+    ]
+    # Add django-osgeo-importer URLs
+    from osgeo_importer.urls import urlpatterns as osgeo_importer_urls
+    urlpatterns += osgeo_importer_urls
 
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls
