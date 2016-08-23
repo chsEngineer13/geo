@@ -33,3 +33,4 @@ pylibmc==1.5.1
 mapproxy==1.9.0
 djmp==0.2.8
 django-registry==0.3.6
+git+git://github.com/boundlessgeo/django-osgeo-importer@b77ea961ea458b9c2ed8388ce7011a43e29f6fe9#egg=django-osgeo-importer
