@@ -22,6 +22,7 @@ import os
 import geonode
 import hypermap
 import dj_database_url
+import django_cache_url
 import copy
 from geonode.settings import *
 from datetime import timedelta
@@ -216,12 +217,6 @@ CELERY_RESULT_BACKEND = 'rpc' + BROKER_URL[4:]
 CELERYD_PREFETCH_MULTIPLIER = 25
 CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
 
-CELERYBEAT_SCHEDULE = {
-    'Check All Services': {
-        'task': 'check_all_services',
-        'schedule': timedelta(minutes=15)
-    },
-}
 CELERY_TIMEZONE = 'UTC'
 
 # Logging settings
@@ -287,16 +282,41 @@ if REGISTRY is not None:
     from hypermap.settings import REGISTRY_PYCSW
 
     REGISTRY = True # ensure the value is True
-    REGISTRYURL = '%s/registry' % SITE_URL.rstrip('/')
+    REGISTRY_SKIP_CELERY = False
+    REGISTRY_SEARCH_URL = os.getenv('REGISTRY_SEARCH_URL',
+                                    'elasticsearch+%s' % ES_URL)
+
+    # Check layers every 24 hours
+    REGISTRY_CHECK_PERIOD = int(os.environ.get('REGISTRY_CHECK_PERIOD', '1440'))
+    # Index cached layers every minute
+    REGISTRY_INDEX_CACHED_LAYERS_PERIOD = int(os.environ.get('REGISTRY_CHECK_PERIOD', '1'))
+
+    CELERYBEAT_SCHEDULE = {
+        'Check All Services': {
+            'task': 'check_all_services',
+            'schedule': timedelta(minutes=REGISTRY_CHECK_PERIOD)
+        },
+        'Index Cached Layers': {
+            'task': 'hypermap.aggregator.tasks.index_cached_layers',
+            'schedule': timedelta(minutes=REGISTRY_INDEX_CACHED_LAYERS_PERIOD)
+        }
+    }
+
+
+    # -1 Disables limit.
+    REGISTRY_LIMIT_LAYERS = int(os.getenv('REGISTRY_LIMIT_LAYERS', '-1'))
+
+    FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
+    REGISTRY_MAPPING_PRECISION = os.getenv('REGISTRY_MAPPING_PRECISION', '500m')
+
     CATALOGLIST = [
         {
             "name": "local registry",
-            "url": "%s/hypermap/" % SITE_URL.rstrip("/")
+            "url": "%s/_elastic/hypermap/" % SITE_URL.rstrip("/"),
+            "registryUrl": '%s/registry/hypermap' % SITE_URL.rstrip('/') 
         },
     ]
-    SEARCH_ENABLED = True
-    SEARCH_TYPE = 'elasticsearch'
-    SEARCH_URL = ES_URL
+
     INSTALLED_APPS = (
         'djmp',
         'hypermap.aggregator',
@@ -304,12 +324,11 @@ if REGISTRY is not None:
         'hypermap.search',
         'hypermap',
     ) + INSTALLED_APPS
-    FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
+
     # if DEBUG_SERVICES is set to True, only first DEBUG_LAYERS_NUMBER layers
     # for each service are updated and checked
-    DEBUG_SERVICES = str2bool(os.getenv('DEBUG_SERVICES', 'False'))
-    DEBUG_LAYERS_NUMBER = int(os.getenv('DEBUG_LAYERS_NUMBER', '10'))
     REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
+
 
     REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
@@ -339,6 +358,10 @@ if REGISTRY is not None:
     }
     TAGGIT_CASE_INSENSITIVE = True
     AUTH_EXEMPT_URLS = ('/registry/search/csw',)
+
+    # Read cache information from CACHE_URL
+    # Registry needs the CACHE to store the layers to be indexed.
+    CACHES = {'default': django_cache_url.config()}
 
 try:
     from local_settings import *  # noqa

@@ -1,7 +1,12 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/GeoNode/geonode.git@290afca3654cee0b65a1d9b8f244ab22a7d82704#egg=geonode
-git+git://github.com/boundlessgeo/django-exchange-maploom.git@9a13491e4af5aac29f4104918d323eab81e5b16e#egg=django-maploom
+
+# TODO: Make sure requirements.txt are complete for exchange's env.
+# GeoNode is now using >= and <= in setup.py, if you need specific versions,
+# they should be listed in this file.
+git+git://github.com/GeoNode/geonode.git@dd0ff0a287289d4cbe98a337dd2ce8aba3e3fd75#egg=geonode
+git+git://github.com/boundlessgeo/django-exchange-maploom.git@914e80e02a1063e9295b4a5621d291557a2ff99b#egg=django-maploom
+
 dj-database-url==0.4.1
 django-storages==1.1.8
 boto==2.38.0
@@ -19,8 +24,9 @@ supervisor==3.2.3
 gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
+# Registry pinned dependencies
+elasticsearch==1.9.0
+pylibmc==1.5.1
 mapproxy==1.9.0
-git+git://github.com/terranodo/django-mapproxy.git@2016-07-27#egg=djmp
-git+git://github.com/cga-harvard/HHypermap.git@2016-07-27#egg=django-registry
-git+git://github.com/geopython/pycsw.git@1525e70d36e363a856f03988ceb1598ba00d87f0#egg=pycsw
-pdb
+djmp==0.2.8
+django-registry==0.2.19
