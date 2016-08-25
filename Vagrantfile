@@ -6,6 +6,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "bento/centos-6.7"
   config.vm.provision :shell, path: "dev/bootstrap.sh"
 
+  config.ssh.shell = "sh"
 
   ## create a private network visible only to the host machine
   config.vm.network :private_network, ip: "192.168.99.110"
