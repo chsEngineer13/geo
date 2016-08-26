@@ -55,6 +55,7 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
         postgresql-devel \
         postgresql95-devel \
         openldap-devel \
+        libmemcached-devel \
     && \
     # Create the virtualenv the app will run in
     /usr/local/bin/virtualenv /env && chmod -R 755 /env
