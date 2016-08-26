@@ -102,7 +102,7 @@ geoserver_setup()
     if [ ! -f /vagrant/dev/.geoserver/geoserver.war ]; then
 	    echo "=> Downloading GeoServer web archive"
 	    pushd /vagrant/dev/.geoserver
-	    wget https://s3.amazonaws.com/boundlessps-public/mapstory/rc1a/geoserver.war > /dev/null 2>&1
+	    wget https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war > /dev/null 2>&1
 	    unzip geoserver.war -d geoserver
 	    popd
     fi
