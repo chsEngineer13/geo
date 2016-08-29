@@ -42,7 +42,8 @@ yum_setup()
         git \
         postgis-postgresql95 \
         elasticsearch \
-        rabbitmq-server-3.6.1
+        rabbitmq-server-3.6.1 \
+        libmemcached-devel \
 
     if [ -f /etc/profile.d/settings.sh ]; then
         rm -fr /etc/profile.d/settings.sh
