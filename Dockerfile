@@ -72,7 +72,6 @@ RUN /env/bin/pip install -r /mnt/exchange/requirements.txt && \
 # docker/home contains a number of things that will go in $HOME:
 # - local_settings.py: env-specific monkeypatches for django's settings.py
 # - .bash_profile: for activating the virtualenv at login
-# - .bashrc: contains aliases (convenience shortcuts)
 # - exchange.sh: commands to run at container boot for Exchange Django app
 # - worker.sh: commands to run at container boot for Exchange Celery app
 # - settings.sh: environment variables
