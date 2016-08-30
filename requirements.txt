@@ -30,4 +30,4 @@ elasticsearch==1.9.0
 pylibmc==1.5.1
 mapproxy==1.9.0
 djmp==0.2.8
-django-registry==0.2.23
+django-registry==0.3.6
