@@ -177,7 +177,7 @@ run_migrations () {
         log "Collecting static assets ..."
         $manage collectstatic --noinput
         # "hotfix, need to find out why it is not importing the categories"
-        $manage loaddata initial_data
+        $manage loaddata initial
     else
         log "POSTGIS_URL is not set, so migrations cannot run"
         exit 1
