@@ -178,6 +178,8 @@ run_migrations () {
         $manage collectstatic --noinput
         # "hotfix, need to find out why it is not importing the categories"
         $manage loaddata initial
+        # migrate account after loaddata to avoid DoesNotExist profile issue
+        $manage migrate account --noinput
     else
         log "POSTGIS_URL is not set, so migrations cannot run"
         exit 1
