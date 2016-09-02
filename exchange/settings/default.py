@@ -376,6 +376,7 @@ DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = False
 # Use https:// scheme in Gravatar URLs
 AVATAR_GRAVATAR_SSL = True
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+# TODO: disable pickle serialization when we can ensure JSON works everywhere
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
