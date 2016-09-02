@@ -11,7 +11,7 @@
 {% block body_outer %}
 <div class="page-header">
   <h2>{% trans "Register New Service" %}</h2>
-  <p>The service needs to be support the following Coordinate Reference System - <b>{{ MAP_CRS }}<b/></p>
+  <p>The service needs to support the following Coordinate Reference System - <b>{{ MAP_CRS }}<b/></p>
 </div>
     <form method="POST" id="service_register_form">
     {% csrf_token %}
