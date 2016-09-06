@@ -13,8 +13,13 @@ from exchange.core.models import ThumbnailImage, ThumbnailImageForm
 from geonode.maps.views import _resolve_map
 import requests
 
-def HomeScreen(request):
+
+def home_screen(request):
     return render(request, 'site_index.html')
+
+
+def documentation_page(request):
+    return HttpResponseRedirect('/static/docs/index.html')
 
 
 def layer_metadata_detail(request, layername,
