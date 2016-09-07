@@ -113,33 +113,33 @@
     <dl class="dl-horizontal">
 
         {% if layer.owner %}
-        {% with layer.owner as poc %}
+        {% with poc=layer.owner NO_VALUE="None" %}
 
         <dt>{% trans "Name" %}</dt>
-        <dd>{{ poc.name_long }}</dd>
+        <dd>{{ poc.name_long|default:NO_VALUE }}</dd>
 
         <dt>{% trans "email" %}</dt>
-        <dd>{{ poc.email }}</dd>
+        <dd>{{ poc.email|default:NO_VALUE }}</dd>
 
         <dt>{% trans "Position" %}</dt>
-        <dd>{{ poc.position }}</dd>
+        <dd>{{ poc.position|default:NO_VALUE }}</dd>
 
         <dt>{% trans "Organization" %}</dt>
-        <dd>{{ poc.organization }}</dd>
+        <dd>{{ poc.organization|default:NO_VALUE }}</dd>
 
         <dt>{% trans "Location" %}</dt>
-        <dd>{{ poc.location }}</dd>
+        <dd>{{ poc.location|default:NO_VALUE }}</dd>
 
         <dt>{% trans "Voice" %}</dt>
-        <dd>{{ poc.voice }}</dd>
+        <dd>{{ poc.voice|default:NO_VALUE }}</dd>
 
         <dt>{% trans "Fax" %}</dt>
-        <dd>{{ poc.fax }}</dd>
+        <dd>{{ poc.fax|default:NO_VALUE }}</dd>
 
         {% if poc.keyword_list %}
         <dt>{% trans "Keywords" %}</dt>
         <dd>{% for keyword in poc.keyword_list %}
-            {{ keyword }}
+            {{ keyword|default:NO_VALUE }}
             {% endfor %}</dd>
         {% endif %}
 
