@@ -45,7 +45,7 @@ class TagLine(SingletonModel):
         max_length=75,
         default='A Platform for Geospatial Collaboration',
         help_text="A Platform for Geospatial Collaboration"
-        )
+    )
 
     def __unicode__(self):
         return u"Tag Line"
@@ -58,7 +58,7 @@ class BannerImage(SingletonModel):
     banner_image = models.ImageField(
         upload_to='static/img/',
         help_text="Recommended dimensions: 1440px x 350px"
-        )
+    )
 
     def save(self, *args, **kwargs):
         pil_image_obj = Image.open(self.banner_image)

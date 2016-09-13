@@ -37,11 +37,11 @@ urlpatterns = patterns(
     url(r'^maps/(?P<mapid>[^/]*)/metadata_detail$', views.map_metadata_detail,
         name='map_metadata_detail'),
     url(r'^wfsproxy/', views.geoserver_reverse_proxy,
-            name='geoserver_reverse_proxy'),
+        name='geoserver_reverse_proxy'),
     # Redirect help and developer links to the documentation page
     url(r'^help/$', views.documentation_page, name='help'),
     url(r'^developer/$', views.documentation_page, name='developer')
- )
+)
 
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls

@@ -41,7 +41,7 @@ CELERYBEAT_SCHEDULE = {
 
 CLOUD_FOUNDRY = os.getenv('CLOUD_FOUNDRY', None)
 
-#TODO:
+# TODO:
 # - Enable postgis settings.
 # - Lockdown geonode.
 

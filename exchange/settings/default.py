@@ -27,6 +27,7 @@ import copy
 from geonode.settings import *
 from datetime import timedelta
 
+
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
@@ -151,7 +152,7 @@ GEOGIG_DATASTORE_NAME = 'geogig-repo'
 MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
 
 # database settings
-SQLITEDB = "sqlite:///%s" % os.path.join(LOCAL_ROOT,'development.db')
+SQLITEDB = "sqlite:///%s" % os.path.join(LOCAL_ROOT, 'development.db')
 DATABASE_URL = os.getenv('DATABASE_URL', SQLITEDB)
 DATABASES['default'] = dj_database_url.parse(DATABASE_URL,
                                              conn_max_age=600)
@@ -281,7 +282,7 @@ REGISTRY = os.environ.get('REGISTRY', None)
 if REGISTRY is not None:
     from hypermap.settings import REGISTRY_PYCSW
 
-    REGISTRY = True # ensure the value is True
+    REGISTRY = True  # ensure the value is True
     REGISTRY_SKIP_CELERY = False
     REGISTRY_SEARCH_URL = os.getenv('REGISTRY_SEARCH_URL',
                                     'elasticsearch+%s' % ES_URL)
@@ -302,7 +303,6 @@ if REGISTRY is not None:
         }
     }
 
-
     # -1 Disables limit.
     REGISTRY_LIMIT_LAYERS = int(os.getenv('REGISTRY_LIMIT_LAYERS', '-1'))
 
@@ -313,7 +313,7 @@ if REGISTRY is not None:
         {
             "name": "local registry",
             "url": "%s/_elastic/hypermap/" % SITE_URL.rstrip("/"),
-            "registryUrl": '%s/registry/hypermap' % SITE_URL.rstrip('/') 
+            "registryUrl": '%s/registry/hypermap' % SITE_URL.rstrip('/')
         },
     ]
 
@@ -328,7 +328,6 @@ if REGISTRY is not None:
     # if DEBUG_SERVICES is set to True, only first DEBUG_LAYERS_NUMBER layers
     # for each service are updated and checked
     REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
-
 
     REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
