@@ -331,9 +331,11 @@ if REGISTRY is not None:
 
     REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
-        'identification_abstract': 'Registry, a Harvard Hypermap project, is an application that manages ' \
-        'OWS, Esri REST, and other types of map service harvesting, and maintains uptime statistics for ' \
-        'services and layers.',
+        'identification_abstract':
+            'Registry, a Harvard Hypermap project, is an application that '
+            'manages OWS, Esri REST, and other types of map service '
+            'harvesting, and maintains uptime statistics for  services and '
+            'layers.',
         'identification_keywords': 'sdi,catalogue,discovery,metadata,registry,HHypermap',
         'identification_keywords_type': 'theme',
         'identification_fees': 'None',
