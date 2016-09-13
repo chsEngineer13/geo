@@ -21,7 +21,9 @@
 
 import dj_database_url
 import json
+import os
 from .default import *  # noqa
+from .default import AUTH_USER_MODEL
 from datetime import timedelta
 
 #####
