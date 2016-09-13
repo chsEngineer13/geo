@@ -22,7 +22,17 @@ import os
 import dj_database_url
 import django_cache_url
 import copy
-from geonode.settings import *
+from geonode.settings import *  # noqa
+from geonode.settings import (
+    MIDDLEWARE_CLASSES,
+    STATICFILES_DIRS,
+    TEMPLATE_DIRS,
+    TEMPLATE_CONTEXT_PROCESSORS,
+    INSTALLED_APPS,
+    MAP_BASELAYERS,
+    DATABASES,
+    CATALOGUE
+)
 from datetime import timedelta
 
 
