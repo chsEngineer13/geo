@@ -1,0 +1,89 @@
+# These first two lines put us in the Trusty beta for Travis
+# and keep us from using the container-based infrastructure.
+sudo: required
+dist: trusty
+
+language: python
+python:
+  - 2.7
+
+services:
+  - rabbitmq
+  - elasticsearch # Output - service does not exist
+  - postgresql
+
+addons:
+  postgresql: "9.5"
+
+branches:
+  only:
+  - master
+
+before_install:
+  # Allow connections to PG from our Docker instance
+  - echo "host all all 0.0.0.0/0 md5" | sudo tee -a /etc/postgresql/9.5/main/pg_hba.conf
+  - echo "listen_addresses = '*'" | sudo tee -a /etc/postgresql/9.5/main/postgresql.conf
+  - sudo service postgresql stop
+  - sudo service postgresql start 9.5
+
+  - sudo apt-get -qq update
+install:
+  # Docker version is 1.12.0, Compose is 1.7.0
+  # This upgrades to 1.12.1 and 1.8.0, respectively, as of 2016-09
+  - sudo apt-get install -qq --only-upgrade docker-engine
+
+  # Install Java, Jetty and Geoserver
+  - sudo apt-get -qq install openjdk-8-jre-headless
+  - wget --directory-prefix=/tmp -q http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.3.8.v20160314/jetty-runner-9.3.8.v20160314.jar
+  - wget --directory-prefix /tmp -q https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war
+  - unzip -qq -o /tmp/geoserver.war -d /tmp/geoserver
+
+  - sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://localhost:8000/</baseUrl>@' /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml
+  - mkdir -p /tmp/geoserver/data/geogig
+  - printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /tmp/geoserver/data/geogig/.geogigconfig
+
+before_script:
+  # - sleep 10 # Elasticsearch needs this
+
+  # Run Geoserver
+  - source docker/travis/geoserver-settings.sh
+  - nohup java \
+      -XX:MaxPermSize=1024m \
+      -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true \
+      -DGEOSERVER_DATA_DIR=/tmp/geoserver/data \
+      -Duser.home=/tmp/geoserver/data/geogig \
+      -jar /tmp/jetty-runner-9.3.8.v20160314.jar \
+      --path /geoserver /tmp/geoserver.war &
+
+  # Initialize databases for Exchange and Geonode
+  - psql -U postgres -c "CREATE USER exchange WITH SUPERUSER PASSWORD 'boundless'"
+  - psql -U postgres -c "CREATE DATABASE exchange WITH OWNER exchange"
+  - psql -U postgres -c "CREATE DATABASE exchange_data WITH OWNER exchange"
+  - psql -U postgres -d exchange_data -c "CREATE EXTENSION postgis"
+
+  # Build the docker container from the CI Dockerfile
+  - docker build -qf Dockerfile.ci .
+
+  # Start the container
+  - export image=$(docker images | head -n 2 | tail -n 1 | awk '{print $3}')
+  - docker run -d -p 80:80 $image /env/bin/python /opt/boundless/exchange/manage.py runserver 0.0.0.0:80
+  - export container=$(docker ps | tail -n 1 | awk '{print $1}')
+
+  # Run migrations
+  - docker exec $container /opt/boundless/exchange/docker/travis/migrate.sh
+
+  # Install flake8 for linting
+  - docker exec $container /env/bin/pip install flake8
+
+script:
+  # Geonode tests fail
+  # - docker exec $container /opt/boundless/exchange/docker/travis/test-geonode.sh
+  - docker exec $container /env/bin/python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange
+  - docker exec $container /opt/boundless/exchange/docker/travis/test-exchange.sh
+
+after_script:
+  - docker stop $container
+
+notifications:
+  slack:
+    secure: Z2nAgjWI9sLH874otcCaxiTYz0Emsco1hbqi6H4dVJo+kREHuq9jjiGzIIs6+1fi3QzUxxoWgL7mddB/ngkOCwfMimm8tnD5xbYjdr/zNVChQTS8l25ZjsoMi0pDdwAFwQ6sKpFAAZY5Hsl9KGXxjfwbeYNnJL4QKGVBOmSZ8sdtRVulyLdrVM1C3mrYF9yyR/Yr3/F6/IrSuDDOBVS+6jrl5P9PCQvmQWkqMFBIevY0NS0111Oi6qzSUladK27juBmZXOFQpJqJ1gTcCbuQkj/57SXuYH1KbuTxK5w+ghjuyJKpN4EYNvnjEjpgSVgvYaiIX3FgDhK6YaptFA3/siQgSKq1GTbC6gsY3toZlKxfDlqRDS3K1oSPXIiWuJrWV7JH49GaORtqq2FaFCn3D/Fwdc4WH6OveaFYiC/hpXI6M0gqLwTY9LqpNbEqMvHCI3RcBtY/jkhu3ErGKdB5waYuvyD5QfRVvBoY0411iu2k16SqWcBzaS9fZhh25rKQ449iPrTwlGdjV1jjpSBDoMRgOFulCTHhQKHO7QqJzE1TTeydYzFb1MDotBHt4MZz29D6/68KJfLV+7Tr83DwyX7I+Oeb2hUCcDT9xfYZoCmZAjrow0mYLrqWv087BGzvygny9b5pIu4ia05UrralZeoUlMovvZBzMogF3kWYikQ=

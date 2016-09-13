@@ -1,0 +1,58 @@
+# This Dockerfile is designed to stand up a ready-to-use Exchange
+# (without any of the other required apps - PG, Geoserver, etc)
+# It is currently only used for Travis-CI builds, but it should be
+# portable enough to work in other situations.
+
+# Testing must happen on CentOS 6.7 per client requirements
+FROM centos:6.7
+
+# Get everything we'll need other than our WAR, Exchange code and Python deps.
+# Most of this is headers needed during pip install of Python packages with C.
+ADD https://yum.boundlessps.com/geoshape.repo /etc/yum.repos.d/
+RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf \
+    && yum update -y \
+    && yum -y install \
+        python27-devel \
+        python27-virtualenv \
+        gcc \
+        gcc-c++ \
+        make \
+        expat-devel \
+        db4-devel \
+        gdbm-devel \
+        sqlite-devel \
+        readline-devel \
+        zlib-devel \
+        bzip2-devel \
+        openssl-devel \
+        tk-devel \
+        gdal-devel-2.0.1 \
+        libxslt-devel \
+        libxml2-devel \
+        libjpeg-turbo-devel \
+        zlib-devel \
+        libtiff-devel \
+        freetype-devel \
+        lcms2-devel \
+        proj-devel \
+        geos-devel \
+        postgresql-devel \
+        postgresql95-devel \
+        openldap-devel \
+        libmemcached-devel \
+        unzip \
+        wget \
+        git \
+        postgis-postgresql95 \
+        elasticsearch \
+        rabbitmq-server-3.6.1
+
+# Add the Exchange tree, install deps
+ADD . /opt/boundless/exchange
+RUN virtualenv /env && chmod -R 755 /env
+RUN /env/bin/pip install -r /opt/boundless/exchange/requirements.txt > /dev/null
+
+# Travis can provide
+# PostGIS: https://docs.travis-ci.com/user/database-setup/#Using-PostGIS
+# RabbitMQ: https://docs.travis-ci.com/user/database-setup/#RabbitMQ
+# ElasticSearch: https://docs.travis-ci.com/user/database-setup/#ElasticSearch
