@@ -19,8 +19,6 @@
 #########################################################################
 
 import os
-import geonode
-import hypermap
 import dj_database_url
 import django_cache_url
 import copy

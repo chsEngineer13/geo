@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
-from django.views.generic import TemplateView
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from hypermap.urls import urlpatterns as hypermap_urls
 from geonode.urls import urlpatterns as geonode_urls

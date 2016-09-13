@@ -18,10 +18,6 @@
 #
 #########################################################################
 
-import datetime
-import os
-import subprocess
-
 
 def get_version(version=None):
     "Returns a PEP 386-compliant version number from VERSION."

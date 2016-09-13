@@ -1,12 +1,9 @@
-import exchange
-import shutil
 import os
 
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.conf import settings
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
-from geonode.utils import resolve_object
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm
