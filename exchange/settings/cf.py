@@ -63,4 +63,4 @@ if CLOUD_FOUNDRY is not None:
 
     SKIP_CELERY_TASK = False
 
-    print 'auth_user = %s' % (AUTH_USER_MODEL)
+    print('auth_user = %s' % (AUTH_USER_MODEL))
