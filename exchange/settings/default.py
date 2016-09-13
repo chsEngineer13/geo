@@ -288,9 +288,13 @@ if REGISTRY is not None:
                                     'elasticsearch+%s' % ES_URL)
 
     # Check layers every 24 hours
-    REGISTRY_CHECK_PERIOD = int(os.environ.get('REGISTRY_CHECK_PERIOD', '1440'))
+    REGISTRY_CHECK_PERIOD = int(
+        os.getenv('REGISTRY_CHECK_PERIOD', '1440')
+    )
     # Index cached layers every minute
-    REGISTRY_INDEX_CACHED_LAYERS_PERIOD = int(os.environ.get('REGISTRY_CHECK_PERIOD', '1'))
+    REGISTRY_INDEX_CACHED_LAYERS_PERIOD = int(
+        os.getenv('REGISTRY_CHECK_PERIOD', '1')
+    )
 
     CELERYBEAT_SCHEDULE = {
         'Check All Services': {
@@ -307,7 +311,9 @@ if REGISTRY is not None:
     REGISTRY_LIMIT_LAYERS = int(os.getenv('REGISTRY_LIMIT_LAYERS', '-1'))
 
     FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
-    REGISTRY_MAPPING_PRECISION = os.getenv('REGISTRY_MAPPING_PRECISION', '500m')
+    REGISTRY_MAPPING_PRECISION = os.getenv(
+        'REGISTRY_MAPPING_PRECISION', '500m'
+    )
 
     CATALOGLIST = [
         {
@@ -327,7 +333,9 @@ if REGISTRY is not None:
 
     # if DEBUG_SERVICES is set to True, only first DEBUG_LAYERS_NUMBER layers
     # for each service are updated and checked
-    REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
+    REGISTRY_PYCSW['server']['url'] = (
+        SITE_URL.rstrip('/') + '/registry/search/csw'
+    )
 
     REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
@@ -336,7 +344,14 @@ if REGISTRY is not None:
             'manages OWS, Esri REST, and other types of map service '
             'harvesting, and maintains uptime statistics for  services and '
             'layers.',
-        'identification_keywords': 'sdi,catalogue,discovery,metadata,registry,HHypermap',
+        'identification_keywords': ','.join([
+            'sdi',
+            'catalogue',
+            'discovery',
+            'metadata',
+            'registry',
+            'HHypermap'
+        ]),
         'identification_keywords_type': 'theme',
         'identification_fees': 'None',
         'identification_accessconstraints': 'None',
