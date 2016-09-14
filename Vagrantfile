@@ -7,6 +7,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, path: "dev/bootstrap.sh"
 
   config.ssh.shell = "sh"
+  # avoid failures that may be mac-specific and/or version-specific
+  config.ssh.insert_key = false
 
   ## create a private network visible only to the host machine
   config.vm.network :private_network, ip: "192.168.99.110"
