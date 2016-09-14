@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
-from django.views.generic import TemplateView
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from hypermap.urls import urlpatterns as hypermap_urls
 from geonode.urls import urlpatterns as geonode_urls
@@ -37,11 +36,11 @@ urlpatterns = patterns(
     url(r'^maps/(?P<mapid>[^/]*)/metadata_detail$', views.map_metadata_detail,
         name='map_metadata_detail'),
     url(r'^wfsproxy/', views.geoserver_reverse_proxy,
-            name='geoserver_reverse_proxy'),
+        name='geoserver_reverse_proxy'),
     # Redirect help and developer links to the documentation page
     url(r'^help/$', views.documentation_page, name='help'),
     url(r'^developer/$', views.documentation_page, name='developer')
- )
+)
 
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls

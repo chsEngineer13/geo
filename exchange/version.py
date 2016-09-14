@@ -18,9 +18,7 @@
 #
 #########################################################################
 
-import datetime
-import os
-import subprocess
+from geonode.version import get_git_changeset
 
 
 def get_version(version=None):

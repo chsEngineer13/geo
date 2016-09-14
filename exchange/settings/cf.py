@@ -21,7 +21,9 @@
 
 import dj_database_url
 import json
+import os
 from .default import *  # noqa
+from .default import AUTH_USER_MODEL
 from datetime import timedelta
 
 #####
@@ -41,7 +43,7 @@ CELERYBEAT_SCHEDULE = {
 
 CLOUD_FOUNDRY = os.getenv('CLOUD_FOUNDRY', None)
 
-#TODO:
+# TODO:
 # - Enable postgis settings.
 # - Lockdown geonode.
 
@@ -63,4 +65,4 @@ if CLOUD_FOUNDRY is not None:
 
     SKIP_CELERY_TASK = False
 
-    print 'auth_user = %s' % (AUTH_USER_MODEL)
+    print('auth_user = %s' % (AUTH_USER_MODEL))

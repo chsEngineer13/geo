@@ -19,13 +19,22 @@
 #########################################################################
 
 import os
-import geonode
-import hypermap
 import dj_database_url
 import django_cache_url
 import copy
-from geonode.settings import *
+from geonode.settings import *  # noqa
+from geonode.settings import (
+    MIDDLEWARE_CLASSES,
+    STATICFILES_DIRS,
+    TEMPLATE_DIRS,
+    TEMPLATE_CONTEXT_PROCESSORS,
+    INSTALLED_APPS,
+    MAP_BASELAYERS,
+    DATABASES,
+    CATALOGUE
+)
 from datetime import timedelta
+
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -151,7 +160,7 @@ GEOGIG_DATASTORE_NAME = 'geogig-repo'
 MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
 
 # database settings
-SQLITEDB = "sqlite:///%s" % os.path.join(LOCAL_ROOT,'development.db')
+SQLITEDB = "sqlite:///%s" % os.path.join(LOCAL_ROOT, 'development.db')
 DATABASE_URL = os.getenv('DATABASE_URL', SQLITEDB)
 DATABASES['default'] = dj_database_url.parse(DATABASE_URL,
                                              conn_max_age=600)
@@ -281,15 +290,19 @@ REGISTRY = os.environ.get('REGISTRY', None)
 if REGISTRY is not None:
     from hypermap.settings import REGISTRY_PYCSW
 
-    REGISTRY = True # ensure the value is True
+    REGISTRY = True  # ensure the value is True
     REGISTRY_SKIP_CELERY = False
     REGISTRY_SEARCH_URL = os.getenv('REGISTRY_SEARCH_URL',
                                     'elasticsearch+%s' % ES_URL)
 
     # Check layers every 24 hours
-    REGISTRY_CHECK_PERIOD = int(os.environ.get('REGISTRY_CHECK_PERIOD', '1440'))
+    REGISTRY_CHECK_PERIOD = int(
+        os.getenv('REGISTRY_CHECK_PERIOD', '1440')
+    )
     # Index cached layers every minute
-    REGISTRY_INDEX_CACHED_LAYERS_PERIOD = int(os.environ.get('REGISTRY_CHECK_PERIOD', '1'))
+    REGISTRY_INDEX_CACHED_LAYERS_PERIOD = int(
+        os.getenv('REGISTRY_CHECK_PERIOD', '1')
+    )
 
     CELERYBEAT_SCHEDULE = {
         'Check All Services': {
@@ -302,18 +315,19 @@ if REGISTRY is not None:
         }
     }
 
-
     # -1 Disables limit.
     REGISTRY_LIMIT_LAYERS = int(os.getenv('REGISTRY_LIMIT_LAYERS', '-1'))
 
     FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
-    REGISTRY_MAPPING_PRECISION = os.getenv('REGISTRY_MAPPING_PRECISION', '500m')
+    REGISTRY_MAPPING_PRECISION = os.getenv(
+        'REGISTRY_MAPPING_PRECISION', '500m'
+    )
 
     CATALOGLIST = [
         {
             "name": "local registry",
             "url": "%s/_elastic/hypermap/" % SITE_URL.rstrip("/"),
-            "registryUrl": '%s/registry/hypermap' % SITE_URL.rstrip('/') 
+            "registryUrl": '%s/registry/hypermap' % SITE_URL.rstrip('/')
         },
     ]
 
@@ -327,15 +341,25 @@ if REGISTRY is not None:
 
     # if DEBUG_SERVICES is set to True, only first DEBUG_LAYERS_NUMBER layers
     # for each service are updated and checked
-    REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
-
+    REGISTRY_PYCSW['server']['url'] = (
+        SITE_URL.rstrip('/') + '/registry/search/csw'
+    )
 
     REGISTRY_PYCSW['metadata:main'] = {
         'identification_title': 'Registry Catalogue',
-        'identification_abstract': 'Registry, a Harvard Hypermap project, is an application that manages ' \
-        'OWS, Esri REST, and other types of map service harvesting, and maintains uptime statistics for ' \
-        'services and layers.',
-        'identification_keywords': 'sdi,catalogue,discovery,metadata,registry,HHypermap',
+        'identification_abstract':
+            'Registry, a Harvard Hypermap project, is an application that '
+            'manages OWS, Esri REST, and other types of map service '
+            'harvesting, and maintains uptime statistics for  services and '
+            'layers.',
+        'identification_keywords': ','.join([
+            'sdi',
+            'catalogue',
+            'discovery',
+            'metadata',
+            'registry',
+            'HHypermap'
+        ]),
         'identification_keywords_type': 'theme',
         'identification_fees': 'None',
         'identification_accessconstraints': 'None',
