@@ -42,6 +42,9 @@ install:
   - mkdir -p /tmp/geoserver/data/geogig
   - printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /tmp/geoserver/data/geogig/.geogigconfig
 
+  # Install Selenium for testing, Requests to grab some shapefiles and Flake8 for linting
+  - pip install selenium requests flake8
+
 before_script:
   # - sleep 10 # Elasticsearch needs this
 
@@ -56,30 +59,32 @@ before_script:
       --path /geoserver /tmp/geoserver.war &
 
   # Initialize databases for Exchange and Geonode
-  - psql -U postgres -c "CREATE USER exchange WITH SUPERUSER PASSWORD 'boundless'"
-  - psql -U postgres -c "CREATE DATABASE exchange WITH OWNER exchange"
-  - psql -U postgres -c "CREATE DATABASE exchange_data WITH OWNER exchange"
-  - psql -U postgres -d exchange_data -c "CREATE EXTENSION postgis"
+  - psql -U postgres -h 127.0.0.1 -c "CREATE USER exchange WITH SUPERUSER PASSWORD 'boundless'"
+  - psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE exchange WITH OWNER exchange"
+  - psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE exchange_data WITH OWNER exchange"
+  - psql -U postgres -h 127.0.0.1 -d exchange_data -c "CREATE EXTENSION postgis"
 
   # Build the docker container from the CI Dockerfile
-  - docker build -qf Dockerfile.ci .
+  - docker build -f Dockerfile.ci .
 
   # Start the container
   - export image=$(docker images | head -n 2 | tail -n 1 | awk '{print $3}')
-  - docker run -d -p 80:80 $image /env/bin/python /opt/boundless/exchange/manage.py runserver 0.0.0.0:80
-  - export container=$(docker ps | tail -n 1 | awk '{print $1}')
+  - docker run -d -p 80:80 $image /opt/boundless/exchange/docker/travis/run-server.sh
+  - export container=$(docker ps | head -n 2 | tail -n 1 | awk '{print $1}')
 
   # Run migrations
   - docker exec $container /opt/boundless/exchange/docker/travis/migrate.sh
 
-  # Install flake8 for linting
-  - docker exec $container /env/bin/pip install flake8
+  # Start XVFB for running tests
+  - "export DISPLAY=:99.0"
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+  - sleep 3 # give xvfb some time to start
 
 script:
   # Geonode tests fail
   # - docker exec $container /opt/boundless/exchange/docker/travis/test-geonode.sh
-  - docker exec $container /env/bin/python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange
-  - docker exec $container /opt/boundless/exchange/docker/travis/test-exchange.sh
+  - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange
+  - python docker/travis/selenium-tests/log_in.py
 
 after_script:
   - docker stop $container
