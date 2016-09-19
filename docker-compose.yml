@@ -152,6 +152,7 @@ services:
         restart: always
         networks:
             - internal
+            - external
 
     # This memcached is not used by anything.
     cache:
