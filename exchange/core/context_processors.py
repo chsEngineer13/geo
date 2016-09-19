@@ -32,6 +32,7 @@ def resource_variables(request):
         MAP_CRS=settings.DEFAULT_MAP_CRS,
         BOUNDLESS_URL=settings.BOUNDLESS_URL,
         BOUNDLESS_LINKTEXT=settings.BOUNDLESS_LINKTEXT,
+        INSTALLED_APPS=set(settings.INSTALLED_APPS),
     )
 
     return defaults
