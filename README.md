@@ -7,8 +7,6 @@ Boundless Exchange is a web-based platform for your content, built for your ente
 ## Clone
 git clone https://github.com/boundlessgeo/exchange.git
 
-git submodule update --init
-
 ### Environment Variables
 - SITE_URL
 Default: 'http://127.0.0.1:8000'
