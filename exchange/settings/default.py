@@ -26,8 +26,6 @@ from geonode.settings import *  # noqa
 from geonode.settings import (
     MIDDLEWARE_CLASSES,
     STATICFILES_DIRS,
-    TEMPLATE_DIRS,
-    TEMPLATE_CONTEXT_PROCESSORS,
     INSTALLED_APPS,
     MAP_BASELAYERS,
     DATABASES,
@@ -84,14 +82,32 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, '.storage/media')
 MEDIA_URL = '/media/'
 
 # template settings
-TEMPLATE_DIRS = (
-    os.path.join(APP_ROOT, "templates"),
-) + TEMPLATE_DIRS
-
-TEMPLATE_CONTEXT_PROCESSORS += (
-    'django_classification_banner.context_processors.classification',
-    'exchange.core.context_processors.resource_variables',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(APP_ROOT, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'account.context_processors.account',
+                'geonode.context_processors.resource_urls',
+                'geonode.geoserver.context_processors.geoserver_urls',
+                'django_classification_banner.context_processors.'
+                'classification',
+                'exchange.core.context_processors.resource_variables',
+            ],
+            'debug': DEBUG,
+        },
+    },
+]
 
 # middlware
 MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
@@ -102,6 +118,7 @@ MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
 # installed applications
 INSTALLED_APPS = (
     'exchange.core',
+    'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
