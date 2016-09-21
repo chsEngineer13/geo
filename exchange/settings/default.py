@@ -117,6 +117,7 @@ MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
 
 # installed applications
 INSTALLED_APPS = (
+    'flat',
     'exchange.core',
     'geonode',
     'geonode.contrib.geogig',
