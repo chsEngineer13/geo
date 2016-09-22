@@ -117,6 +117,7 @@ MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
 
 # installed applications
 INSTALLED_APPS = (
+    'appearance',
     'flat',
     'exchange.core',
     'geonode',
@@ -125,7 +126,6 @@ INSTALLED_APPS = (
     'django_classification_banner',
     'maploom',
     'solo',
-    'colorfield',
     'haystack',
     'corsheaders'
 ) + INSTALLED_APPS
