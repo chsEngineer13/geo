@@ -32,6 +32,11 @@ log "Starting Exchange"
 # since it is easy to forget or mess up.
 check_mounts
 
+# Clean up *.pyc files which can throw a monkey wrench in the works these can
+# persist or transfer between docker/vagrant envs due to the use of mounted
+# directories.
+remove_pycs
+
 # Set environment variables
 load_settings
 
