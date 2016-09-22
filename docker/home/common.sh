@@ -194,3 +194,7 @@ started () {
     log "${name}: stopping"
     exit "${status}"
 }
+
+remove_pycs () {
+    find /mnt/exchange -type f -name "*.pyc" -delete
+}
