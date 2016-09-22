@@ -27,6 +27,7 @@ from geonode.settings import (
     MIDDLEWARE_CLASSES,
     STATICFILES_DIRS,
     INSTALLED_APPS,
+    CELERY_IMPORTS,
     MAP_BASELAYERS,
     DATABASES,
     CATALOGUE
@@ -404,6 +405,17 @@ if REGISTRY is not None:
     # Read cache information from CACHE_URL
     # Registry needs the CACHE to store the layers to be indexed.
     CACHES = {'default': django_cache_url.config()}
+
+# If django-osgeo-importer is enabled, give it the settings it needs...
+if 'osgeo_importer' in INSTALLED_APPS:
+    # Point django-osgeo-importer, if enabled, to the Exchange database
+    OSGEO_DATASTORE = 'exchange_imports'
+    # Tell it to use the GeoNode compatible mode
+    OSGEO_IMPORTER_GEONODE_ENABLED = True
+    # Tell celery to load its tasks
+    CELERY_IMPORTS += ('osgeo_importer.tasks',)
+    # override GeoNode setting so importer UI can see when tasks finish
+    CELERY_IGNORE_RESULT = False
 
 try:
     from local_settings import *  # noqa
