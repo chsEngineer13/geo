@@ -19,10 +19,10 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
+from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from maploom.geonode.urls import urlpatterns as maploom_urls
-from hypermap.urls import urlpatterns as hypermap_urls
 from geonode.urls import urlpatterns as geonode_urls
 from . import views
 
@@ -59,6 +59,6 @@ if 'osgeo_importer' in settings.INSTALLED_APPS:
     from osgeo_importer.urls import urlpatterns as osgeo_importer_urls
     urlpatterns += osgeo_importer_urls
 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls
-urlpatterns += hypermap_urls

@@ -114,7 +114,7 @@
     </tbody>
   </table>
 </div>
-  
+
 <div class="col-xs-12 col-md-3">
   <ul class="list-group">
       <li class="list-group-item"><a href="{% url "message_create" profile.pk %}"><i class="fa fa-paper-plane-o"></i> {% trans "Message User" %}</a></li>
@@ -141,7 +141,7 @@
     </ul>
       {% if user.is_superuser %}
     <ul class="list-group">
-      {% if not REGISTRY %}
+      {% if not REGISTRYURL %}
       <li class="list-group-item"><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
       {% endif %}
       <li class="list-group-item"><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>

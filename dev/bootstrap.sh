@@ -167,8 +167,6 @@ gs-dev_init()
 service_setup()
 {
   service elasticsearch restart
-  sleep 10
-  curl -XDELETE 'http://localhost:9200/hypermap/'
   service rabbitmq-server restart
   rabbitmqctl stop_app
   rabbitmqctl reset

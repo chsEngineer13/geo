@@ -4,9 +4,6 @@
 -e git://github.com/boundlessgeo/django-geoexplorer.git@whitenoise_patch#egg=django-geoexplorer
 -e git://github.com/ROGUE-JCTD/django-maploom.git@bc4d3dd49edd9932f8ec2d2061ad37d78a603d07#egg=django-maploom
 
-#TODO: Remove this line and download hhypermap/registry direclty from Pypi.
--e git+https://github.com/cga-harvard/HHypermap@registry#egg=django-hhypermap
-
 whitenoise==2.0.6
 Django==1.8.7
 django-tastypie==0.11.0

@@ -20,7 +20,6 @@
 
 import os
 import dj_database_url
-import django_cache_url
 import copy
 from geonode.settings import *  # noqa
 from geonode.settings import (
@@ -32,7 +31,6 @@ from geonode.settings import (
     DATABASES,
     CATALOGUE
 )
-from datetime import timedelta
 
 
 def str2bool(v):
@@ -305,107 +303,9 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
     AUTH_LDAP_USER_SEARCH = LDAPSearch(LDAP_SEARCH_DN,
                                        ldap.SCOPE_SUBTREE, AUTH_LDAP_USER)
 
-# registry
-REGISTRY = os.environ.get('REGISTRY', None)
-if REGISTRY is not None:
-    from hypermap.settings import REGISTRY_PYCSW
 
-    REGISTRY = True  # ensure the value is True
-    REGISTRY_SKIP_CELERY = False
-    REGISTRY_SEARCH_URL = os.getenv('REGISTRY_SEARCH_URL',
-                                    'elasticsearch+%s' % ES_URL)
-
-    # Check layers every 24 hours
-    REGISTRY_CHECK_PERIOD = int(
-        os.getenv('REGISTRY_CHECK_PERIOD', '1440')
-    )
-    # Index cached layers every minute
-    REGISTRY_INDEX_CACHED_LAYERS_PERIOD = int(
-        os.getenv('REGISTRY_CHECK_PERIOD', '1')
-    )
-
-    CELERYBEAT_SCHEDULE = {
-        'Check All Services': {
-            'task': 'check_all_services',
-            'schedule': timedelta(minutes=REGISTRY_CHECK_PERIOD)
-        },
-        'Index Cached Layers': {
-            'task': 'hypermap.aggregator.tasks.index_cached_layers',
-            'schedule': timedelta(minutes=REGISTRY_INDEX_CACHED_LAYERS_PERIOD)
-        }
-    }
-
-    # -1 Disables limit.
-    REGISTRY_LIMIT_LAYERS = int(os.getenv('REGISTRY_LIMIT_LAYERS', '-1'))
-
-    FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
-    REGISTRY_MAPPING_PRECISION = os.getenv(
-        'REGISTRY_MAPPING_PRECISION', '500m'
-    )
-
-    CATALOGLIST = [
-        {
-            "name": "local registry",
-            "url": "%s/_elastic/hypermap/" % SITE_URL.rstrip("/"),
-            "registryUrl": '%s/registry/hypermap' % SITE_URL.rstrip('/')
-        },
-    ]
-
-    INSTALLED_APPS = (
-        'djmp',
-        'hypermap.aggregator',
-        'hypermap.dynasty',
-        'hypermap.search',
-        'hypermap',
-    ) + INSTALLED_APPS
-
-    # if DEBUG_SERVICES is set to True, only first DEBUG_LAYERS_NUMBER layers
-    # for each service are updated and checked
-    REGISTRY_PYCSW['server']['url'] = (
-        SITE_URL.rstrip('/') + '/registry/search/csw'
-    )
-
-    REGISTRY_PYCSW['metadata:main'] = {
-        'identification_title': 'Registry Catalogue',
-        'identification_abstract':
-            'Registry, a Harvard Hypermap project, is an application that '
-            'manages OWS, Esri REST, and other types of map service '
-            'harvesting, and maintains uptime statistics for  services and '
-            'layers.',
-        'identification_keywords': ','.join([
-            'sdi',
-            'catalogue',
-            'discovery',
-            'metadata',
-            'registry',
-            'HHypermap'
-        ]),
-        'identification_keywords_type': 'theme',
-        'identification_fees': 'None',
-        'identification_accessconstraints': 'None',
-        'provider_name': 'Organization Name',
-        'provider_url': SITE_URL,
-        'contact_name': 'Lastname, Firstname',
-        'contact_position': 'Position Title',
-        'contact_address': 'Mailing Address',
-        'contact_city': 'City',
-        'contact_stateorprovince': 'Administrative Area',
-        'contact_postalcode': 'Zip or Postal Code',
-        'contact_country': 'Country',
-        'contact_phone': '+xx-xxx-xxx-xxxx',
-        'contact_fax': '+xx-xxx-xxx-xxxx',
-        'contact_email': 'Email Address',
-        'contact_url': 'Contact URL',
-        'contact_hours': 'Hours of Service',
-        'contact_instructions': 'During hours of service. Off on weekends.',
-        'contact_role': 'Point of Contact'
-    }
-    TAGGIT_CASE_INSENSITIVE = True
-    AUTH_EXEMPT_URLS = ('/registry/search/csw',)
-
-    # Read cache information from CACHE_URL
-    # Registry needs the CACHE to store the layers to be indexed.
-    CACHES = {'default': django_cache_url.config()}
+# NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
+REGISTRYURL = os.environ.get('REGISTRYURL', None)
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
