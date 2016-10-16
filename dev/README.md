@@ -53,14 +53,14 @@ $ django-collectstatic
 ```
 __Note:__  each time you provision the vm, you will need to rerun the last steps above.
 
-## manage geoserver service
+## manage exchange services
 
 ```bash
-$ sudo service gs-dev {start | stop | restart}
+$ sudo service exchange {start | stop | restart}
 ```
 ## logs
 ```
-/vagrant/dev/.django/
+/vagrant/dev/.logs/
 |
 ├─── geoserver_error.log    <-- geoserver error log
 ├─── geoserver.log          <-- geoserver stdout log

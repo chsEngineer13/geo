@@ -173,6 +173,7 @@ OGC_SERVER = {
     }
 }
 
+GEOSERVER_BASE_URL = GEOSERVER_URL
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
 MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
