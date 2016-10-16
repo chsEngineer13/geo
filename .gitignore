@@ -75,3 +75,6 @@ dev/.django/
 
 exchange/migrations/
 .DS_Store
+
+#bower
+exchange/static/vendor/
