@@ -15,9 +15,9 @@ services:
 addons:
   postgresql: "9.5"
 
-branches:
-  only:
-  - master
+# branches:
+#   only:
+#   - master
 
 before_install:
   # Allow connections to PG from our Docker instance
@@ -27,6 +27,7 @@ before_install:
   - sudo service postgresql start 9.5
 
   - sudo apt-get -qq update
+  # - sudo apt-get upgrade
 install:
   # Docker version is 1.12.0, Compose is 1.7.0
   # This upgrades to 1.12.1 and 1.8.0, respectively, as of 2016-09
@@ -44,6 +45,16 @@ install:
 
   # Install Selenium for testing, Requests to grab some shapefiles and Flake8 for linting
   - pip install selenium requests flake8
+
+  # Install Marionette driver for later FF versions
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
+  - tar zxvf geckodriver-v0.11.1-linux64.tar.gz
+  - sudo mv geckodriver /usr/bin
+
+  # And get the chromedriver
+  - wget http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
+  - sudo mv chromedriver /usr/bin
 
 before_script:
   # - sleep 10 # Elasticsearch needs this
@@ -80,11 +91,18 @@ before_script:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - sleep 3 # give xvfb some time to start
 
+  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.shp -O /tmp/rivers.shp
+  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.shx -O /tmp/rivers.shx
+  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.dbf -O /tmp/rivers.dbf
+  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.prj -O /tmp/rivers.prj
+
 script:
+  - sleep 45
+  # - wget http://localhost:8080/geoserver/index.html
   # Geonode tests fail
   # - docker exec $container /opt/boundless/exchange/docker/travis/test-geonode.sh
   - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange
-  - python docker/travis/selenium-tests/log_in.py
+  - pytest
 
 after_script:
   - docker stop $container
