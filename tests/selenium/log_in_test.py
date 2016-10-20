@@ -7,7 +7,7 @@ import unittest
 
 class LogIn(unittest.TestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Chrome()
 
     def test_log_in(self):
         sel = self.browser
