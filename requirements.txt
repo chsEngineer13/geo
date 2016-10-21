@@ -4,7 +4,7 @@
 # TODO: Make sure requirements.txt are complete for exchange's env.
 # GeoNode is now using >= and <= in setup.py, if you need specific versions,
 # they should be listed in this file.
-git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.10#egg=django-maploom
+git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.10#egg=django-exchange-maploom
 git+git://github.com/geopython/pycsw.git@4fc1fc1eee3ac4b83d2862d311b20efb142e13bd#egg=pycsw
 geonode==2.5.2
 dj-database-url==0.4.1
@@ -25,7 +25,7 @@ gunicorn==19.4.5
 corsa==0.1.2
 python-resize-image==1.1.10
 django-flat-theme==1.1.3
-git+git://github.com/boundlessgeo/django-exchange-themes@master#egg=appearance
+git+git://github.com/boundlessgeo/django-exchange-themes@master#egg=django-exchange-themes
 # Registry pinned dependencies
 django-cache-url==1.2.0
 elasticsearch==1.9.0

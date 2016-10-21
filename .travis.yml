@@ -33,13 +33,17 @@ install:
   # This upgrades to 1.12.1 and 1.8.0, respectively, as of 2016-09
   - sudo apt-get install -qq --only-upgrade docker-engine
 
+  # reverse proxy
+  - sudo apt-get -qq install apache2
+  - sudo cp -f docker/travis/exchange.conf /etc/apache2/sites-available/000-default.conf
+
   # Install Java, Jetty and Geoserver
-  - sudo apt-get -qq install openjdk-8-jre-headless
+  - sudo apt-get -qq install openjdk-8-jdk-headless
   - wget --directory-prefix=/tmp -q http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.3.8.v20160314/jetty-runner-9.3.8.v20160314.jar
   - wget --directory-prefix /tmp -q https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war
   - unzip -qq -o /tmp/geoserver.war -d /tmp/geoserver
 
-  - sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://localhost:8000/</baseUrl>@' /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml
+  - sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://localhost/</baseUrl>@' /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml
   - mkdir -p /tmp/geoserver/data/geogig
   - printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /tmp/geoserver/data/geogig/.geogigconfig
 
@@ -61,13 +65,7 @@ before_script:
 
   # Run Geoserver
   - source docker/travis/geoserver-settings.sh
-  - nohup java \
-      -XX:MaxPermSize=1024m \
-      -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true \
-      -DGEOSERVER_DATA_DIR=/tmp/geoserver/data \
-      -Duser.home=/tmp/geoserver/data/geogig \
-      -jar /tmp/jetty-runner-9.3.8.v20160314.jar \
-      --path /geoserver /tmp/geoserver.war &
+  - java -XX:MaxPermSize=1024m -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true -DGEOSERVER_DATA_DIR=/tmp/geoserver/data -Duser.home=/tmp/geoserver/data/geogig -jar /tmp/jetty-runner-9.3.8.v20160314.jar --path /geoserver /tmp/geoserver.war &
 
   # Initialize databases for Exchange and Geonode
   - psql -U postgres -h 127.0.0.1 -c "CREATE USER exchange WITH SUPERUSER PASSWORD 'boundless'"
@@ -80,7 +78,7 @@ before_script:
 
   # Start the container
   - export image=$(docker images | head -n 2 | tail -n 1 | awk '{print $3}')
-  - docker run -d -p 80:80 $image /opt/boundless/exchange/docker/travis/run-server.sh
+  - docker run -d -p 8000:8000 $image /opt/boundless/exchange/docker/travis/run-server.sh
   - export container=$(docker ps | head -n 2 | tail -n 1 | awk '{print $1}')
 
   # Run migrations
@@ -97,8 +95,10 @@ before_script:
   - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.prj -O /tmp/rivers.prj
 
 script:
-  - sleep 45
-  # - wget http://localhost:8080/geoserver/index.html
+  - sudo a2enmod proxy_http
+  - sudo a2enmod headers
+  - sudo service apache2 restart
+  - wget http://localhost/geoserver/index.html
   # Geonode tests fail
   # - docker exec $container /opt/boundless/exchange/docker/travis/test-geonode.sh
   - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange
