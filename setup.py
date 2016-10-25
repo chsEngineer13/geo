@@ -26,16 +26,22 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
-    name="exchange",
+    name="geonode-exchange",
     version=__import__('exchange').get_version(),
     author="Boundless Spatial",
     author_email="contact@boundlessgeo.com",
     description="Exchange, a platform for geospatial collaboration",
-    long_description=(read('README.md')),
+    long_description=(read('README.rst')),
     # Full list of classifiers can be found at:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Intended Audience :: System Administrators',
+        'Environment :: Web Environment',
+        'License :: OSI Approved :: BSD License',
+        'Development Status :: 4 - Beta',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Framework :: Django :: 1.8',
     ],
     license="BSD",
     keywords="exchange geonode django",

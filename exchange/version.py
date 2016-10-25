@@ -18,8 +18,6 @@
 #
 #########################################################################
 
-from geonode.version import get_git_changeset
-
 
 def get_version(version=None):
     "Returns a PEP 386-compliant version number from VERSION."
@@ -33,12 +31,7 @@ def get_version(version=None):
     main = '.'.join(str(x) for x in version[:parts])
 
     sub = ''
-    if version[3] == 'alpha' and version[4] == 0:
-        git_changeset = get_git_changeset()
-        if git_changeset:
-            sub = '.dev%s' % git_changeset
-
-    elif version[3] != 'final':
+    if version[3] != 'final':
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}
         sub = mapping[version[3]] + str(version[4])
 
