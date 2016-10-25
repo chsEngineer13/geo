@@ -44,5 +44,5 @@ Default: '(uid=%(user)s)'
 Default: ''
 - AUTH_LDAP_BIND_PASSWORD
 Default: ''
-- REGISTRY
+- REGISTRYURL
 Default: None
