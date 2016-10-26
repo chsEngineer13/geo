@@ -73,8 +73,10 @@ exchange_setup()
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
-    #hotfix, need to find out why it is not importing the categories
+    # import default admin and test user
     python /vagrant/manage.py loaddata initial
+    # "hotfix, need to find out why it is not importing the categories"
+    python /vagrant/manage.py loaddata base_resources
     # migrate account after loaddata to avoid DoesNotExist profile issue
     python /vagrant/manage.py migrate account --noinput
 
