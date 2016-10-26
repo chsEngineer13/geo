@@ -4,7 +4,7 @@
 # Ensure we abort execution of scripts on errors
 set -e
 
-# Paths to dependencies inside the container, mounted as host-shared volumes 
+# Paths to dependencies inside the container, mounted as host-shared volumes
 # Note: these are not named EXCHANGE_HOME and GEONODE_HOME to avoid confusion,
 # since those names are used OUTSIDE the container in .env & docker-compose.yml
 readonly exchange_dir="/mnt/exchange"
@@ -105,7 +105,7 @@ wait_for_pg () {
         sleep "${interval}"
         # Don't actually need to set username or db, just avoids error messages
         if pg_isready --timeout="${timeout}" --host="${postgis_host}" --port="${postgis_port}" --dbname="${postgis_db}" --username="${postgis_username}" > /dev/null; then
-            started=1 
+            started=1
             break
         # Check if host is unreachable
         elif ! ping -c 1 -w 0.1 "${postgis_host}" > /dev/null 2>&1; then
@@ -176,8 +176,10 @@ run_migrations () {
         $manage migrate --noinput
         log "Collecting static assets ..."
         $manage collectstatic --noinput
-        # "hotfix, need to find out why it is not importing the categories"
+        # import default admin and test user
         $manage loaddata initial
+        # "hotfix, need to find out why it is not importing the categories"
+        $manage loaddata base_resources
         # migrate account after loaddata to avoid DoesNotExist profile issue
         $manage migrate account --noinput
     else

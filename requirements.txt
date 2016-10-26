@@ -5,7 +5,7 @@
 # GeoNode is now using >= and <= in setup.py, if you need specific versions,
 # they should be listed in this file.
 git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.11#egg=django-exchange-maploom
-geonode==2.5.2
+geonode==2.5.5
 dj-database-url==0.4.1
 django-storages==1.1.8
 boto==2.38.0
