@@ -23,7 +23,7 @@ try:
 except ImportError:
     pass
 
-__version__ = (1, 0, 1, 'rc', 0)
+__version__ = (1, 1, 0, 'rc', 1)
 
 
 def get_version():
