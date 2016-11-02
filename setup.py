@@ -26,16 +26,22 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
-    name="exchange",
+    name="geonode-exchange",
     version=__import__('exchange').get_version(),
     author="Boundless Spatial",
     author_email="contact@boundlessgeo.com",
     description="Exchange, a platform for geospatial collaboration",
-    long_description=(read('README.md')),
+    long_description=(read('README.rst')),
     # Full list of classifiers can be found at:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Intended Audience :: System Administrators',
+        'Environment :: Web Environment',
+        'License :: OSI Approved :: BSD License',
+        'Development Status :: 4 - Beta',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Framework :: Django :: 1.8',
     ],
     license="BSD",
     keywords="exchange geonode django",
@@ -44,6 +50,25 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        # see requirements.txt
+        "django-exchange-maploom==1.5.11",
+        "geonode==2.5.5",
+        "dj-database-url==0.4.1",
+        "django-storages==1.1.8",
+        "boto==2.38.0",
+        "waitress==0.9.0",
+        "whitenoise==3.2",
+        "django-cors-headers==1.1.0",
+        "django-classification-banner==0.1.5",
+        "django-solo==1.1.2",
+        "django-colorfield==0.1.10",
+        "psycopg2==2.6.1",
+        "python-ldap==2.4.25",
+        "django-auth-ldap==1.2.7",
+        "GDAL==2.0.1",
+        "supervisor==3.2.3",
+        "python-resize-image==1.1.10",
+        "django-flat-theme==1.1.3",
+        "django-exchange-themes==1.0.1",
+        "django-exchange-docs==1.1.0"
     ]
 )

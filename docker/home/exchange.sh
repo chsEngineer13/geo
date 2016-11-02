@@ -55,11 +55,6 @@ start_django
 wait_for_django
 wait_for_geoserver
 
-hypermap_url='http://search:9200/hypermap/'
-log "Issuing DELETE request to ${hypermap_url}"
-curl --silent -XDELETE "${hypermap_url}"
-echo
-
 log "Exchange is ready on http://172.16.238.2"
 
 # Wait for Django process and propagate its exit status.

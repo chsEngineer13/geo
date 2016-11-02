@@ -68,7 +68,7 @@ target/
 .vagrant
 .venv
 dev/.geoserver/
-dev/.django/
+dev/.logs/
 .storage
 *.log
 

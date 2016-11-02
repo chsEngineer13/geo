@@ -26,9 +26,7 @@ def resource_variables(request):
     """Global exchange values to pass to templates"""
     defaults = dict(
         VERSION=get_version(),
-        REGISTRY=getattr(settings, 'REGISTRY', False),
         REGISTRYURL=getattr(settings, 'REGISTRYURL', None),
-        CATALOGLIST=getattr(settings, 'CATALOGLIST', None),
         MAP_CRS=settings.DEFAULT_MAP_CRS,
         INSTALLED_APPS=set(settings.INSTALLED_APPS),
     )

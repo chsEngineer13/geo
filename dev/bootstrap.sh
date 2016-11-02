@@ -44,6 +44,7 @@ yum_setup()
         elasticsearch \
         rabbitmq-server-3.6.1 \
         libmemcached-devel \
+        httpd \
 
     if [ -f /etc/profile.d/settings.sh ]; then
         rm -fr /etc/profile.d/settings.sh
@@ -59,11 +60,11 @@ exchange_setup()
         rm -fr /vagrant/.venv
     fi
 
-    if [ -d /vagrant/dev/.django ]; then
-        rm -fr /vagrant/dev/.django
+    if [ -d /vagrant/dev/.logs ]; then
+        rm -fr /vagrant/dev/.logs
     fi
 
-    mkdir -p /vagrant/dev/.django
+    mkdir -p /vagrant/dev/.logs
 
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
@@ -72,8 +73,10 @@ exchange_setup()
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
-    #hotfix, need to find out why it is not importing the categories
+    # import default admin and test user
     python /vagrant/manage.py loaddata initial
+    # "hotfix, need to find out why it is not importing the categories"
+    python /vagrant/manage.py loaddata base_resources
     # migrate account after loaddata to avoid DoesNotExist profile issue
     python /vagrant/manage.py migrate account --noinput
 
@@ -114,7 +117,7 @@ geoserver_setup()
         rm -fr /vagrant/dev/.geoserver/data
     fi
     cp -R /vagrant/dev/.geoserver/geoserver/data /vagrant/dev/.geoserver
-    sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://192.168.99.110:8000/</baseUrl>@' \
+    sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://localhost/</baseUrl>@' \
                /vagrant/dev/.geoserver/data/security/auth/geonodeAuthProvider/config.xml
     mkdir -p /vagrant/dev/.geoserver/data/geogig
     printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /vagrant/dev/.geoserver/data/geogig/.geogigconfig
@@ -123,8 +126,8 @@ geoserver_setup()
 
 database_setup()
 {
-    if [ -f /etc/init.d/gs-dev ]; then
-        service gs-dev stop > /dev/null 2>&1
+    if [ -f /etc/init.d/exchange ]; then
+        service exchange stop > /dev/null 2>&1
     fi
     if [ ! -d /var/lib/pgsql/9.5/data/base ]; then
         service postgresql-9.5 initdb
@@ -154,21 +157,24 @@ database_setup()
     psql -U postgres -d exchange_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
 }
 
-gs-dev_init()
+dev_init()
 {
-    if [ -f etc/init.d/gs-dev ]; then
-        rm -f /etc/init.d/gs-dev
+    if [ -f /etc/httpd/conf.d/httpd.conf ]; then
+        rm -f /etc/httpd/conf.d/httpd.conf
     fi
-    cp /vagrant/dev/gs-dev.init /etc/init.d/gs-dev
-    chmod +x /etc/init.d/gs-dev
-    service gs-dev restart > /dev/null 2>&1
+    cp /vagrant/dev/httpd.conf /etc/httpd/conf.d/httpd.conf
+    if [ -f etc/init.d/exchange ]; then
+        rm -f /etc/init.d/exchange
+    fi
+    cp /vagrant/dev/exchange.init /etc/init.d/exchange
+    chmod +x /etc/init.d/exchange
+    service exchange restart > /dev/null 2>&1
 }
 
 service_setup()
 {
+  service httpd restart
   service elasticsearch restart
-  sleep 10
-  curl -XDELETE 'http://localhost:9200/hypermap/'
   service rabbitmq-server restart
   rabbitmqctl stop_app
   rabbitmqctl reset
@@ -179,5 +185,5 @@ yum_setup
 database_setup
 exchange_setup
 geoserver_setup
-gs-dev_init
+dev_init
 service_setup

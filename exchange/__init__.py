@@ -18,12 +18,7 @@
 #
 #########################################################################
 
-try:
-    from celery_app import app as celery_app  # flake8: noqa
-except ImportError:
-    pass
-
-__version__ = (1, 0, 1, 'rc', 0)
+__version__ = (1, 1, 0, 'rc', 1)
 
 
 def get_version():
