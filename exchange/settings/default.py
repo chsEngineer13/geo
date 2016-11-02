@@ -318,6 +318,20 @@ if 'osgeo_importer' in INSTALLED_APPS:
     CELERY_IMPORTS += ('osgeo_importer.tasks',)
     # override GeoNode setting so importer UI can see when tasks finish
     CELERY_IGNORE_RESULT = False
+    IMPORT_HANDLERS = [
+        # If GeoServer handlers are enabled, you must have an instance of geoserver running.
+        # Warning: the order of the handlers here matters.
+        'osgeo_importer.handlers.FieldConverterHandler',
+        'osgeo_importer.handlers.geoserver.GeoserverPublishHandler',
+        'osgeo_importer.handlers.geoserver.GeoserverPublishCoverageHandler',
+        'osgeo_importer.handlers.geoserver.GeoServerTimeHandler',
+        'osgeo_importer.handlers.geoserver.GeoWebCacheHandler',
+        'osgeo_importer.handlers.geoserver.GeoServerBoundsHandler',
+        'osgeo_importer.handlers.geoserver.GenericSLDHandler',
+        'osgeo_importer.handlers.geonode.GeoNodePublishHandler',
+        'osgeo_importer.handlers.geoserver.GeoServerStyleHandler',
+        'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler'
+    ]
 
 try:
     from local_settings import *  # noqa
