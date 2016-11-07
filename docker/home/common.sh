@@ -90,7 +90,8 @@ install_dependencies () {
     # Unfortunately, this requires write access to $geonode_dir, because pip
     # install -e insists on writing $geonode_dir/GeoNode.egg-info.
     # But we still have to do it in order to ensure dependencies get in.
-    /env/bin/pip install --upgrade -e "${geonode_dir}" | grep -v 'Requirement already up-to-date'
+    /env/bin/pip install --upgrade -r "${geonode_dir}/requirements.txt"
+    /env/bin/pip install -e "${geonode_dir}"
 }
 
 wait_for_pg () {
