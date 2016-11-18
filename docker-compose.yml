@@ -107,6 +107,9 @@ services:
         volumes:
             - scratch:/scratch
 
+            # Add a MapLoom home
+            - $MAPLOOM_HOME:/mnt/maploom:ro
+
             # Ideally, all volumes shared with host are mounted read-only.
             # But we have to pip install -e /mnt/geonode to ensure GeoNode's
             # dependencies are all installed per its setup.py.
