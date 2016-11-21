@@ -9,6 +9,7 @@ set -e
 # since those names are used OUTSIDE the container in .env & docker-compose.yml
 readonly exchange_dir="/mnt/exchange"
 readonly geonode_dir="/mnt/geonode"
+readonly maploom_dir="/mnt/maploom"
 
 # Define where the Django server should bind/listen
 readonly django_host=0.0.0.0
@@ -72,10 +73,15 @@ check_mounts () {
         log "Could not find Exchange directory at ${exchange_dir}."
         error=1
     fi
+    if [ ! -d "${maploom_dir}" ] || [ ! -f "${maploom_dir}/package.json" ]; then
+        log "Could not find MapLoom directory at ${maploom_dir}."
+        error=1
+    fi
     if [ "${error}" -eq 1 ]; then
         aside "
             At the root of your Exchange repository, please edit .env to set
             GEONODE_HOME to the location of a git clone of GeoNode,
+	    MAPLOOM_HOME to the location of a git clone of MapLoom,
             and EXCHANGE_HOME to the location of a git clone of Exchange.
 
             This is required for docker-compose to know what host directories
