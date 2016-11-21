@@ -75,3 +75,6 @@ dev/.logs/
 
 exchange/migrations/
 .DS_Store
+
+#bower
+exchange/static/vendor/
