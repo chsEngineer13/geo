@@ -48,7 +48,7 @@ install:
   - printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /tmp/geoserver/data/geogig/.geogigconfig
 
   # Install Selenium for testing, Requests to grab some shapefiles and Flake8 for linting
-  - pip install selenium requests flake8
+  - pip install selenium requests flake8==3.0.4
 
   # Install Marionette driver for later FF versions
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
@@ -101,7 +101,7 @@ script:
   - wget http://localhost/geoserver/index.html
   # Geonode tests fail
   # - docker exec $container /opt/boundless/exchange/docker/travis/test-geonode.sh
-  - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange
+  - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange/exchange
   - pytest
 
 after_script:
