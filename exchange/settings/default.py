@@ -319,7 +319,8 @@ if 'osgeo_importer' in INSTALLED_APPS:
     # override GeoNode setting so importer UI can see when tasks finish
     CELERY_IGNORE_RESULT = False
     IMPORT_HANDLERS = [
-        # If GeoServer handlers are enabled, you must have an instance of geoserver running.
+        # If GeoServer handlers are enabled, you must have an instance of
+        # geoserver running.
         # Warning: the order of the handlers here matters.
         'osgeo_importer.handlers.FieldConverterHandler',
         'osgeo_importer.handlers.geoserver.GeoserverPublishHandler',
