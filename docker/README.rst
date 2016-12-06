@@ -37,8 +37,7 @@ Installation
 
 3. Clone repositories.
 
-   If you already cloned these, great - just check out the `docker` branch and
-   go to the next step.
+   If you already cloned these, great - just go to the next step.
 
    If you don't already have SSH keys set up with Github, you need to do that;
    check out https://help.github.com/categories/ssh/
@@ -48,9 +47,7 @@ Installation
 
        cd ~/boundless
        git clone https://github.com/geonode/geonode
-       git clone git@github.com:harts-boundless/exchange.git
-       cd exchange
-       git checkout docker
+       git clone https://github.com/boundlessgeo/exchange.git
 
 4. Edit `.env` to reflect where you keep checkouts of Exchange and GeoNode.
 
