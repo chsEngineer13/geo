@@ -37,8 +37,7 @@ Installation
 
 3. Clone repositories.
 
-   If you already cloned these, great - just check out the `docker` branch and
-   go to the next step.
+   If you already cloned these, great - just go to the next step.
 
    If you don't already have SSH keys set up with Github, you need to do that;
    check out https://help.github.com/categories/ssh/
@@ -48,23 +47,43 @@ Installation
 
        cd ~/boundless
        git clone https://github.com/geonode/geonode
-       git clone git@github.com:harts-boundless/exchange.git
-       cd exchange
-       git checkout docker
+       git clone https://github.com/boundlessgeo/exchange.git
+       git clone https://github.com/boundlessgeo/MapLoom.git
 
-4. Edit `.env` to reflect where you keep checkouts of Exchange and GeoNode.
+4. Build local MapLoom
+
+   MapLoom is a JavaScript application that needs to be built locally at least
+   once before it can be used in Exchange development. As before, if you've
+   already done this just go on to the next step.
+
+   Before running this step, you'll need npm (the Node Package Manager)
+   installed on your dev machine. Follow the installation instructions for your
+   platform at https://nodejs.org/en/download/.
+
+   Next, do the following locally:
+
+        cd ~/boundless/MapLoom
+        npm install -g grunt-cli karma bower
+        npm install
+        bower install
+        grunt watch
+
+5. Edit `.env` to reflect where you keep checkouts of Exchange, GeoNode, and
+   MapLoom.
 
    At the root of the Exchange repo, if you are in the docker branch, you
    should find a file called `.env`. Edit `.env` e.g. with::
 
        GEONODE_HOME=/wherever/you/keep/geonode
        EXCHANGE_HOME=/wherever/you/keep/exchange
+       MAPLOOM_HOME=/wherever/you/keep/MapLoom
 
    Why is this necessary? `.env` is read by `docker-compose` so that it knows
    where on your computer to find the directories which will be mounted inside
-   the containers as `/mnt/exchange` and `/mnt/geonode`. If these are not set
-   accurately, then the exchange container and the Celery worker container will
-   not be able to start properly because they won't have code to start with.
+   the containers as `/mnt/exchange`, `/mnt/geonode` and `/mnt/maploom`. If
+   these are not set accurately, then the exchange container and the Celery
+   worker container will not be able to start properly because they won't have
+   code to start with.
 
    Using host directories like this isn't a Docker thing, just a convenience
    carried over from the Vagrant dev config.
