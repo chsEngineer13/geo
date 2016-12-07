@@ -32,7 +32,7 @@ Installation
 
    If you follow the instructions, you should be fine. If you prefer to install
    docker-compose using pip, that works well too, but don't run `sudo pip`;
-   install Python tools with `pip install --user` or use plain 
+   install Python tools with `pip install --user` or use plain
    `pip install docker-compose` in a virtualenv.
 
 3. Clone repositories.
@@ -60,13 +60,13 @@ Installation
    installed on your dev machine. Follow the installation instructions for your
    platform at https://nodejs.org/en/download/.
 
-   Next, do the following locally:
+   Next, do the following locally ::
 
-        cd ~/boundless/MapLoom
-        npm install -g grunt-cli karma bower
-        npm install
-        bower install
-        grunt watch
+       cd ~/boundless/MapLoom
+       npm install -g grunt-cli karma bower
+       npm install
+       bower install
+       grunt watch
 
 5. Edit `.env` to reflect where you keep checkouts of Exchange, GeoNode, and
    MapLoom.
