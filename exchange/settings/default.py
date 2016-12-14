@@ -36,43 +36,76 @@ from geonode.settings import (
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
+DEBUG = TEMPLATE_DEBUG = str2bool(os.getenv('DEBUG', 'True'))
+DEBUG_STATIC = str2bool(os.getenv('DEBUG_STATIC', 'False'))
 SITEURL = SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
-BOUNDLESS_URL = os.getenv('BOUNDLESS_URL', 'http://boundlessgeo.com')
-BOUNDLESS_LINKTEXT = os.getenv('BOUNDLESS_LINKTEXT', 'Boundless Spatial')
-ALLOWED_HOSTS = ["*"]
+SITENAME = os.getenv('SITENAME', 'exchange')
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*')]
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+WSGI_APPLICATION = "exchange.wsgi.application"
+ROOT_URLCONF = 'exchange.urls'
+SOCIAL_BUTTONS = str2bool(os.getenv('SOCIAL_BUTTONS', 'False'))
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
+)
+
+# Time Zone
+TIME_ZONE = os.getenv('TIME_ZONE', 'America/Chicago')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-SITENAME = 'exchange'
-CLASSIFICATION_BANNER_ENABLED = False
-DEBUG = TEMPLATE_DEBUG = True
-CORS_ENABLED = True
 
-LOCKDOWN_GEONODE = os.getenv('LOCKDOWN_GEONODE', True)
-if LOCKDOWN_GEONODE is not None:
+# classification banner
+CLASSIFICATION_BANNER_ENABLED = str2bool(os.getenv(
+    'CLASSIFICATION_BANNER_ENABLED',
+    'False')
+)
+CLASSIFICATION_TEXT = os.getenv('CLASSIFICATION_TEXT', 'UNCLASSIFIED//FOUO')
+CLASSIFICATION_TEXT_COLOR = os.getenv('CLASSIFICATION_TEXT_COLOR', 'white')
+CLASSIFICATION_BACKGROUND_COLOR = os.getenv(
+    'CLASSIFICATION_BACKGROUND_COLOR',
+    'green'
+)
+CLASSIFICATION_LINK = os.getenv('CLASSIFICATION_LINK', None)
+
+LOCKDOWN_GEONODE = str2bool(os.getenv('LOCKDOWN_GEONODE', 'True'))
+if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
         'geonode.security.middleware.LoginRequiredMiddleware',
     )
 
-REGISTRATION_OPEN = False
-SOCIAL_BUTTONS = False
-SECRET_KEY = 'exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
+# registration
+REGISTRATION_OPEN = str2bool(os.getenv('REGISTRATION_OPEN', 'False'))
+EMAIL_HOST = os.getenv('EMAIL_HOST', None)
+EMAIL_PORT = os.getenv('EMAIL_PORT', None)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', None)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', None)
+THEME_ACCOUNT_CONTACT_EMAIL = os.getenv('THEME_ACCOUNT_CONTACT_EMAIL', None)
+if all([REGISTRATION_OPEN,
+        EMAIL_HOST,
+        EMAIL_PORT,
+        EMAIL_BACKEND,
+        DEFAULT_FROM_EMAIL,
+        THEME_ACCOUNT_CONTACT_EMAIL]):
+    ACCOUNT_ACTIVATION_DAYS = ''
+    ACCOUNT_APPROVAL_REQUIRED = str2bool(os.getenv(
+        'ACCOUNT_APPROVAL_REQUIRED',
+        'False')
+    )
+    ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = str2bool(os.getenv(
+        'ACCOUNT_EMAIL_CONFIRMATION_REQUIRED',
+        'False')
+    )
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Set to True to load non-minified versions of (static) client dependencies
-DEBUG_STATIC = False
-TIME_ZONE = 'America/Chicago'
-WSGI_APPLICATION = "exchange.wsgi.application"
-ROOT_URLCONF = 'exchange.urls'
-
+# path setup
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
 PROJECT_ROOT = os.path.join(APP_ROOT, os.pardir)
 
 # static files storage
 STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
-# not sure why django.contrib.staticfiles is not auto collecting static files
 STATIC_ROOT = os.path.join(PROJECT_ROOT, '.storage/static_root')
 STATIC_URL = '/static/'
 
@@ -108,11 +141,10 @@ TEMPLATES = [
     },
 ]
 
-# middlware
-MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-    'corsheaders.middleware.CorsMiddleware',
+# middleware
+MIDDLEWARE_CLASSES = (
     'whitenoise.middleware.WhiteNoiseMiddleware',
-)
+) + MIDDLEWARE_CLASSES
 
 # installed applications
 INSTALLED_APPS = (
@@ -126,29 +158,36 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'haystack',
-    'corsheaders',
-    'exchange-docs'
+    'exchange-docs',
 ) + INSTALLED_APPS
 
-# cors settings
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_METHODS = ('GET',)
-
 # geoserver settings
-GEOSERVER_URL = os.environ.get('GEOSERVER_URL',
-                               'http://127.0.0.1:8080/geoserver/')
-GEOSERVER_USER = os.environ.get('GEOSERVER_USER',
-                                'admin')
-GEOSERVER_PASSWORD = os.environ.get('GEOSERVER_PASSWORD',
-                                    'geoserver')
-GEOSERVER_LOG = os.environ.get('GEOSERVER_LOG',
-                               '/opt/boundless/exchange/geoserver_data'
-                               '/logs/geoserver.log')
-GEOSERVER_DATA_DIR = os.environ.get('GEOSERVER_DATA_DIR',
-                                    '/opt/boundless/exchange/geoserver_data')
-GEOGIG_DATASTORE_DIR = os.environ.get('GEOSERVER_DATA_DIR',
-                                      '/opt/boundless/exchange/geoserver_data'
-                                      '/geogig')
+GEOSERVER_URL = os.environ.get(
+    'GEOSERVER_URL',
+    'http://127.0.0.1:8080/geoserver/'
+)
+GEOSERVER_USER = os.environ.get(
+    'GEOSERVER_USER',
+    'admin'
+)
+GEOSERVER_PASSWORD = os.environ.get(
+    'GEOSERVER_PASSWORD',
+    'geoserver'
+)
+GEOSERVER_LOG = os.environ.get(
+    'GEOSERVER_LOG',
+    '/opt/geonode/geoserver_data/logs/geoserver.log'
+)
+GEOSERVER_DATA_DIR = os.environ.get(
+    'GEOSERVER_DATA_DIR',
+    '/opt/geonode/geoserver_data'
+)
+GEOGIG_DATASTORE_DIR = os.environ.get(
+    'GEOSERVER_DATA_DIR',
+    '/opt/geonode/geoserver_data/geogig'
+)
+PG_DATASTORE = os.getenv('PG_DATASTORE', 'exchange_imports')
+PG_GEOGIG = str2bool(os.getenv('PG_GEOGIG', 'True'))
 
 OGC_SERVER = {
     'default': {
@@ -167,8 +206,8 @@ OGC_SERVER = {
         'LOG_FILE': GEOSERVER_LOG,
         'GEOSERVER_DATA_DIR': GEOSERVER_DATA_DIR,
         'GEOGIG_DATASTORE_DIR': GEOGIG_DATASTORE_DIR,
-        'DATASTORE': '',
-        'PG_GEOGIG': False,
+        'DATASTORE': PG_DATASTORE,
+        'PG_GEOGIG': PG_GEOGIG,
         'TIMEOUT': 10
     }
 }
@@ -179,31 +218,46 @@ GEOGIG_DATASTORE_NAME = 'geogig-repo'
 MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
 
 # database settings
-SQLITEDB = "sqlite:///%s" % os.path.join(LOCAL_ROOT, 'development.db')
-DATABASE_URL = os.getenv('DATABASE_URL', SQLITEDB)
-DATABASES['default'] = dj_database_url.parse(DATABASE_URL,
-                                             conn_max_age=600)
-POSTGIS_URL = os.environ.get('POSTGIS_URL', None)
-if POSTGIS_URL is not None:
-    DATABASES['exchange_imports'] = dj_database_url.parse(POSTGIS_URL,
-                                                          conn_max_age=600)
-    OGC_SERVER['default']['DATASTORE'] = 'exchange_imports'
-
-    UPLOADER = {
-        'BACKEND': 'geonode.importer',
-        'OPTIONS': {
-            'TIME_ENABLED': True,
-            'GEOGIT_ENABLED': True,
-        }
+DATABASE_URL = os.getenv(
+    'DATABASE_URL',
+    'postgres://exchange:boundless@localhost:5432/exchange'
+)
+DATABASES['default'] = dj_database_url.parse(
+    DATABASE_URL,
+    conn_max_age=600
+)
+POSTGIS_URL = os.environ.get(
+    'POSTGIS_URL',
+    'postgis://exchange:boundless@localhost:5432/exchange_data'
+)
+DATABASES['exchange_imports'] = dj_database_url.parse(
+    POSTGIS_URL,
+    conn_max_age=600
+)
+UPLOADER = {
+    'BACKEND': 'geonode.importer',
+    'OPTIONS': {
+        'TIME_ENABLED': True,
+        'GEOGIT_ENABLED': True,
     }
+}
 
 WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
-    'Excel', 'GeoJSON', 'KML', 'View in Google Earth',
+    'JPEG',
+    'PDF',
+    'PNG',
+    'Zipped Shapefile',
+    'GML 2.0',
+    'GML 3.1.1',
+    'CSV',
+    'Excel',
+    'GeoJSON',
+    'KML',
+    'View in Google Earth',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
@@ -244,8 +298,8 @@ CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_RESULT_BACKEND = 'rpc' + BROKER_URL[4:]
 CELERYD_PREFETCH_MULTIPLIER = 25
 CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
-
-CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = False
+CELERY_TIMEZONE = TIME_ZONE
 
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
@@ -295,7 +349,7 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
         'django.contrib.auth.backends.ModelBackend',
         'guardian.backends.ObjectPermissionBackend',
     )
-    AUTH_LDAP_USER = os.environ.get('AUTH_LDAP_USER', '(uid=%(user)s)')
+    AUTH_LDAP_USER = '(uid=%(user)s)'
     AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN', '')
     AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD', '')
     AUTH_LDAP_USER_ATTR_MAP = {
