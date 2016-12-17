@@ -67,7 +67,7 @@ ADD requirements.txt /mnt/exchange/
 
 # Pre-install dependencies
 # Get preinstalled GeoNode out of the way so the mount can be used
-RUN /env/bin/pip install -r /mnt/exchange/requirements.txt && \
+RUN PATH=$PATH:/usr/pgsql-9.6/bin && /env/bin/pip install -r /mnt/exchange/requirements.txt && \
     /env/bin/pip uninstall -y GeoNode
 
 # docker/home contains a number of things that will go in $HOME:

@@ -51,7 +51,7 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
 # Add the Exchange tree, install deps
 ADD . /opt/boundless/exchange
 RUN virtualenv /env && chmod -R 755 /env
-RUN /env/bin/pip install -r /opt/boundless/exchange/requirements.txt > /dev/null
+RUN PATH=$PATH:/usr/pgsql-9.6/bin && /env/bin/pip install -r /opt/boundless/exchange/requirements.txt > /dev/null
 
 # Travis can provide
 # PostGIS: https://docs.travis-ci.com/user/database-setup/#Using-PostGIS
