@@ -68,7 +68,6 @@ setup(
         "supervisor==3.2.3",
         "python-resize-image==1.1.10",
         "django-flat-theme==1.1.3",
-        "django-exchange-themes==1.0.3",
         "django-exchange-docs==1.1.2"
     ]
 )

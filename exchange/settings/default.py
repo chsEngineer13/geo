@@ -148,9 +148,9 @@ MIDDLEWARE_CLASSES = (
 
 # installed applications
 INSTALLED_APPS = (
-    'appearance',
     'flat',
     'exchange.core',
+    'exchange.themes',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',

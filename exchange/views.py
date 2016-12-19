@@ -12,7 +12,7 @@ import requests
 
 
 def home_screen(request):
-    return render(request, 'site_index.html')
+    return render(request, 'index.html')
 
 
 def documentation_page(request):
