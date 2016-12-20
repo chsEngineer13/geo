@@ -1,7 +1,7 @@
 --index-url https://pypi.python.org/simple/
 
 django-exchange-maploom==1.5.11
-git+git://github.com/GeoNode/geonode@122a8ddebb267f0ec6a54ab719095ad7ca2a9c16#egg=geonode
+git+git://github.com/GeoNode/geonode@1898779e8cdf104ac454bc497c6243d19f7caf90#egg=geonode
 celery==3.1.17
 dj-database-url==0.4.1
 django-storages==1.1.8
