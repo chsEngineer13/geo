@@ -102,16 +102,9 @@ if all([REGISTRATION_OPEN,
 # path setup
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
-PROJECT_ROOT = os.path.join(APP_ROOT, os.pardir)
 
 # static files storage
 STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
-STATIC_ROOT = os.path.join(PROJECT_ROOT, '.storage/static_root')
-STATIC_URL = '/static/'
-
-# media file storage
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, '.storage/media')
-MEDIA_URL = '/media/'
 
 # template settings
 TEMPLATES = [
