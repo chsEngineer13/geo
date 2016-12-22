@@ -21,3 +21,4 @@ export GEOGIG_DATASTORE_DIR='/scratch/geogig/data'
 
 # debug for local dev
 export DJANGO_LOG_LEVEL=DEBUG
+export REGISTRYURL='http://registry.boundlessgeo.io'
