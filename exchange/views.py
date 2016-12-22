@@ -7,8 +7,13 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm
+from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecordForm, CSWRecord
+from exchange.tasks import create_new_csw
 from geonode.maps.views import _resolve_map
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def home_screen(request):
@@ -120,3 +125,21 @@ def geoserver_reverse_proxy(request):
     req = requests.post(url, data=data, headers=headers,
                         cookies=request.COOKIES)
     return HttpResponse(req.content, content_type='application/xml')
+
+
+def insert_csw(request):
+    if request.method == 'POST':
+        form = CSWRecordForm(request.POST)
+        if form.is_valid():
+            new_record = form.save()
+            new_record.user = request.user
+            new_record.save()
+            create_new_csw.delay(new_record.id)
+            return HttpResponseRedirect(reverse('csw_status'))
+    else:
+        form = CSWRecordForm()
+
+    return render_to_response("csw/new.html",
+                              {"form": form,
+                               },
+                              context_instance=RequestContext(request))

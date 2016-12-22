@@ -41,7 +41,8 @@ urlpatterns = patterns(
         name='geoserver_reverse_proxy'),
     # Redirect help and developer links to the documentation page
     url(r'^help/$', views.documentation_page, name='help'),
-    url(r'^developer/$', views.documentation_page, name='developer')
+    url(r'^developer/$', views.documentation_page, name='developer'),
+    url(r'^csw/new/$', views.insert_csw, name='insert_csw'),
 )
 
 # If django-osgeo-importer is enabled...
