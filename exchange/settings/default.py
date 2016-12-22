@@ -333,7 +333,13 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': DJANGO_LOG_LEVEL
-    }
+    },
+}
+
+LOGGING['loggers']['django.db.backends'] = {
+    'handlers': ['console'],
+    'propagate': False,
+    'level': 'WARNING',  # Django SQL logging is too noisy at DEBUG
 }
 
 # Authentication Settings

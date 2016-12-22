@@ -18,3 +18,6 @@ export GEOSERVER_DATA_DIR='/scratch/geoserver/data'
 export GEOSERVER_LOG='/scratch/geoserver/logs'
 export GEOGIG_DATASTORE_DIR='/scratch/geogig/data'
 # export WGS84_MAP_CRS=True
+
+# debug for local dev
+export DJANGO_LOG_LEVEL=DEBUG
