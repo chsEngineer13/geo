@@ -375,7 +375,7 @@ if GEOAXIS_ENABLED:
 
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
-REGISTRY = os.environment.get('ENABLE_REGISTRY', False)
+REGISTRY = os.environ.get('ENABLE_REGISTRY', False)
 REGISTRYURL = os.environ.get('REGISTRYURL', None)
 REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 
