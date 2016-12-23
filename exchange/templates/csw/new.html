@@ -1,0 +1,57 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+{% load url from future %}
+
+{% block title %} Insert New CSW Record - {{ block.super }} {% endblock %}
+
+{% block body %}
+<div class="block">
+    <div class="col-md-10">
+        <h2 class="page-title">{% trans "Insert A New CSW Record" %}</h2>
+        {% if errors %}
+        <div id="errors">
+            {% for error in errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div>
+
+            <div id="message">
+                <div>{{ message }}</div>
+            </div>
+
+            <form method="post" action="">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <!--
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                -->
+
+             <div class="form_group">
+                 <input type="submit" class="btn btn-primary" value="{% trans 'Insert Record' %}"/>
+             </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock body %}
+
