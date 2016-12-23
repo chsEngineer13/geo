@@ -20,6 +20,8 @@ ADD https://yum.boundlessps.com/geoshape.repo /etc/yum.repos.d/
 # ... and do one big step to avoid creating extra layers uselessly
 # TODO: audit what is needed here or not
 RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
+    yum -y install https://yum.postgresql.org/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm && \
+    yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && \
     yum update -y && \
     yum -y install \
         # for pip install from git URLs
@@ -41,7 +43,7 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
         bzip2-devel \
         openssl-devel \
         tk-devel \
-        gdal-devel-2.0.1 \
+        gdal-devel-2.1.2 \
         libxslt-devel \
         libxml2-devel \
         libjpeg-turbo-devel \
@@ -52,8 +54,7 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
         proj-devel \
         geos-devel \
         # Headers for pip install psycopg2
-        postgresql-devel \
-        postgresql95-devel \
+        postgresql96-devel \
         openldap-devel \
         libmemcached-devel \
     && \
@@ -66,7 +67,7 @@ ADD requirements.txt /mnt/exchange/
 
 # Pre-install dependencies
 # Get preinstalled GeoNode out of the way so the mount can be used
-RUN /env/bin/pip install -r /mnt/exchange/requirements.txt && \
+RUN PATH=$PATH:/usr/pgsql-9.6/bin && /env/bin/pip install -r /mnt/exchange/requirements.txt && \
     /env/bin/pip uninstall -y GeoNode
 
 # docker/home contains a number of things that will go in $HOME:

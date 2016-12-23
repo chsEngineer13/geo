@@ -21,6 +21,10 @@ RUN unzip -o /tmp/geoserver.war -d /tmp/geoserver && \
 # Add .geogigconfig from outside container
 ADD .geogigconfig $CATALINA_HOME/webapps/geoserver/data/geogig/
 
+# The base image is missing some of the required spaital libraries
+RUN apt-get update
+RUN apt-get install -y libgeos-dev libproj-dev
+
 # TODO: do these need to be moved to /scratch or can we leave them separate?
 ENV GEOSERVER_DATA_DIR=$CATALINA_HOME/webapps/geoserver/data
 ENV GEOSERVER_LOG=$GEOSERVER_DATA_DIR/logs/geoserver.log

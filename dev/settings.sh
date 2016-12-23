@@ -15,3 +15,4 @@ export GEOSERVER_DATA_DIR='/vagrant/dev/.geoserver/data'
 export GEOSERVER_LOG='/vagrant/dev/.geoserver/data/logs/geoserver.log'
 export GEOGIG_DATASTORE_DIR='/vagrant/dev/.geoserver/data/geogig'
 # export WGS84_MAP_CRS=True
+set +e

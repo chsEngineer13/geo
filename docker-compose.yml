@@ -132,6 +132,8 @@ services:
         ports:
             # Django at /
             - "80"
+            # export ssl version as well.
+            - "443"
 
     # worker process which does "background" work for the django app
     worker:

@@ -343,6 +343,8 @@ LOGGING['loggers']['django.db.backends'] = {
 }
 
 # Authentication Settings
+
+# ldap
 AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
 LDAP_SEARCH_DN = os.environ.get('LDAP_SEARCH_DN', None)
 if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
@@ -363,6 +365,13 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
     }
     AUTH_LDAP_USER_SEARCH = LDAPSearch(LDAP_SEARCH_DN,
                                        ldap.SCOPE_SUBTREE, AUTH_LDAP_USER)
+
+# geoaxis
+GEOAXIS_ENABLED = str2bool(os.getenv('GEOAXIS_ENABLED', 'False'))
+if GEOAXIS_ENABLED:
+    AUTHENTICATION_BACKENDS = (
+        'exchange.auth.middleware.GeoAxisMiddleware',
+    ) + AUTHENTICATION_BACKENDS
 
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
