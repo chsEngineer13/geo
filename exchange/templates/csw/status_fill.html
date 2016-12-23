@@ -1,0 +1,10 @@
+{% for record in records %}
+<div class="record {{ record.status|lower }}">
+    <p>
+    Title: {{ record.title }}
+    <br>
+    Record ID: {{ record.id }}
+    <br>
+    Status: {{ record.status }}
+</div>
+{% endfor %}

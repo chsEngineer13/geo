@@ -119,7 +119,7 @@ services:
             - $GEONODE_HOME:/mnt/geonode
 
             # Exchange code that dev will presumably want to change.
-            - $EXCHANGE_HOME:/mnt/exchange:ro
+            - $EXCHANGE_HOME:/mnt/exchange:rw
 
             # Example of how to mount something else from here.
             # - $HOME/stuff/django-osgeo-importer:/mnt/django-osgeo-importer:ro

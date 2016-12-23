@@ -21,12 +21,15 @@
 from django.db import models
 from solo.models import SingletonModel
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from resizeimage import resizeimage
 from django import forms
 import os
+import uuid
+import datetime
 
 
 class ThumbnailImage(SingletonModel):
@@ -61,3 +64,76 @@ class ThumbnailImageForm(forms.Form):
     thumbnail_image = forms.FileField(
         label='Select a file',
     )
+
+
+class CSWRecord(models.Model):
+    # Registry requires a UUID for all new records
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    status = models.CharField(max_length=128, default='Unknown')
+    user = models.ForeignKey(
+          settings.AUTH_USER_MODEL,
+          null=True,
+          related_name="csw_records_created")
+
+    classification = models.CharField(max_length=128, blank=True)
+    title = models.CharField(max_length=128, blank=False)
+    modified = models.DateField(default=datetime.date.today, blank=False)
+    # 'creator' is assumed to be distinct from logged-in User here
+    creator = models.CharField(max_length=128, blank=True)
+    record_type = models.CharField(max_length=128, blank=True)
+    alternative = models.CharField(max_length=128, blank=True)
+    abstract = models.CharField(max_length=128, blank=True)
+    source = models.URLField(max_length=128, blank=False)
+    relation = models.CharField(max_length=128, blank=True)
+    record_format = models.CharField(max_length=128, blank=True)
+    bbox_upper_corner = models.CharField(max_length=128,
+                                         default="180.0,85.0",
+                                         blank=True)
+    bbox_lower_corner = models.CharField(max_length=128,
+                                         default="-180.0,-85.0",
+                                         blank=True)
+    contact_information = models.CharField(max_length=128, blank=True)
+    gold = models.BooleanField(max_length=128, default=False, blank=True)
+    category = models.CharField(max_length=128, blank=True)
+
+
+class CSWRecordForm(forms.ModelForm):
+    class Meta:
+        model = CSWRecord
+        fields = ('title', 'modified', 'creator', 'record_type', 'alternative', 'abstract',
+                  'source', 'relation', 'record_format', 'bbox_upper_corner',
+                  'bbox_lower_corner', 'contact_information', 'gold',
+                  'category')
+
+        labels = {
+            'title': _('Title'),
+            'modified': _('Date Last Modified'),
+            'creator': _('Creator'),
+            'record_type': _('Type'),
+            'alternative': _('Alternative'),
+            'abstract': _('Abstract'),
+            'source': _('Source'),
+            'relation': _('Relation'),
+            'record_format': _('Format'),
+            'bbox_upper_corner': _('Bounding Box: Upper Corner'),
+            'bbox_lower_corner': _('Bounding Box: Lower Corner'),
+            'contact_information': _('Contact Information'),
+            'gold': _('Gold'),
+            'category': _('Category'),
+        }
+
+        help_texts = {
+            # 'title': _('Title'),
+            # 'creator': _('Creator'),
+            # 'record_type': _('Type'),
+            # 'alternative': _('Alternative'),
+            # 'abstract': _('Abstract'),
+            # 'source': _('Source'),
+            # 'relation': _('Relation'),
+            # 'record_format': _('Format'),
+            'bbox_upper_corner': _('Coordinates for upper left corner'),
+            'bbox_lower_corner': _('Coordinates for lower right corner'),
+            # 'contact_information': _('Contact Information'),
+            # 'gold': _('Gold'),
+            # 'category': _('Category'),
+        }
