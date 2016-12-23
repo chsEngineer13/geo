@@ -13,10 +13,10 @@ services:
   - postgresql
 
 addons:
-  postgresql: "9.5"
+  postgresql: "9.6"
   apt:
     packages:
-    - postgresql-9.5-postgis-2.3
+    - postgresql-9.6-postgis-2.3
 
 # branches:
 #   only:
@@ -24,10 +24,10 @@ addons:
 
 before_install:
   # Allow connections to PG from our Docker instance
-  - echo "host all all 0.0.0.0/0 md5" | sudo tee -a /etc/postgresql/9.5/main/pg_hba.conf
-  - echo "listen_addresses = '*'" | sudo tee -a /etc/postgresql/9.5/main/postgresql.conf
+  - echo "host all all 0.0.0.0/0 md5" | sudo tee -a /etc/postgresql/9.6/main/pg_hba.conf
+  - echo "listen_addresses = '*'" | sudo tee -a /etc/postgresql/9.6/main/postgresql.conf
   - sudo service postgresql stop
-  - sudo service postgresql start 9.5
+  - sudo service postgresql start 9.6
 
   - sudo apt-get -qq update
   # - sudo apt-get upgrade

@@ -148,9 +148,9 @@ MIDDLEWARE_CLASSES = (
 
 # installed applications
 INSTALLED_APPS = (
-    'appearance',
     'flat',
     'exchange.core',
+    'exchange.themes',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
@@ -333,7 +333,13 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': DJANGO_LOG_LEVEL
-    }
+    },
+}
+
+LOGGING['loggers']['django.db.backends'] = {
+    'handlers': ['console'],
+    'propagate': False,
+    'level': 'WARNING',  # Django SQL logging is too noisy at DEBUG
 }
 
 # Authentication Settings
@@ -364,12 +370,13 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
 GEOAXIS_ENABLED = str2bool(os.getenv('GEOAXIS_ENABLED', 'False'))
 if GEOAXIS_ENABLED:
     AUTHENTICATION_BACKENDS = (
-        'exchange.auth.geoaxis.OamRemoteUserMiddleware',
+        'exchange.auth.middleware.GeoAxisMiddleware',
     ) + AUTHENTICATION_BACKENDS
 
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
 REGISTRYURL = os.environ.get('REGISTRYURL', None)
+REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
@@ -401,6 +408,8 @@ try:
     from local_settings import *  # noqa
 except ImportError:
     pass
+
+CELERY_IMPORTS += ('exchange.tasks',)
 
 # Uploaded resources should be private and not downloadable by default
 # Overwrite the default of True found in the base Geonode settings

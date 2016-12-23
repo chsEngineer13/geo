@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.middleware import RemoteUserMiddleware
 
 
-class OamRemoteUserMiddleware(RemoteUserMiddleware):
+class GeoAxisMiddleware(RemoteUserMiddleware):
     """
     Middleware for utilizing GEOAXIS provided authentication. This is a
     subclass of the RemoteUserMiddleware. The header value is configurable

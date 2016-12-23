@@ -64,11 +64,10 @@ setup(
         "psycopg2==2.6.1",
         "python-ldap==2.4.25",
         "django-auth-ldap==1.2.7",
-        "GDAL==2.0.1",
+        "GDAL==2.1.0",
         "supervisor==3.2.3",
         "python-resize-image==1.1.10",
         "django-flat-theme==1.1.3",
-        "django-exchange-themes==1.0.3",
         "django-exchange-docs==1.1.2"
     ]
 )
