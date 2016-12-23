@@ -14,7 +14,7 @@ gpgkey=https://yum.boundlessps.com/RPM-GPG-KEY-yum.boundlessps.com
 
 echo "[rabbitmq-server]
 name=RabbitMQ Server
-baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/6/$basearch
+baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/6/x86_64
 enabled=1
 gpgcheck=0" > /etc/yum.repos.d/rabbitmq.repo
 
@@ -60,10 +60,11 @@ gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
         wget \
         git \
         postgis2-96 \
+        postgresql96-server  \
         elasticsearch \
         rabbitmq-server-3.6.1 \
         libmemcached-devel \
-        httpd \
+        httpd
 
     if [ -f /etc/profile.d/settings.sh ]; then
         rm -fr /etc/profile.d/settings.sh
@@ -148,12 +149,12 @@ database_setup()
     if [ -f /etc/init.d/exchange ]; then
         service exchange stop > /dev/null 2>&1
     fi
-    if [ ! -d /var/lib/pgsql/9.5/data/base ]; then
-        service postgresql-9.5 initdb
-        chkconfig postgresql-9.5 on
-        sed -i.orig 's/peer$/trust/g' /var/lib/pgsql/9.5/data/pg_hba.conf
-        sed -i.orig 's/ident$/md5/g' /var/lib/pgsql/9.5/data/pg_hba.conf
-        service postgresql-9.5 restart > /dev/null 2>&1
+    if [ ! -d /var/lib/pgsql/9.6/data/base ]; then
+        service postgresql-9.6 initdb
+        chkconfig postgresql-9.6 on
+        sed -i.orig 's/peer$/trust/g' /var/lib/pgsql/9.6/data/pg_hba.conf
+        sed -i.orig 's/ident$/md5/g' /var/lib/pgsql/9.6/data/pg_hba.conf
+        service postgresql-9.6 restart > /dev/null 2>&1
     fi
     PGUSER=$(psql -U postgres -c '\du' | cut -d \| -f 1 | grep -w exchange | wc -l)
     if [ "${PGUSER}" -eq 0 ]; then
