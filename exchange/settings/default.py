@@ -208,7 +208,8 @@ OGC_SERVER = {
         'GEOGIG_DATASTORE_DIR': GEOGIG_DATASTORE_DIR,
         'DATASTORE': PG_DATASTORE,
         'PG_GEOGIG': PG_GEOGIG,
-        'TIMEOUT': 10
+        'TIMEOUT': 10,
+        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout'
     }
 }
 
