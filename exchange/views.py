@@ -172,11 +172,11 @@ def combined_elastic_search(request):
     from elasticsearch import Elasticsearch
     from six import iteritems
     from guardian.shortcuts import get_objects_for_user
-    # from elasticsearch_dsl import Search
-    # from elasticsearch_dsl.query import Q
 
-    ''' elasticsearch_dsl overwrites any double underscores with a . this changes the default to not overwrite '''
+    # elasticsearch_dsl overwrites any double underscores with a .
+    # this changes the default to not overwrite
     import elasticsearch_dsl as edsl
+
     def newDSLBaseInit(self, _expand__to_dot=False, **params):
         self._params = {}
         for pname, pvalue in iteritems(params):
@@ -187,63 +187,55 @@ def combined_elastic_search(request):
     Search = edsl.Search
     Q = edsl.query.Q
 
-
     parameters = request.GET
     es = Elasticsearch(settings.ES_URL)
     search = Search(using=es)
-    
+
     # Set base fields to search
     fields = ['title', 'text', 'abstract', 'title_alternate']
-    facets = ['_index', 'type', 'subtype', 'owner__username', 'keywords', 'regions', 'category']
+    facets = ['_index', 'type', 'subtype',
+              'owner__username', 'keywords', 'regions', 'category']
 
     # Text search
     query = parameters.get('q', None)
-    
+
     offset = int(parameters.get('offset', '0'))
     limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
-    #logger.debug('parameters %s   -----query %s   ------   offset %s limit %s    --------',parameters, query, offset, limit)
-    
-    # Types and subtypes to filter (map, layer, vector, etc)
-    type_facets = parameters.getlist("type__in", [])
-
-    # If coming from explore page, add type filter from resource_name
-    # resource_filter = self._meta.resource_name.rstrip("s")
-    # if resource_filter != "base" and resource_filter not in type_facets:
-    #     type_facets.append(resource_filter)
 
     # Publication date range (start,end)
     date_end = parameters.get("date__lte", None)
     date_start = parameters.get("date__gte", None)
-
 
     # Sort order
     sort = parameters.get("order_by", "relevance")
 
     # Geospatial Elements
     bbox = parameters.get("extent", None)
-    
+
     # Filter geonode layers by permissions
     if not settings.SKIP_PERMS_FILTER:
         # Get the list of objects the user has access to
-        filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
+        filter_set = get_objects_for_user(
+            request.user, 'base.view_resourcebase')
         if settings.RESOURCE_PUBLISHING:
             filter_set = filter_set.filter(is_published=True)
 
-        filter_set_ids = map(str,filter_set.values_list('id', flat=True))
+        filter_set_ids = map(str, filter_set.values_list('id', flat=True))
         # Do the query using the filterset and the query term. Facet the
         # results
-        q = Q({"match":{"_type":"layer"}})
+        q = Q({"match": {"_type": "layer"}})
         if len(filter_set_ids) > 0:
-            q = Q({"terms":{"id":filter_set_ids}}) | q
+            q = Q({"terms": {"id": filter_set_ids}}) | q
 
         search = search.query(q)
-    
+
     # Filter by Query Params
     if query:
         if query.startswith('"') or query.startswith('\''):
             # Match exact phrase
             phrase = query.replace('"', '')
-            search = search.query("multi_match", type='phrase', query=phrase, fields=fields)
+            search = search.query(
+                "multi_match", type='phrase', query=phrase, fields=fields)
         else:
             words = [
                 w for w in re.split(
@@ -252,47 +244,49 @@ def combined_elastic_search(request):
                     flags=re.UNICODE) if w]
             for i, search_word in enumerate(words):
                 if i == 0:
-                    word_query = Q("multi_match", query=search_word, fields=fields)
+                    word_query = Q(
+                        "multi_match", query=search_word, fields=fields)
                 elif search_word.upper() in ["AND", "OR"]:
                     pass
-                elif words[i - 1].upper() == "OR":  # previous word OR this word
-                    word_query = word_query | Q("multi_match", query=search_word, fields=fields)
+                elif words[i - 1].upper() == "OR":
+                    word_query = word_query | Q(
+                        "multi_match", query=search_word, fields=fields)
                 else:  # previous word AND this word
-                    word_query = word_query & Q("multi_match", query=search_word, fields=fields)
+                    word_query = word_query & Q(
+                        "multi_match", query=search_word, fields=fields)
             # logger.debug('******* WORD_QUERY %s', word_query.to_dict())
             search = search.query(word_query)
-    
+
     if bbox:
         left, bottom, right, top = bbox.split(',')
-        leftq = Q({'range':{'bbox_left':{'gte':left}}}) | Q({'range':{'min_x':{'gte':left}}})
-        bottomq = Q({'range':{'bbox_bottom':{'gte':bottom}}}) | Q({'range':{'min_y':{'gte':bottom}}})
-        rightq = Q({'range':{'bbox_right':{'lte':right}}}) | Q({'range':{'max_x':{'lte':right}}})
-        topq = Q({'range':{'bbox_top':{'lte':top}}}) | Q({'range':{'max_y':{'lte':top}}}) 
+        leftq = Q({'range': {'bbox_left': {'gte': left}}}) | Q(
+            {'range': {'min_x': {'gte': left}}})
+        bottomq = Q({'range': {'bbox_bottom': {'gte': bottom}}}) | Q(
+            {'range': {'min_y': {'gte': bottom}}})
+        rightq = Q({'range': {'bbox_right': {'lte': right}}}) | Q(
+            {'range': {'max_x': {'lte': right}}})
+        topq = Q({'range': {'bbox_top': {'lte': top}}}) | Q(
+            {'range': {'max_y': {'lte': top}}})
         q = leftq & bottomq & rightq & topq
         search = search.query(q)
 
     # filter by date
     if date_start:
-        q = Q({'range':{'date':{'gte':date_start}}}) | Q({'range':{'layer_date':{'gte':date_start}}})
+        q = Q({'range': {'date': {'gte': date_start}}}) | Q(
+            {'range': {'layer_date': {'gte': date_start}}})
         search = search.query(q)
 
     if date_end:
-        q = Q({'range':{'date':{'lte':date_end}}}) | Q({'range':{'layer_date':{'lte':date_end}}})
+        q = Q({'range': {'date': {'lte': date_end}}}) | Q(
+            {'range': {'layer_date': {'lte': date_end}}})
         search = search.query(q)
 
-    def facet_search(search, parameters, paramfield, esfield = None):
+    def facet_search(search, parameters, paramfield, esfield=None):
         if esfield is None:
-            esfield = paramfield.replace('__in','' )
+            esfield = paramfield.replace('__in', '')
         getparams = parameters.getlist(paramfield)
         if getparams:
-            #for i, p in enumerate(getparams):
-            #    if i == 0:
-            #        q = Q({'match':{esfield:p}})
-            #    else:
-            #        q = q | Q({'match':{esfield:p}})
-            # logger.debug('^^^^^^^^^^^^^^^ getparams:     %s', getparams)
-            q = Q({'terms':{esfield:getparams}})
-            # logger.debug('q: %s', q.to_dict())
+            q = Q({'terms': {esfield: getparams}})
             return search.query(q)
         return search
 
@@ -304,11 +298,25 @@ def combined_elastic_search(request):
 
     # Apply sort
     if sort.lower() == "-date":
-        search = search.sort({"date":{"order":"desc", "missing":"_last", "unmapped_type":"date"}}, 
-                                {"layer_date":{"order":"desc", "missing":"_last", "unmapped_type":"date"}})
+        search = search.sort({"date":
+                              {"order": "desc",
+                               "missing": "_last",
+                               "unmapped_type": "date"
+                               }},
+                             {"layer_date":
+                              {"order": "desc",
+                               "missing": "_last",
+                               "unmapped_type": "date"}})
     elif sort.lower() == "date":
-        search = search.sort({"date":{"order":"asc", "missing":"_last", "unmapped_type":"date"}}, 
-                                {"layer_date":{"order":"asc", "missing":"_last", "unmapped_type":"date"}})
+        search = search.sort({"date":
+                              {"order": "asc",
+                               "missing": "_last",
+                               "unmapped_type": "date"
+                               }},
+                             {"layer_date":
+                              {"order": "asc",
+                               "missing": "_last",
+                               "unmapped_type": "date"}})
     elif sort.lower() == "title":
         search = search.sort('title')
     elif sort.lower() == "-title":
@@ -316,31 +324,37 @@ def combined_elastic_search(request):
     elif sort.lower() == "-popular_count":
         search = search.sort('-popular_count')
     else:
-        search = search.sort({"date":{"order":"desc", "missing":"_last", "unmapped_type":"date"}}, 
-                                {"layer_date":{"order":"desc", "missing":"_last", "unmapped_type":"date"}})
+        search = search.sort({"date":
+                              {"order": "desc",
+                               "missing": "_last",
+                               "unmapped_type": "date"
+                               }},
+                             {"layer_date":
+                              {"order": "desc",
+                               "missing": "_last",
+                               "unmapped_type": "date"}})
 
-    
     # print search.to_dict()
-    search = search[offset:offset+limit]
+    search = search[offset:offset + limit]
     results = search.execute()
 
     # Get facet counts
-    facet_results={}
+    facet_results = {}
     for f in facets:
         facet_results[f] = {}
         for bucket in results.aggregations[f].buckets:
-            facet_results[f][bucket.key]=bucket.doc_count
+            facet_results[f][bucket.key] = bucket.doc_count
 
     # Get results
-    objects=[]
+    objects = []
 
     for hit in results.hits.hits:
         try:
             source = hit.get('_source')
-        except: # No source
+        except:  # No source
             pass
-        result={}
-        result['index'] = hit.get('_index',None)
+        result = {}
+        result['index'] = hit.get('_index', None)
         for key, value in source.iteritems():
             if key == 'bbox':
                 result['bbox_left'] = value[0]
@@ -348,8 +362,10 @@ def combined_elastic_search(request):
                 result['bbox_right'] = value[2]
                 result['bbox_top'] = value[3]
             elif key == 'links':
-                result['registry_url'] = '%s/%s' % (settings.REGISTRY_URL,value['xml'])
-                # result['thumbnail_url'] = '%s/%s' % (settings.REGISTRY_URL,value['png'])
+                result['registry_url'] = '%s/%s' % (settings.REGISTRY_URL,
+                                                    value['xml'])
+                # result['thumbnail_url'] = '%s/%s' % (settings.REGISTRY_URL,
+                #                                      value['png'])
             else:
                 result[key] = source.get(key, None)
         objects.append(result)
