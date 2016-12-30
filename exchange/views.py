@@ -169,6 +169,7 @@ def csw_status_table(request):
 
 def combined_elastic_search(request):
     import re
+    import requests
     from elasticsearch import Elasticsearch
     from six import iteritems
     from guardian.shortcuts import get_objects_for_user
@@ -362,10 +363,16 @@ def combined_elastic_search(request):
                 result['bbox_right'] = value[2]
                 result['bbox_top'] = value[3]
             elif key == 'links':
-                result['registry_url'] = '%s/%s' % (settings.REGISTRY_URL,
-                                                    value['xml'])
-                # result['thumbnail_url'] = '%s/%s' % (settings.REGISTRY_URL,
-                #                                      value['png'])
+                # Get source link from Registry
+                xml = value['xml']
+                js = '%s/%s' % (settings.REGISTRY_URL,
+                                re.sub(r"xml$","js",xml))
+                try:
+                    req = requests.get(js)
+                    json = req.json()
+                    result['registry_url'] = json.sources.default_source.req.url
+                except:
+                    result['registry_url'] = js
             else:
                 result[key] = source.get(key, None)
         objects.append(result)
