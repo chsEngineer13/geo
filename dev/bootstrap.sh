@@ -4,12 +4,31 @@ set -e
 
 yum_setup()
 {
-    pushd /etc/yum.repos.d/
-    if [ -f geoshape.repo ]; then
-        rm -f geoshape.repo
-    fi
-    wget https://yum.boundlessps.com/geoshape.repo
-    popd
+echo "[boundlessps]
+name=boundlessps
+baseurl=https://yum.boundlessps.com/el6/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=https://yum.boundlessps.com/RPM-GPG-KEY-yum.boundlessps.com
+" > /etc/yum.repos.d/boundlessps.repo
+
+echo "[rabbitmq-server]
+name=RabbitMQ Server
+baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/6/x86_64
+enabled=1
+gpgcheck=0" > /etc/yum.repos.d/rabbitmq.repo
+
+echo "[elasticsearch]
+name=Elasticearch 1.7 Community Repo
+baseurl=https://packages.elastic.co/elasticsearch/1.7/centos
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
+" > /etc/yum.repos.d/elasticsearch.repo
+
+    rpm -ivh https://yum.postgresql.org/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+    rpm -ivh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
     yum -y install python27-devel \
         python27-virtualenv \
         gcc \
@@ -24,7 +43,7 @@ yum_setup()
         bzip2-devel \
         openssl-devel \
         tk-devel \
-        gdal-devel-2.0.1 \
+        gdal-devel-2.1.2 \
         libxslt-devel \
         libxml2-devel \
         libjpeg-turbo-devel \
@@ -34,17 +53,18 @@ yum_setup()
         lcms2-devel \
         proj-devel \
         geos-devel \
-        postgresql95-devel \
+        postgresql96-devel \
         openldap-devel \
         java-1.8.0-openjdk \
         unzip \
         wget \
         git \
-        postgis-postgresql95 \
+        postgis2-96 \
+        postgresql96-server  \
         elasticsearch \
         rabbitmq-server-3.6.1 \
         libmemcached-devel \
-        httpd \
+        httpd
 
     if [ -f /etc/profile.d/settings.sh ]; then
         rm -fr /etc/profile.d/settings.sh
@@ -129,12 +149,12 @@ database_setup()
     if [ -f /etc/init.d/exchange ]; then
         service exchange stop > /dev/null 2>&1
     fi
-    if [ ! -d /var/lib/pgsql/9.5/data/base ]; then
-        service postgresql-9.5 initdb
-        chkconfig postgresql-9.5 on
-        sed -i.orig 's/peer$/trust/g' /var/lib/pgsql/9.5/data/pg_hba.conf
-        sed -i.orig 's/ident$/md5/g' /var/lib/pgsql/9.5/data/pg_hba.conf
-        service postgresql-9.5 restart > /dev/null 2>&1
+    if [ ! -d /var/lib/pgsql/9.6/data/base ]; then
+        service postgresql-9.6 initdb
+        chkconfig postgresql-9.6 on
+        sed -i.orig 's/peer$/trust/g' /var/lib/pgsql/9.6/data/pg_hba.conf
+        sed -i.orig 's/ident$/md5/g' /var/lib/pgsql/9.6/data/pg_hba.conf
+        service postgresql-9.6 restart > /dev/null 2>&1
     fi
     PGUSER=$(psql -U postgres -c '\du' | cut -d \| -f 1 | grep -w exchange | wc -l)
     if [ "${PGUSER}" -eq 0 ]; then

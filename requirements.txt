@@ -1,7 +1,7 @@
 --index-url https://pypi.python.org/simple/
 
 django-exchange-maploom==1.5.11
-git+git://github.com/GeoNode/geonode@122a8ddebb267f0ec6a54ab719095ad7ca2a9c16#egg=geonode
+git+git://github.com/GeoNode/geonode@1898779e8cdf104ac454bc497c6243d19f7caf90#egg=geonode
 celery==3.1.17
 dj-database-url==0.4.1
 django-storages==1.1.8
@@ -15,7 +15,7 @@ django-colorfield==0.1.10
 psycopg2==2.6.1
 python-ldap==2.4.25
 django-auth-ldap==1.2.7
-GDAL==2.0.1
+GDAL==2.1.0
 supervisor==3.2.3
 python-resize-image==1.1.10
 django-flat-theme==1.1.3

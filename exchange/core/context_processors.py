@@ -27,6 +27,7 @@ def resource_variables(request):
     defaults = dict(
         VERSION=get_version(),
         REGISTRYURL=getattr(settings, 'REGISTRYURL', None),
+        REGISTRY=getattr(settings, 'REGISTRY', False),
         MAP_CRS=settings.DEFAULT_MAP_CRS,
         INSTALLED_APPS=set(settings.INSTALLED_APPS),
     )

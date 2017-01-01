@@ -25,6 +25,7 @@ from django.contrib.auth.decorators import login_required
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from geonode.urls import urlpatterns as geonode_urls
 from . import views
+from django.views.defaults import page_not_found
 
 js_info_dict = {
     'packages': ('geonode.layers',),
@@ -46,6 +47,11 @@ urlpatterns = patterns(
     url(r'^csw/status/$', views.csw_status, name='csw_status'),
     url(r'^csw/status_table/$', views.csw_status_table, name='csw_status_table'),
 )
+
+if settings.REGISTRY is False:
+    urlpatterns += [
+        url(r'^services(.*)$', page_not_found)
+    ]
 
 # If django-osgeo-importer is enabled...
 if 'osgeo_importer' in settings.INSTALLED_APPS:
