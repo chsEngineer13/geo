@@ -3,7 +3,7 @@
 # it isn't meant to be; it's for the benefit of people hacking on Exchange.
 
 # The django app is tested on CentOS 6.7 to match client production environment
-FROM centos:6.7
+FROM centos:6.8
 
 # Set up to use the internal yum repo.
 # It's normally better practice to use e.g. curl or wget instead of ADD
@@ -77,6 +77,8 @@ RUN PATH=$PATH:/usr/pgsql-9.6/bin && /env/bin/pip install -r /mnt/exchange/requi
 # - worker.sh: commands to run at container boot for Exchange Celery app
 # - settings.sh: environment variables
 ADD docker/home/* /root/
+RUN chmod 755 /root/*.sh /root/*.py
+
 # Relocate files that are expected to be in other places
 RUN mv /root/local_settings.py /env/lib/python2.7/site-packages && \
     mv /root/settings.sh /etc/profile.d/
