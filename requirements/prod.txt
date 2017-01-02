@@ -1,0 +1,5 @@
+--index-url https://pypi.python.org/simple/
+
+-r common.txt
+git+git://github.com/GeoNode/geonode@1898779e8cdf104ac454bc497c6243d19f7caf90#egg=geonode
+git+git://github.com/boundlessgeo/exchange.git@6cc6a9dc257276009f376c6b708ecfe6850a269e#egg=geonode-exchange

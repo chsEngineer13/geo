@@ -63,7 +63,8 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
 
 # Add Exchange requirements list to pip install during container build.
 # All work done AFTER this line will be re-done when requirements.txt changes.
-ADD requirements.txt /mnt/exchange/
+COPY requirements/dev.txt /mnt/exchange/requirements.txt
+COPY requirements/common.txt /mnt/exchange
 
 # Pre-install dependencies
 # Get preinstalled GeoNode out of the way so the mount can be used

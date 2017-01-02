@@ -88,7 +88,7 @@ exchange_setup()
 
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
-    pip install -r /vagrant/requirements.txt
+    pip install -r /vagrant/requirements/dev.txt
     python /vagrant/manage.py makemigrations
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
