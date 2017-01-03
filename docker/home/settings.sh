@@ -23,12 +23,8 @@ export GEOGIG_DATASTORE_DIR='/scratch/geogig/data'
 # debug for local dev
 export DJANGO_LOG_LEVEL=DEBUG
 export REGISTRYURL='http://registry.boundlessgeo.io'
-export STATIC_ROOT='/scratch/static_root'
 export STATIC_URL='/static/'
-export MEDIA_ROOT='/scratch/media_root'
 export MEDIA_URL='/media/'
-export DEBUG_STATIC='False'
-export ALLOWED_HOSTS='["172.16.238.3", "exchange"]'
 export LANGUAGE_CODE='en-us'
 export SOCIAL_BUTTONS='False'
 export SECRET_KEY='exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
