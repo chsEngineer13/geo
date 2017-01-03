@@ -3,7 +3,7 @@
 # it isn't meant to be; it's for the benefit of people hacking on Exchange.
 
 # The django app is tested on CentOS 6.7 to match client production environment
-FROM centos:6.8
+FROM centos:6.7
 
 # Set up to use the internal yum repo.
 # It's normally better practice to use e.g. curl or wget instead of ADD
