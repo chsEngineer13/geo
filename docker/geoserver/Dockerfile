@@ -10,6 +10,8 @@ RUN wget --directory-prefix /tmp --progress=dot:giga https://yum-geonode.boundle
 RUN unzip -o /tmp/geoserver.war -d /tmp/geoserver && \
     sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://172.16.238.2/</baseUrl>@' \
                /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml && \
+    sed -i.bak 's@<onlineResource>http://geoserver.org</onlineResource>@<onlineResource>http://geoserver.org</onlineResource><proxyBaseUrl>http://172.16.238.2/geoserver/</proxyBaseUrl>@' \
+               /tmp/geoserver/data/global.xml && \
     rm -rf /usr/local/tomcat/webapps/geoserver && \
     mv /tmp/geoserver $CATALINA_HOME/webapps/geoserver && \
     chmod -R 755 $CATALINA_HOME/webapps/geoserver && \
