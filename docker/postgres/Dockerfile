@@ -3,7 +3,7 @@
 # https://github.com/appropriate/docker-postgis/blob/master/initdb-postgis.sh
 # https://github.com/docker-library/postgres/blob/fc36c25f8ac352f1fea6d0e7cf8d9bd92a4e720f/9.5/Dockerfile
 # https://github.com/docker-library/postgres/blob/fc36c25f8ac352f1fea6d0e7cf8d9bd92a4e720f/9.5/docker-entrypoint.sh
-FROM mdillon/postgis:9.5
+FROM mdillon/postgis:9.6
 ADD zz-init-exchange.sh /docker-entrypoint-initdb.d/
 
 # Here we try to bake in the initial data setup, to make boot much faster and

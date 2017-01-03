@@ -36,25 +36,13 @@ from geonode.settings import (
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
-DEBUG = TEMPLATE_DEBUG = str2bool(os.getenv('DEBUG', 'True'))
-DEBUG_STATIC = str2bool(os.getenv('DEBUG_STATIC', 'False'))
-SITEURL = SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
+TEMPLATE_DEBUG = str2bool(os.getenv('TEMPLATE_DEBUG', 'True'))
 SITENAME = os.getenv('SITENAME', 'exchange')
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*')]
-LANGUAGE_CODE = 'en-us'
 WSGI_APPLICATION = "exchange.wsgi.application"
 ROOT_URLCONF = 'exchange.urls'
 SOCIAL_BUTTONS = str2bool(os.getenv('SOCIAL_BUTTONS', 'False'))
-SECRET_KEY = os.getenv(
-    'SECRET_KEY',
-    'exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
-)
 
-# Time Zone
-TIME_ZONE = os.getenv('TIME_ZONE', 'America/Chicago')
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
+USE_TZ = str2bool(os.getenv('USE_TZ', 'True'))
 
 # classification banner
 CLASSIFICATION_BANNER_ENABLED = str2bool(os.getenv(
@@ -69,49 +57,20 @@ CLASSIFICATION_BACKGROUND_COLOR = os.getenv(
 )
 CLASSIFICATION_LINK = os.getenv('CLASSIFICATION_LINK', None)
 
-LOCKDOWN_GEONODE = str2bool(os.getenv('LOCKDOWN_GEONODE', 'True'))
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-        'geonode.security.middleware.LoginRequiredMiddleware',
-    )
-
 # registration
-REGISTRATION_OPEN = str2bool(os.getenv('REGISTRATION_OPEN', 'False'))
 EMAIL_HOST = os.getenv('EMAIL_HOST', None)
 EMAIL_PORT = os.getenv('EMAIL_PORT', None)
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', None)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', None)
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv('THEME_ACCOUNT_CONTACT_EMAIL', None)
-if all([REGISTRATION_OPEN,
-        EMAIL_HOST,
-        EMAIL_PORT,
-        EMAIL_BACKEND,
-        DEFAULT_FROM_EMAIL,
-        THEME_ACCOUNT_CONTACT_EMAIL]):
-    ACCOUNT_ACTIVATION_DAYS = ''
-    ACCOUNT_APPROVAL_REQUIRED = str2bool(os.getenv(
-        'ACCOUNT_APPROVAL_REQUIRED',
-        'False')
-    )
-    ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = str2bool(os.getenv(
-        'ACCOUNT_EMAIL_CONFIRMATION_REQUIRED',
-        'False')
-    )
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+ACCOUNT_ACTIVATION_DAYS = os.getenv('ACCOUNT_ACTIVATION_DAYS', 7)
 
 # path setup
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
-PROJECT_ROOT = os.path.join(APP_ROOT, os.pardir)
 
 # static files storage
 STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
-STATIC_ROOT = os.path.join(PROJECT_ROOT, '.storage/static_root')
-STATIC_URL = '/static/'
-
-# media file storage
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, '.storage/media')
-MEDIA_URL = '/media/'
 
 # template settings
 TEMPLATES = [
@@ -218,15 +177,6 @@ GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
 MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
 
-# database settings
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'postgres://exchange:boundless@localhost:5432/exchange'
-)
-DATABASES['default'] = dj_database_url.parse(
-    DATABASE_URL,
-    conn_max_age=600
-)
 POSTGIS_URL = os.environ.get(
     'POSTGIS_URL',
     'postgis://exchange:boundless@localhost:5432/exchange_data'
@@ -247,39 +197,12 @@ WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
-DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG',
-    'PDF',
-    'PNG',
-    'Zipped Shapefile',
-    'GML 2.0',
-    'GML 3.1.1',
-    'CSV',
-    'Excel',
-    'GeoJSON',
-    'KML',
-    'View in Google Earth',
-]
-DOWNLOAD_FORMATS_RASTER = [
-    'JPEG',
-    'PDF',
-    'PNG',
-    'ArcGrid',
-    'GeoTIFF',
-    'Gtopo30',
-    'ImageMosaic',
-    'KML',
-    'View in Google Earth',
-    'GML',
-    'GZIP'
-]
-
 # local pycsw
-CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITE_URL.rstrip('/')
+CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
-ES_ENGINE = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
+ES_ENGINE = os.environ.get('ES_ENGINE', 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine')
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': ES_ENGINE,
@@ -301,6 +224,7 @@ CELERYD_PREFETCH_MULTIPLIER = 25
 CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
 CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_IMPORTS += ('exchange.tasks',)
 
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
@@ -410,13 +334,6 @@ try:
     from local_settings import *  # noqa
 except ImportError:
     pass
-
-CELERY_IMPORTS += ('exchange.tasks',)
-
-# Uploaded resources should be private and not downloadable by default
-# Overwrite the default of True found in the base Geonode settings
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = False
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = False
 
 # Use https:// scheme in Gravatar URLs
 AVATAR_GRAVATAR_SSL = True
