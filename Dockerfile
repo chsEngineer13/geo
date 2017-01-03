@@ -77,6 +77,8 @@ RUN PATH=$PATH:/usr/pgsql-9.6/bin && /env/bin/pip install -r /mnt/exchange/requi
 # - worker.sh: commands to run at container boot for Exchange Celery app
 # - settings.sh: environment variables
 ADD docker/home/* /root/
+RUN chmod 755 /root/*.sh /root/*.py
+
 # Relocate files that are expected to be in other places
 RUN mv /root/local_settings.py /env/lib/python2.7/site-packages && \
     mv /root/settings.sh /etc/profile.d/

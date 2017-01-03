@@ -111,7 +111,7 @@ wait_for_pg () {
     for try in $(seq "$tries"); do
         sleep "${interval}"
         # Don't actually need to set username or db, just avoids error messages
-        if pg_isready --timeout="${timeout}" --host="${postgis_host}" --port="${postgis_port}" --dbname="${postgis_db}" --username="${postgis_username}" > /dev/null; then
+        if /usr/pgsql-9.6/bin/pg_isready --timeout="${timeout}" --host="${postgis_host}" --port="${postgis_port}" --dbname="${postgis_db}" --username="${postgis_username}" > /dev/null; then
             started=1
             break
         # Check if host is unreachable
