@@ -208,6 +208,7 @@ CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
 ES_ENGINE = os.environ.get('ES_ENGINE', 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine')
+HAYSTACK_SEARCH = True
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': ES_ENGINE,
@@ -215,6 +216,16 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'exchange',
     },
 }
+
+''' 
+unified search settings
+ES_UNIFIED_SEARCH must be set to True
+Elastic Search for both Registry and GeoNode must running
+on same elasticsearch instance at ES_URL
+REGISTRY_URL must be set in order to provide links to Registry
+'''
+ES_UNIFIED_SEARCH = os.environ.get('ES_UNIFIED_SEARCH', False) 
+REGISTRY_URL = os.environ.get('REGISTRY_URL', 'http://127.0.0.1:8000')
 
 # amqp settings
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672/')
@@ -233,7 +244,7 @@ CELERY_IMPORTS += ('exchange.tasks',)
 
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
-DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'ERROR')
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
 
 installed_apps_conf = {
     'handlers': ['console'],
