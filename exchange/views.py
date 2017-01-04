@@ -127,6 +127,7 @@ def geoserver_reverse_proxy(request):
     return HttpResponse(req.content, content_type='application/xml')
 
 
+<<<<<<< 4d763fbbd0ea00c0dc23c983c1a6a7426eb9a57e
 def insert_csw(request):
     if request.method == 'POST':
         form = CSWRecordForm(request.POST)
@@ -168,6 +169,9 @@ def csw_status_table(request):
 
 
 def combined_elastic_search(request):
+=======
+def unified_elastic_search(request):
+>>>>>>> rename view
     import re
     import requests
     from elasticsearch import Elasticsearch
