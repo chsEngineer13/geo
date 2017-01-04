@@ -63,13 +63,16 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
 
 # Add Exchange requirements list to pip install during container build.
 # All work done AFTER this line will be re-done when requirements.txt changes.
-COPY requirements/dev.txt /mnt/exchange/requirements.txt
-COPY requirements/common.txt /mnt/exchange
+COPY requirements.txt /mnt/exchange/
 
 # Pre-install dependencies
 # Get preinstalled GeoNode out of the way so the mount can be used
 RUN PATH=$PATH:/usr/pgsql-9.6/bin && /env/bin/pip install -r /mnt/exchange/requirements.txt && \
     /env/bin/pip uninstall -y GeoNode
+
+# Moving osgeo-importer to Docker because it's a dev only dependency at the moment
+# Using commit 930c68a to solve https://github.com/boundlessgeo/exchange/issues/127
+RUN /env/bin/pip install git+git://github.com/GeoNode/django-osgeo-importer@930c68abe3bc392282d5fe3f5e3786bb96c8bdd9#egg=django-osgeo-importer
 
 # docker/home contains a number of things that will go in $HOME:
 # - local_settings.py: env-specific monkeypatches for django's settings.py

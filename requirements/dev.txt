@@ -1,7 +1,0 @@
---index-url https://pypi.python.org/simple/
-
--r common.txt
-git+git://github.com/GeoNode/geonode#egg=geonode
-git+git://github.com/boundlessgeo/django-osgeo-importer#egg=django-osgeo-importer
-git+git://github.com/boundlessgeo/exchange.git#egg=geonode-exchange
-
