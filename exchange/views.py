@@ -370,11 +370,12 @@ def unified_elastic_search(request):
                 # Get source link from Registry
                 xml = value['xml']
                 js = '%s/%s' % (settings.REGISTRY_URL,
-                                re.sub(r"xml$","js",xml))
+                                re.sub(r"xml$", "js", xml))
                 try:
                     req = requests.get(js)
                     json = req.json()
-                    result['registry_url'] = json.sources.default_source.req.url
+                    surl = json.sources.default_source.req.url
+                    result['registry_url'] = surl
                 except:
                     result['registry_url'] = js
             else:

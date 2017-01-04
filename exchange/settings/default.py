@@ -217,14 +217,14 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-''' 
+'''
 unified search settings
 ES_UNIFIED_SEARCH must be set to True
 Elastic Search for both Registry and GeoNode must running
 on same elasticsearch instance at ES_URL
 REGISTRY_URL must be set in order to provide links to Registry
 '''
-ES_UNIFIED_SEARCH = os.environ.get('ES_UNIFIED_SEARCH', False) 
+ES_UNIFIED_SEARCH = os.environ.get('ES_UNIFIED_SEARCH', False)
 REGISTRY_URL = os.environ.get('REGISTRY_URL', 'http://127.0.0.1:8000')
 
 # amqp settings
