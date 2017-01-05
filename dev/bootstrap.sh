@@ -99,9 +99,9 @@ exchange_setup()
     python /vagrant/manage.py loaddata base_resources
     # migrate account after loaddata to avoid DoesNotExist profile issue
     python /vagrant/manage.py migrate account --noinput
+    # load default_oauth_apps fixture from geonode
+    python /vagrant/manage.py loaddata default_oauth_apps
 
-    #echo "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@exchange.com', 'exchange', first_name='Administrator', last_name='Exchange')" | python /vagrant/manage.py shell
-    #echo "from geonode.people.models import Profile; Profile.objects.create_user('test', 'test@exchange.com', 'exchange', first_name='Test', last_name='User')" | python /vagrant/manage.py shell
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
     if ! grep -q 'django-runserver' /home/vagrant/.bashrc; then
         printf "\nalias django-runserver='/vagrant/.venv/bin/python /vagrant/manage.py runserver 0.0.0.0:8000'" >> /home/vagrant/.bashrc
