@@ -208,7 +208,7 @@ CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
 ES_ENGINE = os.environ.get('ES_ENGINE', 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine')
-HAYSTACK_SEARCH = True
+HAYSTACK_SEARCH = False
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': ES_ENGINE,
