@@ -244,7 +244,7 @@ CELERY_IMPORTS += ('exchange.tasks',)
 
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
-DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'ERROR')
 
 installed_apps_conf = {
     'handlers': ['console'],
