@@ -12,6 +12,10 @@ RUN unzip -o /tmp/geoserver.war -d /tmp/geoserver && \
                /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml && \
     sed -i.bak 's@<onlineResource>http://geoserver.org</onlineResource>@<onlineResource>http://geoserver.org</onlineResource><proxyBaseUrl>http://172.16.238.2/geoserver/</proxyBaseUrl>@' \
                /tmp/geoserver/data/global.xml && \
+    sed -i.bak 's@localhost:\(8000\|8080\)@172.16.238.2@g' \
+               /tmp/geoserver/data/security/filter/geonode-oauth2/config.xml && \
+    sed -i.bak 's@localhost:8000@172.16.238.2@g' \
+               /tmp/geoserver/data/security/role/geonode\ REST\ role\ service/config.xml && \
     rm -rf /usr/local/tomcat/webapps/geoserver && \
     mv /tmp/geoserver $CATALINA_HOME/webapps/geoserver && \
     chmod -R 755 $CATALINA_HOME/webapps/geoserver && \

@@ -48,26 +48,5 @@ setup(
     url='https://github.com/boundlessgeo/exchange',
     packages=find_packages('.'),
     include_package_data=True,
-    zip_safe=False,
-    install_requires=[
-        "django-exchange-maploom==1.5.11",
-        "geonode==2.5.5",
-        "dj-database-url==0.4.1",
-        "django-storages==1.1.8",
-        "boto==2.38.0",
-        "waitress==0.9.0",
-        "whitenoise==3.2",
-        "django-cors-headers==1.1.0",
-        "django-classification-banner==0.1.5",
-        "django-solo==1.1.2",
-        "django-colorfield==0.1.10",
-        "psycopg2==2.6.1",
-        "python-ldap==2.4.25",
-        "django-auth-ldap==1.2.7",
-        "GDAL==2.1.0",
-        "supervisor==3.2.3",
-        "python-resize-image==1.1.10",
-        "django-flat-theme==1.1.3",
-        "django-exchange-docs==1.1.2"
-    ]
+    zip_safe=False
 )
