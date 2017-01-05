@@ -122,7 +122,9 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</li>
                 <li role="separator" class="divider"></li>
+                {% if not GEOAXIS_ENABLED %}
                 <li><a href="/account/logout/">Logout</a></li>
+                {% endif %}
                 </ul>
               </li>
 		      {% else %}
