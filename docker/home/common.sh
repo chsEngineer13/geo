@@ -189,6 +189,8 @@ run_migrations () {
         $manage loaddata base_resources
         # migrate account after loaddata to avoid DoesNotExist profile issue
         $manage migrate account --noinput
+        # load docker_oauth_apps fixture
+        $manage loaddata /mnt/exchange/docker/home/docker_oauth_apps.json
     else
         log "POSTGIS_URL is not set, so migrations cannot run"
         exit 1

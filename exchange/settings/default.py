@@ -120,6 +120,9 @@ INSTALLED_APPS = (
     'exchange-docs',
 ) + INSTALLED_APPS
 
+# authorized exempt urls
+AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
+
 # geoserver settings
 GEOSERVER_URL = os.environ.get(
     'GEOSERVER_URL',
@@ -152,6 +155,8 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
         'LOCATION': GEOSERVER_URL,
+        'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': GEOSERVER_USER,
         'PASSWORD': GEOSERVER_PASSWORD,
