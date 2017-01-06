@@ -68,6 +68,12 @@ if 'osgeo_importer' in settings.INSTALLED_APPS:
     from osgeo_importer.urls import urlpatterns as osgeo_importer_urls
     urlpatterns += osgeo_importer_urls
 
+# use combined registry/geonode elastic search rather than geonode search
+if settings.ES_UNIFIED_SEARCH:
+    urlpatterns += [url(r'^api/base/search/$',
+                        views.unified_elastic_search,
+                        name='unified_elastic_search')]
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls
