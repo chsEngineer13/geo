@@ -121,7 +121,7 @@ INSTALLED_APPS = (
 ) + INSTALLED_APPS
 
 # authorized exempt urls
-AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
+AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',)
 
 # geoserver settings
 GEOSERVER_URL = os.environ.get(
