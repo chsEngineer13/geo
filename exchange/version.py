@@ -18,21 +18,25 @@
 #
 #########################################################################
 
+import os
+import subprocess
+
 
 def get_version(version=None):
-    "Returns a PEP 386-compliant version number from VERSION."
+    "Returns a version number with commit id if the git repo is present"
     if version is None:
         from exchange import __version__ as version
-    else:
-        assert len(version) == 5
-        assert version[3] in ('alpha', 'beta', 'rc', 'final')
-
-    parts = 2 if version[2] == 0 else 3
-    main = '.'.join(str(x) for x in version[:parts])
-
-    sub = ''
-    if version[3] != 'final':
-        mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}
-        sub = mapping[version[3]] + str(version[4])
-
-    return main + sub
+    commit = None
+    repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    _commit = subprocess.Popen(
+        'git rev-parse --short HEAD',
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+        cwd=repo_dir,
+        universal_newlines=True
+    )
+    commit = _commit.communicate()[0].partition('\n')[0]
+    if commit:
+        version = "%s.%s" % (version, commit)
+    return version
