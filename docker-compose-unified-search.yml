@@ -1,0 +1,33 @@
+version: '2'
+
+# Call this dockerfile with 
+# docker-compose up -f docker-compose.yml -f docker-compose-unifiedsearch.yml
+services:
+
+    # Registry, used for unified search set to use same es as geonode
+    registry:
+        container_name: registry
+        image: registry
+        build: ./docker/registry
+        links:
+            - search
+        ports:
+            - "8001"
+        volumes:
+            - scratch:/scratch
+        networks:
+            internal:
+            # Expose on a fixed host IP for diagnostic purposes.
+            external:
+                ipv4_address: 172.16.238.6
+        environment:
+            # Setup registry to use included search
+            REGISTRY_SEARCH_URL: http://search:9200
+  
+    # Django app which presents an interface and ties everything else together
+    exchange:
+        environment:
+            - ES_URL = 'http://172.16.238.5:9200'
+            - HAYSTACK_SEARCH = 'True'
+            - ES_UNIFIED_SEARCH = 'True'
+            - REGISTRY_URL = 'http://172.16.238.6:8001

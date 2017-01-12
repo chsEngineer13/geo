@@ -67,7 +67,9 @@ services:
         # Not customized
         image: elasticsearch:1.7
         networks:
-            - internal
+            internal:
+            external:
+                ipv4_address: 172.16.238.5
 
     # Useful thing
     geoserver:
