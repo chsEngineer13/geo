@@ -1,8 +1,8 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.12#django-exchange-maploom
-git+git://github.com/boundlessgeo/dj-database-url@8a24aab17db8ee52400f2fc0fe23c44fef1439e6#egg=dj-database-url
-git+git://github.com/GeoNode/geonode@1898779e8cdf104ac454bc497c6243d19f7caf90#egg=geonode
+git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.14#django-exchange-maploom
+git+git://github.com/GeoNode/geonode@85f7aad07255a03845616bfb6d7696e71edba0d0#egg=geonode
+dj-database-url==0.4.2
 celery==3.1.18
 django-storages==1.1.8
 boto==2.38.0
