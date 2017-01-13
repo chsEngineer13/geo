@@ -66,6 +66,8 @@ services:
         container_name: search
         # Not customized
         image: elasticsearch:1.7
+        ports:
+            - "9200"
         networks:
             internal:
             external:

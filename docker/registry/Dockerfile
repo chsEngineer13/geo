@@ -7,5 +7,9 @@ RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
 
 EXPOSE 8001
 
+COPY registry-settings.sh /etc/profile.d/registry-settings.sh
+
+RUN /usr/bin/registry-createdb
+
 WORKDIR /scratch
 CMD  /opt/registry/registry.sh
