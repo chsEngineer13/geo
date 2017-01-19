@@ -105,6 +105,14 @@ MIDDLEWARE_CLASSES = (
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ) + MIDDLEWARE_CLASSES
 
+ADDITIONAL_APPS = os.environ.get(
+    'ADDITIONAL_APPS',
+    ()
+)
+
+if isinstance(ADDITIONAL_APPS, str):
+    ADDITIONAL_APPS = tuple(map(str.strip, ADDITIONAL_APPS.split(',')))
+
 # installed applications
 INSTALLED_APPS = (
     'flat',
@@ -118,10 +126,18 @@ INSTALLED_APPS = (
     'solo',
     'haystack',
     'exchange-docs',
-) + INSTALLED_APPS
+) + ADDITIONAL_APPS + INSTALLED_APPS
 
 # authorized exempt urls
-AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',)
+ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
+    'ADDITIONAL_AUTH_EXEMPT_URLS',
+    ()
+)
+
+if isinstance(ADDITIONAL_AUTH_EXEMPT_URLS, str):
+    ADDITIONAL_AUTH_EXEMPT_URLS = tuple(map(str.strip, ADDITIONAL_AUTH_EXEMPT_URLS.split(',')))
+
+AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
 
 # geoserver settings
 GEOSERVER_URL = os.environ.get(
