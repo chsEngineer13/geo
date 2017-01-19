@@ -4,7 +4,7 @@ FROM tomcat:9-jre8
 
 # Grab the WAR file containing the version of GeoServer Exchange depends on.
 # Avoid ADD so we can reuse this layer instead of downloading at every build.
-RUN wget --directory-prefix /tmp --progress=dot:giga https://yum-geonode.boundlessps.com/war/latest/geoserver.war
+RUN wget --directory-prefix /tmp --progress=dot:giga https://exchange-development-war.s3.amazonaws.com/war/geoserver.war
 
 # Run config inside container
 RUN unzip -o /tmp/geoserver.war -d /tmp/geoserver && \

@@ -8,8 +8,8 @@ FROM centos:6.7
 
 # Get everything we'll need other than our WAR, Exchange code and Python deps.
 # Most of this is headers needed during pip install of Python packages with C.
-ADD https://yum.boundlessps.com/geoshape.repo /etc/yum.repos.d/
 RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
+    yum -y install https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm && \
     yum -y install https://yum.postgresql.org/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm && \
     yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && \
     yum update -y && \

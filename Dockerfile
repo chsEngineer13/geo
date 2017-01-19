@@ -5,22 +5,13 @@
 # The django app is tested on CentOS 6.7 to match client production environment
 FROM centos:6.7
 
-# Set up to use the internal yum repo.
-# It's normally better practice to use e.g. curl or wget instead of ADD
-# to avoid doing the download at every build.
-# But in this case, we do want every build to check for changes in
-# geoshape.repo, because if it changed then it's possible that the effect of
-# the yum installs will change, so that we can't safely reuse the yum installs.
-# If geoshape.repo didn't change, the yum installs won't be repeated.
-ADD https://yum.boundlessps.com/geoshape.repo /etc/yum.repos.d/
-
 # Prevent yum from invalidating cache every build (default is keepcache=0).
 # Pull in initial updates, e.g. security updates
 # Install the packages we want for the application
 # ... and do one big step to avoid creating extra layers uselessly
 # TODO: audit what is needed here or not
+RUN yum -y install https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm
 RUN sed -i -e 's:keepcache=0:keepcache=1:' /etc/yum.conf && \
-    yum -y install https://yum.postgresql.org/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm && \
     yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && \
     yum update -y && \
     yum -y install \
@@ -88,7 +79,7 @@ RUN mv /root/local_settings.py /env/lib/python2.7/site-packages && \
 
 # this will symlink the maploom files to the MapLoom repository which
 #  exists outside of the container.
-RUN rm -rf /env/lib/python2.7/site-packages/maploom/static/maploom && \ 
+RUN rm -rf /env/lib/python2.7/site-packages/maploom/static/maploom && \
     ln -s /mnt/maploom/build /env/lib/python2.7/site-packages/maploom/static/maploom && \
     rm /env/lib/python2.7/site-packages/maploom/templates/maps/maploom.html && \
     ln -s /mnt/maploom/build/maploom.html /env/lib/python2.7/site-packages/maploom/templates/maps/maploom.html
