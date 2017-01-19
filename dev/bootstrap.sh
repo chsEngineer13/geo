@@ -4,14 +4,6 @@ set -e
 
 yum_setup()
 {
-echo "[boundlessps]
-name=boundlessps
-baseurl=https://yum.boundlessps.com/el6/x86_64
-enabled=1
-gpgcheck=1
-gpgkey=https://yum.boundlessps.com/RPM-GPG-KEY-yum.boundlessps.com
-" > /etc/yum.repos.d/boundlessps.repo
-
 echo "[rabbitmq-server]
 name=RabbitMQ Server
 baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/6/x86_64
@@ -26,8 +18,8 @@ gpgcheck=1
 gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
 " > /etc/yum.repos.d/elasticsearch.repo
 
-    rpm -ivh https://yum.postgresql.org/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm
-    rpm -ivh https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+    yum -y install https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm
+    yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
     yum -y install python27-devel \
         python27-virtualenv \
@@ -129,7 +121,7 @@ geoserver_setup()
     if [ ! -f /vagrant/dev/.geoserver/geoserver.war ]; then
 	    echo "=> Downloading GeoServer web archive"
 	    pushd /vagrant/dev/.geoserver
-	    wget https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war > /dev/null 2>&1
+	    wget https://exchange-development-war.s3.amazonaws.com/war/geoserver.war > /dev/null 2>&1
 	    unzip geoserver.war -d geoserver
 	    popd
     fi
