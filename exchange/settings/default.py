@@ -327,8 +327,13 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
 GEOAXIS_ENABLED = str2bool(os.getenv('GEOAXIS_ENABLED', 'False'))
 if GEOAXIS_ENABLED:
     AUTHENTICATION_BACKENDS = (
-        'exchange.auth.middleware.GeoAxisMiddleware',
+        'django.contrib.auth.backends.RemoteUserBackend',
     ) + AUTHENTICATION_BACKENDS
+    for i, middleware in enumerate(MIDDLEWARE_CLASSES):
+        # Put custom middleware class after AuthenticationMiddleware
+        if middleware == 'django.contrib.auth.middleware.AuthenticationMiddleware':
+            MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
+            MIDDLEWARE_CLASSES.insert(i+1, 'exchange.auth.middleware.GeoAxisMiddleware')
 
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
