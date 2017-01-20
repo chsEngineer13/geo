@@ -224,7 +224,7 @@ CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
 ES_ENGINE = os.environ.get('ES_ENGINE', 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine')
-HAYSTACK_SEARCH = False
+HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': ES_ENGINE,
@@ -240,7 +240,7 @@ Elastic Search for both Registry and GeoNode must running
 on same elasticsearch instance at ES_URL
 REGISTRY_URL must be set in order to provide links to Registry
 '''
-ES_UNIFIED_SEARCH = os.environ.get('ES_UNIFIED_SEARCH', False)
+ES_UNIFIED_SEARCH = str2bool(os.environ.get('ES_UNIFIED_SEARCH', 'False'))
 REGISTRY_URL = os.environ.get('REGISTRY_URL', 'http://127.0.0.1:8000')
 
 # amqp settings
