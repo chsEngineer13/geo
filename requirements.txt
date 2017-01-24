@@ -2,6 +2,7 @@
 
 git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.14#django-exchange-maploom
 git+git://github.com/GeoNode/geonode@85f7aad07255a03845616bfb6d7696e71edba0d0#egg=geonode
+django-geonode-client==0.0.11
 dj-database-url==0.4.2
 celery==3.1.18
 django-storages==1.1.8

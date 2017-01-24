@@ -119,6 +119,7 @@ INSTALLED_APPS = (
     'exchange.core',
     'exchange.themes',
     'geonode',
+    'geonode-client',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
