@@ -43,7 +43,7 @@ install:
   # Install Java, Jetty and Geoserver
   - sudo apt-get -qq install openjdk-8-jdk-headless
   - wget --directory-prefix=/tmp -q http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.3.8.v20160314/jetty-runner-9.3.8.v20160314.jar
-  - wget --directory-prefix /tmp -q https://s3.amazonaws.com/boundlessps-public/GVS/geoserver.war
+  - wget --directory-prefix /tmp -q https://exchange-development-war.s3.amazonaws.com/war/geoserver.war
   - unzip -qq -o /tmp/geoserver.war -d /tmp/geoserver
 
   - sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://localhost/</baseUrl>@' /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml
