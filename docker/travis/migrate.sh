@@ -5,6 +5,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 source $DIR/exchange-settings.sh;
 source $DIR/venv.sh
+source /etc/profile.d/vendor-libs.sh
 
 $CMD makemigrations
 $CMD collectstatic --noinput
