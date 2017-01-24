@@ -48,7 +48,7 @@ echo_ip () {
 load_settings () {
     # Load variables into environment for Django app to consume
     source /etc/profile.d/settings.sh
-
+    source /etc/profile.d/vendor-libs.sh
     # Activate the virtualenv
     source /env/bin/activate
 
@@ -93,10 +93,10 @@ check_mounts () {
 }
 
 install_dependencies () {
+    # pin versions in exchange requirements that you will want to override
+    # exchange requirements are installed first with geonode removed. We will
+    # now install Geonode from local mount.
     # Unfortunately, this requires write access to $geonode_dir, because pip
-    # install -e insists on writing $geonode_dir/GeoNode.egg-info.
-    # But we still have to do it in order to ensure dependencies get in.
-    /env/bin/pip install --upgrade -r "${geonode_dir}/requirements.txt"
     /env/bin/pip install -e "${geonode_dir}"
 }
 
@@ -111,7 +111,7 @@ wait_for_pg () {
     for try in $(seq "$tries"); do
         sleep "${interval}"
         # Don't actually need to set username or db, just avoids error messages
-        if /usr/pgsql-9.6/bin/pg_isready --timeout="${timeout}" --host="${postgis_host}" --port="${postgis_port}" --dbname="${postgis_db}" --username="${postgis_username}" > /dev/null; then
+        if /opt/boundless/vendor/bin/pg_isready --timeout="${timeout}" --host="${postgis_host}" --port="${postgis_port}" --dbname="${postgis_db}" --username="${postgis_username}" > /dev/null; then
             started=1
             break
         # Check if host is unreachable
@@ -174,7 +174,6 @@ run_migrations () {
     local POSTGIS_URL="$(echo_postgis_url)"
 
     log "Running migrations against '${POSTGIS_URL}' ..."
-
     local manage='/env/bin/python /mnt/exchange/manage.py'
     if [ ! -z "${POSTGIS_URL}" ]; then
         pushd /mnt/exchange > /dev/null

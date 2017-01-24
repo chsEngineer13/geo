@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Include common variables and routines that are also used in exchange.sh 
+# Include common variables and routines that are also used in exchange.sh
 HERE=$(dirname $(readlink -f $0))
 source "${HERE}/common.sh"
+source /etc/profile.d/vendor-libs.sh
 
 # path to the log for this shell script - used by log() in common.sh
 readonly startup_log="/tmp/worker_startup.log"

@@ -19,9 +19,8 @@ gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
 " > /etc/yum.repos.d/elasticsearch.repo
 
     yum -y install https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm
-    yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-
-    yum -y install python27-devel \
+    yum -y install boundless-vendor-libs \
+        python27-devel \
         python27-virtualenv \
         gcc \
         gcc-c++ \
@@ -35,17 +34,12 @@ gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
         bzip2-devel \
         openssl-devel \
         tk-devel \
-        gdal-devel-2.1.2 \
         libxslt-devel \
         libxml2-devel \
         libjpeg-turbo-devel \
         zlib-devel \
         libtiff-devel \
         freetype-devel \
-        lcms2-devel \
-        proj-devel \
-        geos-devel \
-        postgresql96-devel \
         openldap-devel \
         java-1.8.0-openjdk \
         unzip \
@@ -63,6 +57,7 @@ gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
     fi
     cp /vagrant/dev/settings.sh /etc/profile.d/settings.sh
     source /etc/profile.d/settings.sh
+    source /etc/profile.d/vendor-libs.sh
 }
 
 exchange_setup()
