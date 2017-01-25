@@ -219,6 +219,8 @@ WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
+LAYER_PREVIEW_LIBRARY = 'react'
+
 # local pycsw
 CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 
