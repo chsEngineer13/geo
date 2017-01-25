@@ -1,3 +1,2 @@
 include README.rst
-recursive-exclude cf *
 recursive-include exchange *.js *.css *.png *.eot *.woff *.tff *.svg *.html *.xml *.json
