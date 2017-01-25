@@ -119,6 +119,7 @@ INSTALLED_APPS = (
     'exchange.core',
     'exchange.themes',
     'geonode',
+    'geonode-client',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
@@ -217,6 +218,8 @@ UPLOADER = {
 WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
     DEFAULT_MAP_CRS = "EPSG:4326"
+
+LAYER_PREVIEW_LIBRARY = 'react'
 
 # local pycsw
 CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
