@@ -37,13 +37,14 @@ setup(
     classifiers=[
         'Intended Audience :: System Administrators',
         'Environment :: Web Environment',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU General Public License v3 or later '
+        '(GPLv3+)',
         'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Framework :: Django :: 1.8',
     ],
-    license="BSD",
+    license="GPLv3+",
     keywords="exchange geonode django",
     url='https://github.com/boundlessgeo/exchange',
     packages=find_packages('.'),
