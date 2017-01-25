@@ -223,6 +223,15 @@ LAYER_PREVIEW_LIBRARY = 'react'
 # local pycsw
 CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 
+'''
+unified search settings
+ES_UNIFIED_SEARCH must be set to True
+Elastic Search for both Registry and GeoNode must running
+on same elasticsearch instance at ES_URL
+REGISTRY_URL must be set in order to provide links to Registry
+'''
+ES_UNIFIED_SEARCH = str2bool(os.environ.get('ES_UNIFIED_SEARCH', 'False'))
+
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
 ES_ENGINE = os.environ.get(
@@ -230,6 +239,8 @@ ES_ENGINE = os.environ.get(
     'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
 )
 HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
+if ES_UNIFIED_SEARCH == True:
+    HAYSTACK_SEARCH = True
 if HAYSTACK_SEARCH:
     HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
     HAYSTACK_CONNECTIONS = {
@@ -242,16 +253,6 @@ if HAYSTACK_SEARCH:
     INSTALLED_APPS = (
         'haystack',
     ) + INSTALLED_APPS
-
-'''
-unified search settings
-ES_UNIFIED_SEARCH must be set to True
-Elastic Search for both Registry and GeoNode must running
-on same elasticsearch instance at ES_URL
-REGISTRY_URL must be set in order to provide links to Registry
-'''
-ES_UNIFIED_SEARCH = str2bool(os.environ.get('ES_UNIFIED_SEARCH', 'False'))
-REGISTRY_URL = os.environ.get('REGISTRY_URL', 'http://127.0.0.1:8000')
 
 # amqp settings
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672/')

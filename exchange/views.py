@@ -372,7 +372,8 @@ def unified_elastic_search(request):
                     json = req.json()
                     surl = json.sources.default_source.req.url
                     result['registry_url'] = surl
-                except:
+                except Exception:
+                    logger.exception('Could not parse registry json')
                     result['registry_url'] = js
             else:
                 result[key] = source.get(key, None)

@@ -29,6 +29,5 @@ services:
     exchange:
         environment:
             - ES_URL=http://search:9200
-            - HAYSTACK_SEARCH=True
             - ES_UNIFIED_SEARCH=True
             - REGISTRY_URL=http://172.16.238.6:8001
