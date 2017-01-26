@@ -362,21 +362,29 @@ def unified_elastic_search(request):
                 result['bbox_bottom'] = value[1]
                 result['bbox_right'] = value[2]
                 result['bbox_top'] = value[3]
+                bbox_str = ','.join(map(str,value))
             elif key == 'links':
                 # Get source link from Registry
                 xml = value['xml']
                 js = '%s/%s' % (settings.REGISTRY_URL,
                                 re.sub(r"xml$", "js", xml))
-                try:
-                    req = requests.get(js)
-                    json = req.json()
-                    surl = json.sources.default_source.req.url
-                    result['registry_url'] = surl
-                except Exception:
-                    logger.exception('Could not parse registry json')
-                    result['registry_url'] = js
+                result['registry_url'] = js
+                # try:
+                #    req = requests.get(js)
+                #    json = req.json()
+                #    surl = json['sources']['default_source']['req']['url']
+                #    result['registry_source_url'] = surl
+                # except Exception:
+                #    result['registry_url'] = js
             else:
                 result[key] = source.get(key, None)
+        if result.get('layer_identifier') is not None:
+            result['thumbnail_url'] = ('%s/layer/%s/service?REQUEST=GetMap'
+                                    '&srs=EPSG:4326&bbox=%s&width=200'
+                                    '&height=200&format=image/png'
+                                    '&layers=None&styles=&version=1.1'
+                                    '') % (settings.REGISTRY_URL,result['layer_identifier'],bbox_str)
+            logger.debug('thumbnail: %s',result['thumbnail_url'])
         objects.append(result)
 
     object_list = {
