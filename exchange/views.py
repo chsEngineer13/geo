@@ -369,21 +369,28 @@ def unified_elastic_search(request):
                 js = '%s/%s' % (settings.REGISTRY_URL,
                                 re.sub(r"xml$", "js", xml))
                 result['registry_url'] = js
-                # try:
-                #    req = requests.get(js)
-                #    json = req.json()
-                #    surl = json['sources']['default_source']['req']['url']
-                #    result['registry_source_url'] = surl
-                # except Exception:
-                #    result['registry_url'] = js
+                try:
+                    req = requests.get(js)
+                    json = req.json()
+                    req = json['sources']['default_source']['req']
+                    surl = req['url']
+                    result['registry_source_url'] = surl
+                    result['wmslayer'] = req.get('layers','None')
+                    if result['wmslayer'] == 'None':
+                        result['wmslayer'] = '1'
+                except Exception:
+                    result['registry_url'] = js
             else:
                 result[key] = source.get(key, None)
         if result.get('layer_identifier') is not None:
             result['thumbnail_url'] = ('%s/layer/%s/service?REQUEST=GetMap'
                                     '&srs=EPSG:4326&bbox=%s&width=200'
                                     '&height=200&format=image/png'
-                                    '&layers=None&styles=&version=1.1'
-                                    '') % (settings.REGISTRY_URL,result['layer_identifier'],bbox_str)
+                                    '&layers=%s&styles=&version=1.1'
+                                    '') % (settings.REGISTRY_URL,
+                                           result['layer_identifier'],
+                                           bbox_str,
+                                           result['wmslayer'])
             logger.debug('thumbnail: %s',result['thumbnail_url'])
         objects.append(result)
 
