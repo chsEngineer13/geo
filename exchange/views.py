@@ -366,7 +366,7 @@ def unified_elastic_search(request):
             elif key == 'links':
                 # Get source link from Registry
                 xml = value['xml']
-                js = '%s/%s' % (settings.REGISTRY_URL,
+                js = '%s/%s' % (settings.REGISTRYURL,
                                 re.sub(r"xml$", "js", xml))
                 result['registry_url'] = js
                 try:
@@ -377,20 +377,16 @@ def unified_elastic_search(request):
                     result['registry_source_url'] = surl
                     result['wmslayer'] = req.get('layers','None')
                     if result['wmslayer'] == 'None':
-                        result['wmslayer'] = '1'
+                       result['wmslayer'] = '1'
                 except Exception:
-                    result['registry_url'] = js
+                    logger.exception('Problem fetching registry')
+                    result['registry_source_url'] = js
             else:
                 result[key] = source.get(key, None)
         if result.get('layer_identifier') is not None:
-            result['thumbnail_url'] = ('%s/layer/%s/service?REQUEST=GetMap'
-                                    '&srs=EPSG:4326&bbox=%s&width=200'
-                                    '&height=200&format=image/png'
-                                    '&layers=%s&styles=&version=1.1'
-                                    '') % (settings.REGISTRY_URL,
-                                           result['layer_identifier'],
-                                           bbox_str,
-                                           result['wmslayer'])
+            result['thumbnail_url'] = ('%s/layer/%s.png'
+                                    '') % (settings.REGISTRYURL,
+                                           result['layer_identifier'])
             logger.debug('thumbnail: %s',result['thumbnail_url'])
         objects.append(result)
 

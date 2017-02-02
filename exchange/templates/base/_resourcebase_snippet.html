@@ -1,5 +1,6 @@
 {% load i18n %}
 {% verbatim %}
+<script src="/static/js/clipboard.min.js"></script>
 <div class="row">
   <div class="ng-hide" ng-show="results.length == 0">
     <div><h3>No {{ dataValue || 'content' }} created yet.</h3></div>
@@ -44,12 +45,13 @@
         </div>
         <div class="col-xs-8 item-details">
           <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
-          <h4><a href="{{ item.registry_url }}">{{ item.title }}</a></h4>
+          <h4>{{ item.title }}</h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-xs-12 item-items">
               <ul class="list-inline">
-                <li><a href="{{ item.registry_url }}" target="_registry"><i class="fa fa-globe"></i>Registry Entry</a></li>
+                <li><a href="{{ item.registry_url }}" target="_registry"><i class="fa fa-globe"></i>Registry JSON Information</a></li>
+                <li><i class="btn fa fa-copy" data-clipboard-text="{{ item.registry_source_url }}"></i>Copy Service Endpoint to Clipboard</li>
               </ul>
             </div>
           </div>
