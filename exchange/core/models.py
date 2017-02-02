@@ -75,6 +75,23 @@ class CSWRecord(models.Model):
           null=True,
           related_name="csw_records_created")
 
+    category_choices = (
+        ('Air', 'Air (Aero)'),
+        ('Intelligence', 'Intelligence'),
+        ('Elevation', 'Elevation'),
+        ('HumanGeog', 'Human Geography'),
+        ('Basemaps', 'Basemaps'),
+        ('Space', 'Space'),
+        ('Land', 'Land (Topo)'),
+        ('Targeting', 'Targeting'),
+        ('NamesBoundaries', 'Names & Boundaries'),
+        ('MapsCharts', 'NGA Standard Maps & Charts'),
+        ('Sea', 'Sea (Maritime)'),
+        ('Imagery', 'Imagery/Collections'),
+        ('Geomatics', 'Geodesy/Geodetics Geomatics'),
+        ('Weather', 'Weather')
+    )
+
     classification = models.CharField(max_length=128, blank=True)
     title = models.CharField(max_length=128, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
@@ -94,7 +111,8 @@ class CSWRecord(models.Model):
                                          blank=True)
     contact_information = models.CharField(max_length=128, blank=True)
     gold = models.BooleanField(max_length=128, default=False, blank=True)
-    category = models.CharField(max_length=128, blank=True)
+    category = models.CharField(max_length=128, choices=category_choices,
+                                blank=True)
 
 
 class CSWRecordForm(forms.ModelForm):
