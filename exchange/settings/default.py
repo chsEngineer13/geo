@@ -125,7 +125,6 @@ INSTALLED_APPS = (
     'django_classification_banner',
     'maploom',
     'solo',
-    'haystack',
     'exchange-docs',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
@@ -226,15 +225,23 @@ CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
 
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
-ES_ENGINE = os.environ.get('ES_ENGINE', 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine')
+ES_ENGINE = os.environ.get(
+    'ES_ENGINE',
+    'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
+)
 HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': ES_ENGINE,
-        'URL': ES_URL,
-        'INDEX_NAME': 'exchange',
-    },
-}
+if HAYSTACK_SEARCH:
+    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': ES_ENGINE,
+            'URL': ES_URL,
+            'INDEX_NAME': 'exchange',
+        },
+    }
+    INSTALLED_APPS = (
+        'haystack',
+    ) + INSTALLED_APPS
 
 '''
 unified search settings
