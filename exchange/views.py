@@ -362,18 +362,17 @@ def unified_elastic_search(request):
                 result['bbox_bottom'] = value[1]
                 result['bbox_right'] = value[2]
                 result['bbox_top'] = value[3]
+                bbox_str = ','.join(map(str,value))
             elif key == 'links':
                 # Get source link from Registry
                 xml = value['xml']
-                js = '%s/%s' % (settings.REGISTRY_URL,
+                js = '%s/%s' % (settings.REGISTRYURL,
                                 re.sub(r"xml$", "js", xml))
-                try:
-                    req = requests.get(js)
-                    json = req.json()
-                    surl = json.sources.default_source.req.url
-                    result['registry_url'] = surl
-                except:
-                    result['registry_url'] = js
+                png = '%s/%s' % (settings.REGISTRYURL,
+                                value['png'])
+                result['registry_url'] = js
+                result['thumbnail_url'] = png
+
             else:
                 result[key] = source.get(key, None)
         objects.append(result)
