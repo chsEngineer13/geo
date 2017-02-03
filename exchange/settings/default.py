@@ -231,7 +231,6 @@ on same elasticsearch instance at ES_URL
 REGISTRY_URL must be set in order to provide links to Registry
 '''
 ES_UNIFIED_SEARCH = str2bool(os.environ.get('ES_UNIFIED_SEARCH', 'False'))
-<<<<<<< 87ab3de5ff9d52117eebb778d7dba912ac0455d0
 
 # haystack settings
 ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
@@ -254,20 +253,7 @@ if HAYSTACK_SEARCH:
     INSTALLED_APPS = (
         'haystack',
     ) + INSTALLED_APPS
-=======
-ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200')
-if ES_UNIFIED_SEARCH:
-    HAYSTACK_SEARCH = True
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.'
-            'ElasticsearchSearchEngine',
-            'URL': ES_URL,
-            'INDEX_NAME': 'geonode',
-            },
-        }
-    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
->>>>>>> tweak display, make settings easier to configure
+
 
 # amqp settings
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672/')

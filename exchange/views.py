@@ -368,26 +368,13 @@ def unified_elastic_search(request):
                 xml = value['xml']
                 js = '%s/%s' % (settings.REGISTRYURL,
                                 re.sub(r"xml$", "js", xml))
+                png = '%s/%s' % (settings.REGISTRYURL,
+                                value['png'])
                 result['registry_url'] = js
-                try:
-                    req = requests.get(js)
-                    json = req.json()
-                    req = json['sources']['default_source']['req']
-                    surl = req['url']
-                    result['registry_source_url'] = surl
-                    result['wmslayer'] = req.get('layers','None')
-                    if result['wmslayer'] == 'None':
-                       result['wmslayer'] = '1'
-                except Exception:
-                    logger.exception('Problem fetching registry')
-                    result['registry_source_url'] = js
+                result['thumbnail_url'] = png
+
             else:
                 result[key] = source.get(key, None)
-        if result.get('layer_identifier') is not None:
-            result['thumbnail_url'] = ('%s/layer/%s.png'
-                                    '') % (settings.REGISTRYURL,
-                                           result['layer_identifier'])
-            logger.debug('thumbnail: %s',result['thumbnail_url'])
         objects.append(result)
 
     object_list = {
