@@ -1,8 +1,8 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.14#django-exchange-maploom
+git+git://github.com/boundlessgeo/django-exchange-maploom.git@v1.5.39#django-exchange-maploom
 git+git://github.com/GeoNode/geonode@d7e5f440e7ff34cd5a95acf7a3098704fee527c7#egg=geonode
-django-geonode-client==0.0.19
+django-geonode-client==0.0.22
 dj-database-url==0.4.2
 celery[redis]==3.1.18
 django-storages==1.1.8
@@ -20,6 +20,6 @@ GDAL==2.1.0
 supervisor==3.3.1
 python-resize-image==1.1.10
 django-flat-theme==1.1.3
-django-exchange-docs==1.1.2
+django-exchange-docs==1.1.3
 flake8==3.0.4
 elasticsearch-dsl==5.0.0
