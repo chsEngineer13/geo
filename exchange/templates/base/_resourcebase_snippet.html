@@ -5,7 +5,7 @@
   <div class="ng-hide" ng-show="results.length == 0">
     <div><h3>No {{ dataValue || 'content' }} created yet.</h3></div>
   </div>
-  <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
+  <article ng-repeat="item in results" resource_id="{{ item.id || item.layer_identifier }}" ng-cloak class="ng-cloak">
     <div class="col-xs-12 item-container" ng-if="item.detail_url">
       <div class="col-xs-12 profile-avatar">
         <div class="col-xs-4 item-thumb">
@@ -44,6 +44,9 @@
           <a href="{{ item.thumbnail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
         </div>
         <div class="col-xs-8 item-details">
+          {% endverbatim %}
+          <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.layer_identifier)" class="fa fa-lg"></i></button>
+          {% verbatim %}
           <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
           <h4>{{ item.title }}</h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
