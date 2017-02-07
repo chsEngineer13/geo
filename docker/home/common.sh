@@ -184,7 +184,7 @@ run_migrations () {
         # load fixtures
         $manage loaddata default_users
         $manage loaddata base_resources
-        load docker_oauth_apps fixture
+        # load docker_oauth_apps fixture
         $manage loaddata /mnt/exchange/docker/home/docker_oauth_apps.json
     else
         log "POSTGIS_URL is not set, so migrations cannot run"
