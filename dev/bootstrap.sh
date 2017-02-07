@@ -76,17 +76,12 @@ exchange_setup()
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
     pip install -r /vagrant/requirements.txt
-    python /vagrant/manage.py makemigrations
     python /vagrant/manage.py migrate account --noinput
     python /vagrant/manage.py migrate --noinput
     python /vagrant/manage.py collectstatic --noinput
-    # import default admin and test user
-    python /vagrant/manage.py loaddata initial
-    # "hotfix, need to find out why it is not importing the categories"
+    # load fixtures
+    python /vagrant/manage.py loaddata default_users
     python /vagrant/manage.py loaddata base_resources
-    # migrate account after loaddata to avoid DoesNotExist profile issue
-    python /vagrant/manage.py migrate account --noinput
-    # load default_oauth_apps fixture from geonode
     python /vagrant/manage.py loaddata default_oauth_apps
 
     printf "\nsource /vagrant/dev/activate\n" > /home/vagrant/.bash_profile
