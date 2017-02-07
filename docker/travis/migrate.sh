@@ -7,9 +7,9 @@ source $DIR/exchange-settings.sh;
 source $DIR/venv.sh
 source /etc/profile.d/vendor-libs.sh
 
-$CMD makemigrations
 $CMD collectstatic --noinput
 $CMD migrate account --noinput
 $CMD migrate --noinput
-$CMD loaddata initial
-$CMD migrate account --noinput
+$CMD loaddata default_users
+$CMD loaddata base_resources
+$CMD loaddata default_oauth_apps
