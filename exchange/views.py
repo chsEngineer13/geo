@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.core.serializers import serialize
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecordForm, CSWRecord
+from geonode.base.models import TopicCategory
 from exchange.tasks import create_new_csw
 from geonode.maps.views import _resolve_map
 import requests
@@ -17,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 def home_screen(request):
-    return render(request, 'index.html')
+    categories = TopicCategory.objects.filter(is_choice=True).order_by('pk')
+    return render(request, 'index.html', {'categories': categories})
 
 
 def documentation_page(request):
