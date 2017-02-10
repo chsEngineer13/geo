@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
+    'osgeo_importer',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
 # authorized exempt urls
@@ -206,13 +207,6 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
     POSTGIS_URL,
     conn_max_age=600
 )
-UPLOADER = {
-    'BACKEND': 'geonode.importer',
-    'OPTIONS': {
-        'TIME_ENABLED': True,
-        'GEOGIT_ENABLED': True,
-    }
-}
 
 WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
@@ -355,6 +349,7 @@ REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
+    import pyproj
     # Point django-osgeo-importer, if enabled, to the Exchange database
     OSGEO_DATASTORE = 'exchange_imports'
     # Tell it to use the GeoNode compatible mode
@@ -378,6 +373,11 @@ if 'osgeo_importer' in INSTALLED_APPS:
         'osgeo_importer.handlers.geoserver.GeoServerStyleHandler',
         'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler'
     ]
+    PROJECTION_DIRECTORY = os.path.join(
+        os.path.dirname(pyproj.__file__),
+        'data/'
+    )
+
 
 try:
     from local_settings import *  # noqa

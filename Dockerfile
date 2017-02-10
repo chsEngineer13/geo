@@ -49,9 +49,6 @@ RUN sed -i.bak "/egg=geonode/d" /mnt/exchange/req.txt && \
     PATH="/opt/boundless/vendor/bin":"${PATH}" && \
     /env/bin/pip install -r /mnt/exchange/req.txt
 
-# Moving osgeo-importer to Docker because it's a dev only dependency at the moment
-RUN /env/bin/pip install git+git://github.com/GeoNode/django-osgeo-importer@master#egg=django-osgeo-importer
-
 # docker/home contains a number of things that will go in $HOME:
 # - local_settings.py: env-specific monkeypatches for django's settings.py
 # - .bash_profile: for activating the virtualenv at login
