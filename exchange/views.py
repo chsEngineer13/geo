@@ -205,6 +205,10 @@ def unified_elastic_search(request):
     offset = int(parameters.get('offset', '0'))
     limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
 
+    # Make sure Category search works with either category__in or category__identifier__in
+    categories = parameters.getlist('category__in',
+                                    parameters.getlist('category__identifier__in', None))
+
     # Publication date range (start,end)
     date_end = parameters.get("date__lte", None)
     date_start = parameters.get("date__gte", None)
@@ -284,12 +288,21 @@ def unified_elastic_search(request):
             {'range': {'layer_date': {'lte': date_end}}})
         search = search.query(q)
 
+    if categories:
+        q = Q({'terms': {'category': categories}})
+        #also check for truncated categories
+        trunc_cats = [c[:13] for c in categories]
+        q = q | Q({'terms': {'category': trunc_cats}})
+        search = search.query(q)
+
     def facet_search(search, parameters, paramfield, esfield=None):
         if esfield is None:
             esfield = paramfield.replace('__in', '')
         getparams = parameters.getlist(paramfield)
         if getparams:
             q = Q({'terms': {esfield: getparams}})
+            if esfield == 'type':
+                q = q | Q({'terms': {'subtype': getparams}})
             return search.query(q)
         return search
 
