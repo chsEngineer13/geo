@@ -289,10 +289,7 @@ def unified_elastic_search(request):
         search = search.query(q)
 
     if categories:
-        q = Q({'terms': {'category': categories}})
-        #also check for truncated categories
-        trunc_cats = [c[:13] for c in categories]
-        q = q | Q({'terms': {'category': trunc_cats}})
+        q = Q({'terms': {'category_exact': categories}})
         search = search.query(q)
 
     def facet_search(search, parameters, paramfield, esfield=None):
@@ -310,7 +307,7 @@ def unified_elastic_search(request):
     for f in facets:
         param = '%s__in' % f
         search = facet_search(search, parameters, param)
-        search.aggs.bucket(f, 'terms', field=f)
+        search.aggs.bucket(f, 'terms', field=f + '_exact')
 
     # Apply sort
     if sort.lower() == "-date":
