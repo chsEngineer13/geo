@@ -1,0 +1,3 @@
+[run]
+omit = exchange/settings/default.py,
+       exchange/themes/migrations/*

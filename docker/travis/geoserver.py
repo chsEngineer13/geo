@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #########################################################################
 #
@@ -17,9 +18,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 
-if os.getenv('PYTEST'):
-    from .test_settings import *  # noqa
-else:
-    from .default import *  # noqa
+args = [
+    '-XX:MaxPermSize=1024m',
+    '-Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true',
+    '-DGEOSERVER_DATA_DIR=/tmp/geoserver/data',
+    '-Duser.home=/tmp/geoserver/data/geogig',
+    '-jar',
+    '/tmp/jetty-runner.jar',
+    '--path',
+    '/geoserver',
+    '/tmp/geoserver.war'
+]
+os.execvp('java', args)

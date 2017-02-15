@@ -36,7 +36,6 @@ from geonode.settings import (
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
-TEMPLATE_DEBUG = str2bool(os.getenv('TEMPLATE_DEBUG', 'True'))
 SITENAME = os.getenv('SITENAME', 'exchange')
 WSGI_APPLICATION = "exchange.wsgi.application"
 ROOT_URLCONF = 'exchange.urls'

@@ -1,5 +1,3 @@
-# These first two lines put us in the Trusty beta for Travis
-# and keep us from using the container-based infrastructure.
 sudo: required
 dist: trusty
 
@@ -8,8 +6,8 @@ python:
   - 2.7
 
 services:
+  - docker
   - rabbitmq
-  - elasticsearch # Output - service does not exist
   - postgresql
 
 addons:
@@ -18,97 +16,56 @@ addons:
     packages:
     - postgresql-9.6-postgis-2.3
 
-# branches:
-#   only:
-#   - master
-
 before_install:
-  # Allow connections to PG from our Docker instance
+  # allow connections to postgresql from container
   - echo "host all all 0.0.0.0/0 md5" | sudo tee -a /etc/postgresql/9.6/main/pg_hba.conf
   - echo "listen_addresses = '*'" | sudo tee -a /etc/postgresql/9.6/main/postgresql.conf
   - sudo service postgresql stop
   - sudo service postgresql start 9.6
-
-  - sudo apt-get -qq update
-  # - sudo apt-get upgrade
-install:
-  # Docker version is 1.12.0, Compose is 1.7.0
-  # This upgrades to 1.12.1 and 1.8.0, respectively, as of 2016-09
-  - sudo apt-get install -qq --only-upgrade docker-engine
-
-  # reverse proxy
-  - sudo apt-get -qq install apache2
-  - sudo cp -f docker/travis/exchange.conf /etc/apache2/sites-available/000-default.conf
-
-  # Install Java, Jetty and Geoserver
-  - sudo apt-get -qq install openjdk-8-jdk-headless
-  - wget --directory-prefix=/tmp -q http://central.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.3.8.v20160314/jetty-runner-9.3.8.v20160314.jar
-  - wget --directory-prefix /tmp -q https://exchange-development-war.s3.amazonaws.com/war/geoserver.war
-  - unzip -qq -o /tmp/geoserver.war -d /tmp/geoserver
-
-  - sed -i.bak 's@<baseUrl>\([^<][^<]*\)</baseUrl>@<baseUrl>http://localhost/</baseUrl>@' /tmp/geoserver/data/security/auth/geonodeAuthProvider/config.xml
-  - mkdir -p /tmp/geoserver/data/geogig
-  - printf "[user]\nname = admin\nemail = exchange@boundlessgeo.com\n" > /tmp/geoserver/data/geogig/.geogigconfig
-
-  # Install Selenium for testing, Requests to grab some shapefiles and Flake8 for linting
-  - pip install selenium requests flake8==3.0.4
-
-  # Install Marionette driver for later FF versions
-  - wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
-  - tar zxvf geckodriver-v0.11.1-linux64.tar.gz
-  - sudo mv geckodriver /usr/bin
-
-  # And get the chromedriver
-  - wget http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip
-  - sudo mv chromedriver /usr/bin
-
-before_script:
-  # - sleep 10 # Elasticsearch needs this
-
-  # Run Geoserver
-  - source docker/travis/geoserver-settings.sh
-  - java -XX:MaxPermSize=1024m -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true -DGEOSERVER_DATA_DIR=/tmp/geoserver/data -Duser.home=/tmp/geoserver/data/geogig -jar /tmp/jetty-runner-9.3.8.v20160314.jar --path /geoserver /tmp/geoserver.war &
-
-  # Initialize databases for Exchange and Geonode
+  # create databases
   - psql -U postgres -h 127.0.0.1 -c "CREATE USER exchange WITH SUPERUSER PASSWORD 'boundless'"
   - psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE exchange WITH OWNER exchange"
   - psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE exchange_data WITH OWNER exchange"
   - psql -U postgres -h 127.0.0.1 -d exchange_data -c "CREATE EXTENSION postgis"
 
-  # Build the docker container from the CI Dockerfile
-  - docker build -f Dockerfile.ci .
+install:
+  # setup and start container
+  - docker build -t ci-exchange -f docker/travis/Dockerfile.ci .
+  - docker run -d -p 8000:8000 -p 8080:8080 --name ci-exchange ci-exchange
+  # Install chromedriver
+  - wget http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
+  - sudo mv chromedriver /usr/bin
 
-  # Start the container
-  - export image=$(docker images | head -n 2 | tail -n 1 | awk '{print $3}')
-  - docker run -d -p 8000:8000 $image /opt/boundless/exchange/docker/travis/run-server.sh
-  - export container=$(docker ps | head -n 2 | tail -n 1 | awk '{print $1}')
-
-  # Run migrations
-  - docker exec $container /opt/boundless/exchange/docker/travis/migrate.sh
-
-  # Start XVFB for running tests
+before_script:
+  # setup local pytest env
+  - pip install Pillow python-resize-image Django==1.8.17
+  - pip install selenium flake8 pytest coverage pytest-cov
+  - export DJANGO_SETTINGS_MODULE='exchange.settings'
+  - export PYTEST=1
+  - PYTEST=True bash -c 'python manage.py migrate'
+  - PYTEST=True bash -c 'python manage.py collectstatic --noinput'
+  # start xvfb for running selenium tests
   - "export DISPLAY=:99.0"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
-  - sleep 3 # give xvfb some time to start
-
-  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.shp -O /tmp/rivers.shp
-  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.shx -O /tmp/rivers.shx
-  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.dbf -O /tmp/rivers.dbf
-  - wget https://github.com/GeoNode/geonode/tree/master/docs/tutorials/devel/geonode_apis/geoserver_rest/examples/resources/shapefiles/rivers.prj -O /tmp/rivers.prj
+   # give services some time to start
+  - sleep 60
 
 script:
-  - sudo a2enmod proxy_http
-  - sudo a2enmod headers
-  - sudo service apache2 restart
-  - wget http://localhost/geoserver/index.html
-  # Geonode tests fail
-  # - docker exec $container /opt/boundless/exchange/docker/travis/test-geonode.sh
+  # basic test if django is up
+  - wget http://localhost:8000
+  # basic test if geoserver is up
+  - wget http://localhost:8080/geoserver/index.html
+  # flake8 tests
   - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange/exchange
-  - pytest
+  # run pytests
+  - PYTEST=True bash -c 'py.test --cov exchange exchange/tests/ --cov-report term-missing'
 
-after_script:
-  - docker stop $container
+after_success:
+  - coveralls
+
+after_failure:
+  - docker logs django
 
 notifications:
   slack:
