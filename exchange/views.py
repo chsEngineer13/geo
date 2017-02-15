@@ -205,6 +205,13 @@ def unified_elastic_search(request):
     offset = int(parameters.get('offset', '0'))
     limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
 
+    # Make sure Category search works with either category__in or category__identifier__in
+    categories = parameters.getlist('category__in',
+                                    parameters.getlist('category__identifier__in', None))
+
+    keywords = parameters.getlist('keywords__in',
+                                  parameters.getlist('keywords__slug__in', None))
+
     # Publication date range (start,end)
     date_end = parameters.get("date__lte", None)
     date_start = parameters.get("date__gte", None)
@@ -284,20 +291,33 @@ def unified_elastic_search(request):
             {'range': {'layer_date': {'lte': date_end}}})
         search = search.query(q)
 
+    if categories:
+        q = Q({'terms': {'category_exact': categories}})
+        search = search.query(q)
+
+    if keywords:
+        q = Q({'terms': {'keywords_exact': keywords}})
+        search = search.query(q)
+
     def facet_search(search, parameters, paramfield, esfield=None):
         if esfield is None:
             esfield = paramfield.replace('__in', '')
+        if esfield != '_index':
+            esfield = esfield + '_exact'
         getparams = parameters.getlist(paramfield)
         if getparams:
             q = Q({'terms': {esfield: getparams}})
+            if esfield == 'type_exact':
+                q = q | Q({'terms': {'subtype_exact': getparams}})
             return search.query(q)
         return search
 
     # Setup aggregations and filters for faceting
     for f in facets:
         param = '%s__in' % f
-        search = facet_search(search, parameters, param)
-        search.aggs.bucket(f, 'terms', field=f)
+        if f not in ['category', 'keywords']:
+            search = facet_search(search, parameters, param)
+        search.aggs.bucket(f, 'terms', field=f + '_exact')
 
     # Apply sort
     if sort.lower() == "-date":
