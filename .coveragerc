@@ -1,3 +1,4 @@
 [run]
-omit = exchange/settings/default.py,
-       exchange/themes/migrations/*
+omit = exchange/settings/*,
+       exchange/wsgi.py,
+       */migrations/*
