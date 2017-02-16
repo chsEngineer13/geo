@@ -77,3 +77,7 @@ exchange/migrations/
 
 #bower
 exchange/static/vendor/
+
+#pytest + coverage
+exchange/db.sqlite3
+cov_html/
