@@ -40,7 +40,7 @@ install:
 before_script:
   # setup local pytest env
   - pip install Pillow python-resize-image Django==1.8.17
-  - pip install selenium flake8 pytest coverage pytest-cov
+  - pip install selenium flake8 pytest coverage pytest-cov coveralls
   - export DJANGO_SETTINGS_MODULE='exchange.settings'
   - export PYTEST=1
   - PYTEST=True bash -c 'python manage.py migrate'
@@ -59,7 +59,7 @@ script:
   # flake8 tests
   - python -m flake8 --ignore=F405,F403 --statistics /opt/boundless/exchange/exchange
   # run pytests
-  - PYTEST=True bash -c 'py.test --cov exchange exchange/tests/ --cov-report term-missing'
+  - PYTEST=True bash -c 'py.test --cov exchange exchange/tests/'
 
 after_success:
   - coveralls
