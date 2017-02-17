@@ -112,21 +112,37 @@ ADDITIONAL_APPS = os.environ.get(
 if isinstance(ADDITIONAL_APPS, str):
     ADDITIONAL_APPS = tuple(map(str.strip, ADDITIONAL_APPS.split(',')))
 
+OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'True'))
+GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
+
 # installed applications
 INSTALLED_APPS = (
     'flat',
     'exchange.core',
     'exchange.themes',
     'geonode',
-    'geonode-client',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
     'maploom',
     'solo',
     'exchange-docs',
-    'osgeo_importer',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
+
+if OSGEO_IMPORTER_ENABLED:
+    INSTALLED_APPS = ('osgeo_importer',) + INSTALLED_APPS
+else:
+    UPLOADER = {
+        'BACKEND': 'geonode.importer',
+        'OPTIONS': {
+            'TIME_ENABLED': True,
+            'GEOGIT_ENABLED': True,
+        }
+    }
+
+if GEONODE_CLIENT_ENABLED:
+    INSTALLED_APPS = ('geonode-client',) + INSTALLED_APPS
+    LAYER_PREVIEW_LIBRARY = 'react'
 
 # authorized exempt urls
 ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
@@ -210,8 +226,6 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
 WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
     DEFAULT_MAP_CRS = "EPSG:4326"
-
-LAYER_PREVIEW_LIBRARY = 'react'
 
 # local pycsw
 CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
