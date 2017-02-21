@@ -411,3 +411,8 @@ AVATAR_GRAVATAR_SSL = True
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
 SESSION_COOKIE_AGE = 60 * 60 * 24
+
+# Set default access to layers to all, user will need to deselect the checkbox
+# manually
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
