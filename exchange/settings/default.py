@@ -112,7 +112,7 @@ ADDITIONAL_APPS = os.environ.get(
 if isinstance(ADDITIONAL_APPS, str):
     ADDITIONAL_APPS = tuple(map(str.strip, ADDITIONAL_APPS.split(',')))
 
-OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'True'))
+OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'False'))
 GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
 
 # installed applications
@@ -133,10 +133,11 @@ if OSGEO_IMPORTER_ENABLED:
     INSTALLED_APPS = ('osgeo_importer',) + INSTALLED_APPS
 else:
     UPLOADER = {
-        'BACKEND': 'geonode.importer',
+        'BACKEND': 'geonode.rest',
         'OPTIONS': {
             'TIME_ENABLED': True,
-            'GEOGIT_ENABLED': True,
+            'MOSAIC_ENABLED': False,
+            'GEOGIG_ENABLED': True,
         }
     }
 
@@ -159,6 +160,10 @@ AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/
 GEOSERVER_URL = os.environ.get(
     'GEOSERVER_URL',
     'http://127.0.0.1:8080/geoserver/'
+)
+GEOSERVER_LOCAL_URL = os.environ.get(
+    'GEOSERVER__LOCAL_URL',
+    GEOSERVER_URL
 )
 GEOSERVER_USER = os.environ.get(
     'GEOSERVER_USER',
@@ -186,7 +191,7 @@ PG_GEOGIG = str2bool(os.getenv('PG_GEOGIG', 'True'))
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-        'LOCATION': GEOSERVER_URL,
+        'LOCATION': GEOSERVER_LOCAL_URL,
         'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
         'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
         'PUBLIC_LOCATION': GEOSERVER_URL,
@@ -209,10 +214,11 @@ OGC_SERVER = {
     }
 }
 
-GEOSERVER_BASE_URL = GEOSERVER_URL
+GEOSERVER_BASE_URL = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'wms'
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
-MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
+MAP_BASELAYERS[0]['source']['url'] = (OGC_SERVER['default']
+                                      ['PUBLIC_LOCATION'] + 'wms')
 
 POSTGIS_URL = os.environ.get(
     'POSTGIS_URL',
