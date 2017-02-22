@@ -1,0 +1,22 @@
+FROM boundlessgeo/ci-exchange-el6:2.1.0b2
+
+# install geoserver
+RUN curl -o /tmp/geoserver.war \
+         https://exchange-development-war.s3.amazonaws.com/war/geoserver.war
+RUN unzip /tmp/geoserver.war -d /tmp/geoserver
+RUN chmod -Rf 755 /tmp/geoserver
+
+# install geonode-exchange and dependencies
+ADD . /opt/boundless/exchange
+RUN echo "GEOS_LIBRARY_PATH = '/opt/boundless/vendor/lib/libgeos_c.so'" >> /opt/boundless/exchange/exchange/settings/default.py
+
+# install python dependencies
+RUN virtualenv /env && chmod -R 755 /env
+RUN PATH=$PATH:/opt/boundless/vendor/bin && /env/bin/pip install -r /opt/boundless/exchange/requirements.txt
+RUN /opt/boundless/exchange/docker/travis/setup.sh
+
+# expose ports for django and geoserver
+EXPOSE 8000 8080
+
+# run supervisord, which runs both django/exchange and jetty/geoserver
+CMD ["/env/bin/supervisord", "-c", "/opt/boundless/exchange/docker/travis/supervisord.conf"]

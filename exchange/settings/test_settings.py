@@ -5,7 +5,7 @@ SECRET_KEY = '6((ie#5#8yu%r4j)s@*qzhp!o2*6lu07s846(xahxi^uoy52h6'
 DEBUG = True
 ALLOWED_HOSTS = []
 INSTALLED_APPS = (
-    'appearance',
+    'exchange.themes',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

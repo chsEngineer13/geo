@@ -36,7 +36,6 @@ from geonode.settings import (
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
-TEMPLATE_DEBUG = str2bool(os.getenv('TEMPLATE_DEBUG', 'True'))
 SITENAME = os.getenv('SITENAME', 'exchange')
 WSGI_APPLICATION = "exchange.wsgi.application"
 ROOT_URLCONF = 'exchange.urls'
@@ -113,13 +112,15 @@ ADDITIONAL_APPS = os.environ.get(
 if isinstance(ADDITIONAL_APPS, str):
     ADDITIONAL_APPS = tuple(map(str.strip, ADDITIONAL_APPS.split(',')))
 
+OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'False'))
+GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
+
 # installed applications
 INSTALLED_APPS = (
     'flat',
     'exchange.core',
     'exchange.themes',
     'geonode',
-    'geonode-client',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
     'django_classification_banner',
@@ -127,6 +128,22 @@ INSTALLED_APPS = (
     'solo',
     'exchange-docs',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
+
+if OSGEO_IMPORTER_ENABLED:
+    INSTALLED_APPS = ('osgeo_importer',) + INSTALLED_APPS
+else:
+    UPLOADER = {
+        'BACKEND': 'geonode.rest',
+        'OPTIONS': {
+            'TIME_ENABLED': True,
+            'MOSAIC_ENABLED': False,
+            'GEOGIG_ENABLED': True,
+        }
+    }
+
+if GEONODE_CLIENT_ENABLED:
+    INSTALLED_APPS = ('geonode-client',) + INSTALLED_APPS
+    LAYER_PREVIEW_LIBRARY = 'react'
 
 # authorized exempt urls
 ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
@@ -143,6 +160,10 @@ AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/
 GEOSERVER_URL = os.environ.get(
     'GEOSERVER_URL',
     'http://127.0.0.1:8080/geoserver/'
+)
+GEOSERVER_LOCAL_URL = os.environ.get(
+    'GEOSERVER__LOCAL_URL',
+    GEOSERVER_URL
 )
 GEOSERVER_USER = os.environ.get(
     'GEOSERVER_USER',
@@ -170,7 +191,7 @@ PG_GEOGIG = str2bool(os.getenv('PG_GEOGIG', 'True'))
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-        'LOCATION': GEOSERVER_URL,
+        'LOCATION': GEOSERVER_LOCAL_URL,
         'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
         'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
         'PUBLIC_LOCATION': GEOSERVER_URL,
@@ -193,10 +214,11 @@ OGC_SERVER = {
     }
 }
 
-GEOSERVER_BASE_URL = GEOSERVER_URL
+GEOSERVER_BASE_URL = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'wms'
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
-MAP_BASELAYERS[0]['source']['url'] = OGC_SERVER['default']['LOCATION'] + 'wms'
+MAP_BASELAYERS[0]['source']['url'] = (OGC_SERVER['default']
+                                      ['PUBLIC_LOCATION'] + 'wms')
 
 POSTGIS_URL = os.environ.get(
     'POSTGIS_URL',
@@ -206,19 +228,10 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
     POSTGIS_URL,
     conn_max_age=600
 )
-UPLOADER = {
-    'BACKEND': 'geonode.importer',
-    'OPTIONS': {
-        'TIME_ENABLED': True,
-        'GEOGIT_ENABLED': True,
-    }
-}
 
 WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
 if WGS84_MAP_CRS is not None:
     DEFAULT_MAP_CRS = "EPSG:4326"
-
-LAYER_PREVIEW_LIBRARY = 'react'
 
 # local pycsw
 CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
@@ -355,6 +368,7 @@ REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
+    import pyproj
     # Point django-osgeo-importer, if enabled, to the Exchange database
     OSGEO_DATASTORE = 'exchange_imports'
     # Tell it to use the GeoNode compatible mode
@@ -378,6 +392,11 @@ if 'osgeo_importer' in INSTALLED_APPS:
         'osgeo_importer.handlers.geoserver.GeoServerStyleHandler',
         'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler'
     ]
+    PROJECTION_DIRECTORY = os.path.join(
+        os.path.dirname(pyproj.__file__),
+        'data/'
+    )
+
 
 try:
     from local_settings import *  # noqa
@@ -392,3 +411,8 @@ AVATAR_GRAVATAR_SSL = True
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_SERIALIZER = 'json'
 SESSION_COOKIE_AGE = 60 * 60 * 24
+
+# Set default access to layers to all, user will need to deselect the checkbox
+# manually
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True

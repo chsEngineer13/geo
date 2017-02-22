@@ -177,17 +177,13 @@ run_migrations () {
     local manage='/env/bin/python /mnt/exchange/manage.py'
     if [ ! -z "${POSTGIS_URL}" ]; then
         pushd /mnt/exchange > /dev/null
-        $manage makemigrations
         $manage migrate account --noinput
         $manage migrate --noinput
         log "Collecting static assets ..."
         $manage collectstatic --noinput
-        # import default admin and test user
-        $manage loaddata initial
-        # "hotfix, need to find out why it is not importing the categories"
+        # load fixtures
+        $manage loaddata default_users
         $manage loaddata base_resources
-        # migrate account after loaddata to avoid DoesNotExist profile issue
-        $manage migrate account --noinput
         # load docker_oauth_apps fixture
         $manage loaddata /mnt/exchange/docker/home/docker_oauth_apps.json
     else

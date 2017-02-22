@@ -1,0 +1,4 @@
+[run]
+omit = exchange/settings/*,
+       exchange/wsgi.py,
+       */migrations/*
