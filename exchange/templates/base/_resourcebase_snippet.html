@@ -47,12 +47,14 @@
           {% endverbatim %}
           <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.layer_identifier)" class="fa fa-lg"></i></button>
           {% verbatim %}
-          <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
+          <p class="item-meta"><span class="item-category">{{ item.registry.category }}</span></p>
           <h4>{{ item.title }}</h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-xs-12 item-items">
               <ul class="list-inline">
+                <li ng-if="item.layer_originator"><a href="#"><i class="fa fa-user"></i>{{ item.layer_originator }}</a></li>
+                <li ng-if="item.layer_date"><a href="#"><i class="fa fa-calendar-o"></i>{{ item.layer_date|date:'d MMM y' }}</a></li>
                 <li><a href="{{ item.registry_url }}" target="_registry"><i class="fa fa-globe"></i>Registry JSON Information</a></li>
                 <li><a href="{{ item.source }}" target="_registry"><i class="fa fa-globe"></i>Source Service Endpoint</a></li>
               </ul>
