@@ -28,7 +28,7 @@ def resource_variables(request):
         VERSION=get_version(),
         REGISTRYURL=getattr(settings, 'REGISTRYURL', None),
         REGISTRY=getattr(settings, 'REGISTRY', False),
-        MAP_CRS=settings.DEFAULT_MAP_CRS,
+        MAP_CRS=getattr(settings, 'DEFAULT_MAP_CRS', None),
         INSTALLED_APPS=set(settings.INSTALLED_APPS),
         GEOAXIS_ENABLED=getattr(settings, 'GEOAXIS_ENABLED', False),
     )
