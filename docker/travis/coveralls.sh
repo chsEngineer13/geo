@@ -5,4 +5,4 @@ source $DIR/common.sh
 cd /opt/boundless/exchange
 
 # run coverage
-/env/bin/coveralls
+/env/bin/coveralls debug
