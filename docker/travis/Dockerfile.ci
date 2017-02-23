@@ -13,6 +13,9 @@ RUN echo "GEOS_LIBRARY_PATH = '/opt/boundless/vendor/lib/libgeos_c.so'" >> /opt/
 # install python dependencies
 RUN virtualenv /env && chmod -R 755 /env
 RUN PATH=$PATH:/opt/boundless/vendor/bin && /env/bin/pip install -r /opt/boundless/exchange/requirements.txt
+RUN /env/bin/pip install pytest coverage pytest-cov coveralls
+
+# setup django
 RUN /opt/boundless/exchange/docker/travis/setup.sh
 
 # expose ports for django and geoserver
