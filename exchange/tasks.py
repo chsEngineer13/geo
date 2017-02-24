@@ -27,7 +27,7 @@ def create_new_csw(record_id):
         xmlns:registry="http://gis.harvard.edu/HHypermap/registry/0.1" >
         <csw:Insert>
 
-            <csw:Record>
+            <csw:Record xmlns:registry="http://gis.harvard.edu/HHypermap/registry/0.1">
             <dc:identifier>{uuid}</dc:identifier>
             <dc:title>{title}</dc:title>
             <dc:creator>{creator}</dc:creator>
@@ -39,7 +39,7 @@ def create_new_csw(record_id):
             <dc:source>{source}</dc:source>
             <dc:relation>{relation}</dc:relation>
             <dc:gold>{gold}</dc:gold>
-            <dc:category>{category}</dc:category>
+            <registry:property name="category" value="{category}"/>
             <registry:property
             name="ContactInformation/Primary/organization"
             value="{contact}" />
