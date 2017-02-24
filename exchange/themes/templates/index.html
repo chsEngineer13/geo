@@ -56,7 +56,6 @@
   				{% endif %}
   			</form>
   		</div>
-  		<p><a class="btn btn-default btn-lg" href="/search/">Advanced Search</a></p>
   	</div>
   </div>
 
@@ -90,7 +89,7 @@
           <div ng-repeat="item in featured | limitTo:4">
             <div class="col-md-3">
               <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
-              <h5>{{ item.title|limitTo:24 }}</h4>
+              <h4>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h4>
             </div>
           </div>
         </div>
