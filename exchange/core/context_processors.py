@@ -31,6 +31,7 @@ def resource_variables(request):
         MAP_CRS=getattr(settings, 'DEFAULT_MAP_CRS', None),
         INSTALLED_APPS=set(settings.INSTALLED_APPS),
         GEOAXIS_ENABLED=getattr(settings, 'GEOAXIS_ENABLED', False),
+        MAP_PREVIEW_LAYER=getattr(settings, 'MAP_PREVIEW_LAYER', "''"),
     )
 
     return defaults
