@@ -25,7 +25,8 @@
   {% elif preview == 'OL3' %}
     {% include "layers/layer_ol3_map.html" %}
   {% elif preview == 'react' %}
-		{% include 'geonode-client/layer_map.html' %}
+    <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+    {% include 'geonode-client/layer_map.html' %}
   {% else %}
     {% include "layers/layer_leaflet_map.html" %}
   {% endif %}

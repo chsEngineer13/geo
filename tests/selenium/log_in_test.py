@@ -11,7 +11,7 @@ class LogIn(unittest.TestCase):
 
     def test_log_in(self):
         sel = self.browser
-        sel.get("http://localhost/account/login/?next=/")
+        sel.get("http://localhost:8000/account/login/?next=/")
         self.assertIn("example.com", sel.title)
         user = sel.find_element_by_id("id_username")
         user.send_keys("admin")
