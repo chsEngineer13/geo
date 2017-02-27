@@ -21,6 +21,7 @@
 import os
 import dj_database_url
 import copy
+import django
 from geonode.settings import *  # noqa
 from geonode.settings import (
     MIDDLEWARE_CLASSES,
@@ -237,6 +238,7 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
     POSTGIS_URL,
     conn_max_age=600
 )
+DATABASES['exchange_imports']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 WGS84_MAP_CRS = str2bool(os.environ.get('WGS84_MAP_CRS', False))
 if WGS84_MAP_CRS:

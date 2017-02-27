@@ -52,7 +52,8 @@ def layer_metadata_detail(request, layername,
             )
 
             # only create backup for original thumbnail
-            if os.path.isfile(default_thumbnail + '.bak') is False:
+            if os.path.isfile(default_thumbnail + '.bak') is False and \
+               os.path.isfile(default_thumbnail):
                 os.rename(default_thumbnail, default_thumbnail + '.bak')
 
             os.rename(user_upload_thumbnail_filepath, default_thumbnail)
@@ -97,7 +98,8 @@ def map_metadata_detail(request, mapid,
             )
 
             # only create backup for original thumbnail
-            if os.path.isfile(default_thumbnail + '.bak') is False:
+            if os.path.isfile(default_thumbnail + '.bak') and \
+               os.path.isfile(default_thumbnail):
                 os.rename(default_thumbnail, default_thumbnail + '.bak')
 
             os.rename(user_upload_thumbnail_filepath, default_thumbnail)
@@ -150,6 +152,8 @@ def insert_csw(request):
 def csw_status(request):
     format = request.GET.get('format', "")
     records = CSWRecord.objects.filter(user=request.user)
+    if records.count() == 0:
+        records=[]
 
     if format.lower() == 'json':
         return HttpResponse(serialize('json', records),
