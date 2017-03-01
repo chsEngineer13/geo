@@ -34,7 +34,10 @@ from geonode.settings import (
 
 
 def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
+    if v and len(v) > 0:
+        return v.lower() in ("yes", "true", "t", "1")
+    else:
+        return False
 
 SITENAME = os.getenv('SITENAME', 'exchange')
 WSGI_APPLICATION = "exchange.wsgi.application"
@@ -330,23 +333,7 @@ LOGGING['loggers']['django.db.backends'] = {
 AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
 LDAP_SEARCH_DN = os.environ.get('LDAP_SEARCH_DN', None)
 if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
-
-    import ldap
-    from django_auth_ldap.config import LDAPSearch
-
-    AUTHENTICATION_BACKENDS = (
-        'django_auth_ldap.backend.LDAPBackend',
-        'django.contrib.auth.backends.ModelBackend',
-        'guardian.backends.ObjectPermissionBackend',
-    )
-    AUTH_LDAP_USER = '(uid=%(user)s)'
-    AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN', '')
-    AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD', '')
-    AUTH_LDAP_USER_ATTR_MAP = {
-        'first_name': 'givenName', 'last_name': 'sn', 'email': 'mail',
-    }
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(LDAP_SEARCH_DN,
-                                       ldap.SCOPE_SUBTREE, AUTH_LDAP_USER)
+    from ._ldap import *   # noqa
 
 # geoaxis
 GEOAXIS_ENABLED = str2bool(os.getenv('GEOAXIS_ENABLED', 'False'))
