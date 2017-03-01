@@ -36,13 +36,12 @@ if str2bool(os.environ.get('AUTH_LDAP_DEBUG')):
 
 AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
 LDAP_SEARCH_DN = os.environ.get('LDAP_SEARCH_DN', None)
+LDAP_EMAIL_MAP = os.environ.get('LDAP_EMAIL_MAP', 'mail')
 if str2bool(os.environ.get('LDAP_IS_AD', 'False')):
     AUTH_LDAP_USER = '(SAMAccountName=%(user)s)'
-    LDAP_EMAIL_MAP = 'userPrincipalName'
     AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType()
 else:
     AUTH_LDAP_USER = '(uid=%(user)s)'
-    LDAP_EMAIL_MAP = 'mail'
     AUTH_LDAP_GROUP_TYPE = MemberDNGroupType()
 
 AUTHENTICATION_BACKENDS = (
