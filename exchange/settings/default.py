@@ -232,8 +232,8 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
     conn_max_age=600
 )
 
-WGS84_MAP_CRS = os.environ.get('WGS84_MAP_CRS', None)
-if WGS84_MAP_CRS is not None:
+WGS84_MAP_CRS = str2bool(os.environ.get('WGS84_MAP_CRS', False))
+if WGS84_MAP_CRS:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
 # local pycsw
