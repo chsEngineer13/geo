@@ -39,11 +39,12 @@ def str2bool(v):
     else:
         return False
 
+
 def isValid(v):
-	if v and len(v) > 0:
-		return True
-	else:
-		return False
+    if v and len(v) > 0:
+        return True
+    else:
+        return False
 
 SITENAME = os.getenv('SITENAME', 'exchange')
 WSGI_APPLICATION = "exchange.wsgi.application"
@@ -164,7 +165,7 @@ ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
 if isinstance(ADDITIONAL_AUTH_EXEMPT_URLS, str):
     ADDITIONAL_AUTH_EXEMPT_URLS = tuple(map(str.strip, ADDITIONAL_AUTH_EXEMPT_URLS.split(',')))
 
-AUTH_EXEMPT_URLS = ('/complete/*', '/login/*','/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
+AUTH_EXEMPT_URLS = ('/complete/*', '/login/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
 
 # geoserver settings
 GEOSERVER_URL = os.environ.get(
