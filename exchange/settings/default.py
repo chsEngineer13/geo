@@ -144,11 +144,10 @@ if OSGEO_IMPORTER_ENABLED:
     INSTALLED_APPS = ('osgeo_importer',) + INSTALLED_APPS
 else:
     UPLOADER = {
-        'BACKEND': 'geonode.rest',
+        'BACKEND': 'geonode.importer',
         'OPTIONS': {
             'TIME_ENABLED': True,
             'MOSAIC_ENABLED': False,
-            'GEOGIG_ENABLED': True,
         }
     }
 
