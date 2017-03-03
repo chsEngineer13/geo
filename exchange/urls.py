@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -51,6 +51,11 @@ urlpatterns = patterns(
 if settings.REGISTRY is False:
     urlpatterns += [
         url(r'^services(.*)$', page_not_found)
+    ]
+
+if settings.ENABLE_SOCIAL_LOGIN is True:
+    urlpatterns += [
+        url('', include('social.apps.django_app.urls', namespace='social'))
     ]
 
 # If django-osgeo-importer is enabled...

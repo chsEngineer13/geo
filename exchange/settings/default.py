@@ -39,6 +39,12 @@ def str2bool(v):
     else:
         return False
 
+def isValid(v):
+	if v and len(v) > 0:
+		return True
+	else:
+		return False
+
 SITENAME = os.getenv('SITENAME', 'exchange')
 WSGI_APPLICATION = "exchange.wsgi.application"
 ROOT_URLCONF = 'exchange.urls'
@@ -130,6 +136,7 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
+    'social.apps.django_app.default',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
 if OSGEO_IMPORTER_ENABLED:
@@ -157,7 +164,7 @@ ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
 if isinstance(ADDITIONAL_AUTH_EXEMPT_URLS, str):
     ADDITIONAL_AUTH_EXEMPT_URLS = tuple(map(str.strip, ADDITIONAL_AUTH_EXEMPT_URLS.split(',')))
 
-AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
+AUTH_EXEMPT_URLS = ('/complete/*', '/login/*','/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
 
 # geoserver settings
 GEOSERVER_URL = os.environ.get(
@@ -403,3 +410,45 @@ SESSION_COOKIE_AGE = 60 * 60 * 24
 # manually
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
+
+ENABLE_SOCIAL_LOGIN = str2bool(os.getenv('ENABLE_SOCIAL_LOGIN', 'False'))
+
+if ENABLE_SOCIAL_LOGIN:
+    SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
+
+    AUTHENTICATION_BACKENDS += (
+        'social.backends.google.GoogleOAuth2',
+        'social.backends.facebook.FacebookOAuth2',
+        'exchange.auth.backends.geoaxis.GeoAxisOAuth2',
+    )
+
+    DEFAULT_AUTH_PIPELINE = (
+        'social.pipeline.social_auth.social_details',
+        'social.pipeline.social_auth.social_uid',
+        'social.pipeline.social_auth.auth_allowed',
+        'social.pipeline.social_auth.social_user',
+        'social.pipeline.user.get_username',
+        'social.pipeline.mail.mail_validation',
+        'social.pipeline.social_auth.associate_by_email',
+        'social.pipeline.user.create_user',
+        'social.pipeline.social_auth.associate_user',
+        'social.pipeline.social_auth.load_extra_data',
+        'social.pipeline.user.user_details'
+    )
+
+    SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('OAUTH_FACEBOOK_KEY', None)
+    SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('OAUTH_FACEBOOK_SECRET', None)
+    SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+    SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+        'fields': 'id,name,email',
+    }
+    ENABLE_FACEBOOK_LOGIN = isValid(SOCIAL_AUTH_FACEBOOK_KEY)
+
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('OAUTH_GOOGLE_KEY', None)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('OAUTH_GOOGLE_SECRET', None)
+    ENABLE_GOOGLE_LOGIN = isValid(SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
+
+    SOCIAL_AUTH_GEOAXIS_KEY = os.environ.get('OAUTH_GEOAXIS_KEY', None)
+    SOCIAL_AUTH_GEOAXIS_SECRET = os.environ.get('OAUTH_GEOAXIS_SECRET', None)
+    SOCIAL_AUTH_GEOAXIS_HOST = os.environ.get('OAUTH_GEOAXIS_HOST', None)
+    ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
