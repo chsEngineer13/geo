@@ -439,9 +439,11 @@ if ENABLE_SOCIAL_LOGIN:
 
     SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('OAUTH_FACEBOOK_KEY', None)
     SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('OAUTH_FACEBOOK_SECRET', None)
-    SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+    OAUTH_FACEBOOK_SCOPES = os.environ.get('OAUTH_FACEBOOK_SCOPES', 'email')
+    SOCIAL_AUTH_FACEBOOK_SCOPE = map(str.strip, OAUTH_FACEBOOK_SCOPES.split(','))
     SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-        'fields': 'id,name,email',
+        'fields': os.environ.get('OAUTH_FACEBOOK_PROFILE_EXTRA_PARAMS', 'id,name,email'),
     }
     ENABLE_FACEBOOK_LOGIN = isValid(SOCIAL_AUTH_FACEBOOK_KEY)
 
