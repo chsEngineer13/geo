@@ -169,7 +169,7 @@ def csw_status_table(request):
                               context_instance=RequestContext(request))
 
 
-def unified_elastic_search(request):
+def unified_elastic_search(request, resourcetype='base'):
     import re
     import requests
     from elasticsearch import Elasticsearch
@@ -221,6 +221,18 @@ def unified_elastic_search(request):
 
     # Geospatial Elements
     bbox = parameters.get("extent", None)
+
+    # filter by resource type if included by path
+    logger.debug('-------------------------------------------------------------')
+    logger.debug('>>>>>>>>> Filtering by Resource Type %s <<<<<<<<<<<<<' % resourcetype)
+    logger.debug('-------------------------------------------------------------')
+
+    if resourcetype == 'documents':
+        search = search.query("match", type_exact="document")
+    elif resourcetype == 'layers':
+        search = search.query("match", type_exact="layer")
+    elif resourcetype == 'maps':
+        search = search.query("match", type_exact="map")
 
     # Filter geonode layers by permissions
     if not settings.SKIP_PERMS_FILTER:
