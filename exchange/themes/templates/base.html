@@ -169,7 +169,7 @@
         <div class="container">
           <div class="row">
             <div class="col-md-8 small-text">
-              <b>{% trans "Powered by" %}&nbsp;&nbsp;
+              <span>{% trans "Powered by" %}&nbsp;&nbsp;
                 {% if theme.pb_link %}
                   <a href="{{ theme.pb_link }}" target="_new">
                 {% else %}
@@ -180,7 +180,7 @@
                 {% else %}
                   Boundless Spatial</a>
                 {% endif %}
-                &nbsp;&nbsp;{% trans "version" %} {{ VERSION }}</b>&nbsp;&nbsp;|&nbsp;&nbsp;
+                &nbsp;&nbsp;{% trans "version" %} {{ VERSION }}</span>&nbsp;&nbsp;|&nbsp;&nbsp;
                 {% if theme.docs_link %}
                   <a href="{{ theme.docs_link }}" target="_new">
                 {% else %}
