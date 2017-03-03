@@ -26,9 +26,10 @@ class GeoAxisOAuth2(BaseOAuth2):
 
     def get_user_details(self, response):
         """Return user details from GeoAxis account"""
-        name = response.get('username') or ''
-        fullname, first_name, last_name = self.get_user_names(name)
-        return {'username': name,
+        fullname, first_name, last_name = self.get_user_names('',
+                                                              response.get('firstname'),
+                                                              response.get('lastname'))
+        return {'username': response.get('username'),
                 'email': response.get('email'),
                 'fullname': fullname,
                 'firstname': first_name,
@@ -40,28 +41,22 @@ class GeoAxisOAuth2(BaseOAuth2):
         Response:
 
         {
-            "uid": "testuser02",
-            "mail": "testuser02@gxis.org",
-            "username": "testuser02",
-            "DN": "cn=testuser02, OU=People, OU=NGA, OU=DoD, O=U.S. Government, C=US",
-            "email": "testuser02@gxis.org",
-            "ID": "testuser02",
-            "lastname": "testuser02",
-            "login": "testuser02",
-            "commonname": "testuser02",
-            "firstname": "testuser02",
+            "uid": "testuser",
+            "mail": "testuser@gxis.org",
+            "username": "testuser",
+            "DN": "cn=testuser, OU=People, OU=Unit, OU=DD, O=Example, C=US",
+            "email": "testuser@gxis.org",
+            "ID": "testuser",
+            "lastname": "testuser",
+            "login": "testuser",
+            "commonname": "testuser",
+            "firstname": "testuser",
             "personatypecode": "AAA",
-            "uri": "\/ms_oauth\/resources\/userprofile\/me\/testuser02"
+            "uri": "\/ms_oauth\/resources\/userprofile\/me\/testuser"
         }
         
         
         """
         response = self.get_json('https://' + self.HOST + '/ms_oauth/resources/userprofile/me',
                                  params={'access_token': access_token})
-        if 'Profile' in response:
-            response = {
-                'user_id': response['Profile']['CustomerId'],
-                'name': response['Profile']['Name'],
-                'email': response['Profile']['PrimaryEmail']
-            }
         return response
