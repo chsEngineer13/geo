@@ -55,7 +55,7 @@ if settings.REGISTRY is False:
 
 if settings.ENABLE_SOCIAL_LOGIN is True:
     urlpatterns += [
-        url('', include('social.apps.django_app.urls', namespace='social'))
+        url('', include('social_django.urls', namespace='social'))
     ]
 
 # If django-osgeo-importer is enabled...
