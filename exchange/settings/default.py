@@ -137,7 +137,6 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
-    'social.apps.django_app.default',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
 if OSGEO_IMPORTER_ENABLED:
@@ -414,26 +413,27 @@ DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
 ENABLE_SOCIAL_LOGIN = str2bool(os.getenv('ENABLE_SOCIAL_LOGIN', 'False'))
 
 if ENABLE_SOCIAL_LOGIN:
+    INSTALLED_APPS = ('social_django',) + INSTALLED_APPS
     SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
 
     AUTHENTICATION_BACKENDS += (
-        'social.backends.google.GoogleOAuth2',
-        'social.backends.facebook.FacebookOAuth2',
-        'exchange.auth.backends.geoaxis.GeoAxisOAuth2',
+        'social_core.backends.google.GoogleOpenId',
+        'social_core.backends.google.GoogleOAuth2',
+        'social_core.backends.facebook.FacebookOAuth2',
     )
 
     DEFAULT_AUTH_PIPELINE = (
-        'social.pipeline.social_auth.social_details',
-        'social.pipeline.social_auth.social_uid',
-        'social.pipeline.social_auth.auth_allowed',
-        'social.pipeline.social_auth.social_user',
-        'social.pipeline.user.get_username',
-        'social.pipeline.mail.mail_validation',
-        'social.pipeline.social_auth.associate_by_email',
-        'social.pipeline.user.create_user',
-        'social.pipeline.social_auth.associate_user',
-        'social.pipeline.social_auth.load_extra_data',
-        'social.pipeline.user.user_details'
+        'social_core.pipeline.social_auth.social_details',
+        'social_core.pipeline.social_auth.social_uid',
+        'social_core.pipeline.social_auth.auth_allowed',
+        'social_core.pipeline.social_auth.social_user',
+        'social_core.pipeline.user.get_username',
+        'social_core.pipeline.mail.mail_validation',
+        'social_core.pipeline.social_auth.associate_by_email',
+        'social_core.pipeline.user.create_user',
+        'social_core.pipeline.social_auth.associate_user',
+        'social_core.pipeline.social_auth.load_extra_data',
+        'social_core.pipeline.user.user_details'
     )
 
     SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('OAUTH_FACEBOOK_KEY', None)
@@ -454,3 +454,8 @@ if ENABLE_SOCIAL_LOGIN:
     SOCIAL_AUTH_GEOAXIS_SECRET = os.environ.get('OAUTH_GEOAXIS_SECRET', None)
     SOCIAL_AUTH_GEOAXIS_HOST = os.environ.get('OAUTH_GEOAXIS_HOST', None)
     ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
+    # GeoAxisOAuth2 will cause all login attempt to fail if SOCIAL_AUTH_GEOAXIS_HOST is None
+    if ENABLE_GEOAXIS_LOGIN:
+        AUTHENTICATION_BACKENDS += (
+            'exchange.auth.backends.geoaxis.GeoAxisOAuth2',
+        )
