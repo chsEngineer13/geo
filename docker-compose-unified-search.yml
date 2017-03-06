@@ -15,6 +15,12 @@ services:
             - "8001"
         volumes:
             - scratch:/scratch
+
+            # For local dev'ing, uncomment the below
+            #  If using the line below verbatim, 
+            #  registry must be cloned to ~/boundless/registry
+            # - ~/boundless/registry:/opt/registry:ro
+
         networks:
             internal:
             # Expose on a fixed host IP for diagnostic purposes.
