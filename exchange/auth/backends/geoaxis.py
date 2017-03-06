@@ -3,7 +3,7 @@ GeoAxis OAuth2 backend:
 """
 import ssl
 
-from social.backends.oauth import BaseOAuth2
+from social_core.backends.oauth import BaseOAuth2
 
 from django.conf import settings
 
