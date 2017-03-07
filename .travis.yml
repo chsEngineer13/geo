@@ -58,10 +58,6 @@ script:
   # run exchange tests and coverage
   - docker exec ci-exchange /opt/boundless/exchange/docker/travis/pytests.sh
 
-
-after_success:
-  - docker exec ci-exchange /opt/boundless/exchange/docker/travis/coveralls.sh
-
 after_failure:
   - docker logs ci-exchange
 
