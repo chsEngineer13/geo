@@ -97,6 +97,7 @@ services:
 
     # Django app which presents an interface and ties everything else together
     exchange:
+        env_file: .env
         container_name: exchange
         image: exchange
         # see ./Dockerfile which defines the whole setup
