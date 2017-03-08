@@ -346,6 +346,7 @@ if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
 # geoaxis
 GEOAXIS_ENABLED = str2bool(os.getenv('GEOAXIS_ENABLED', 'False'))
 if GEOAXIS_ENABLED:
+    GEOAXIS_HEADER = os.getenv('GEOAXIS_HEADER', None)
     AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.RemoteUserBackend',
     ) + AUTHENTICATION_BACKENDS
