@@ -3,8 +3,8 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, RequestFactory
-from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecord
+from django.test import TestCase
+from exchange.core.models import ThumbnailImage
 from exchange.core.context_processors import resource_variables
 from shutil import rmtree
 
@@ -13,6 +13,8 @@ thumbs_dir = os.path.join(
     settings.MEDIA_ROOT,
     'thumbs'
 )
+
+
 class MockRequest:
     pass
 
@@ -26,10 +28,10 @@ class ThumbnailImageModelTestCase(TestCase):
         self.site = AdminSite()
         self.ma = admin.ModelAdmin(ThumbnailImage, self.site)
         self.thumb = ThumbnailImage.objects.create(
-            thumbnail_image  = SimpleUploadedFile(
-                name = 'test_thumb_delete_me.png',
-                content = open(test_img, 'rb').read(),
-                content_type = 'image/png',
+            thumbnail_image=SimpleUploadedFile(
+                name='test_thumb_delete_me.png',
+                content=open(test_img, 'rb').read(),
+                content_type='image/png',
             )
         )
         self.thumb.save()
@@ -37,7 +39,7 @@ class ThumbnailImageModelTestCase(TestCase):
     def test(self):
         self.assertEqual(
             self.ma.get_fieldsets(request),
-            [(None, 
+            [(None,
                 {'fields': ['thumbnail_image']})]
         )
         self.assertEqual(
@@ -60,7 +62,9 @@ class ThumbnailImageModelTestCase(TestCase):
     def tearDown(self):
         rmtree(thumbs_dir)
 
+
 class resource_variablesTestCase(TestCase):
+
     def setUp(self):
         self.defaults = resource_variables(request)
 
