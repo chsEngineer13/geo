@@ -3,7 +3,7 @@
 <script src="/static/js/clipboard.min.js"></script>
 <div class="row">
   <div class="ng-hide" ng-show="results.length == 0">
-    <div><h3>No {{ dataValue || 'content' }} created yet.</h3></div>
+    <div><h3>No content created yet.</h3></div>
   </div>
   <article ng-repeat="item in results" resource_id="{{ item.id || item.layer_identifier }}" ng-cloak class="ng-cloak">
     <div class="col-xs-12 item-container" ng-if="item.detail_url">
