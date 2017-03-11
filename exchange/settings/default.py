@@ -415,6 +415,11 @@ DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
 
 ENABLE_SOCIAL_LOGIN = str2bool(os.getenv('ENABLE_SOCIAL_LOGIN', 'False'))
 
+# Should always be set to true if we're behind a proxy
+USE_X_FORWARDED_HOST = True
+if SITEURL.startswith('https'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 if ENABLE_SOCIAL_LOGIN:
     INSTALLED_APPS = ('social_django',) + INSTALLED_APPS
     SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
