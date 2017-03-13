@@ -31,6 +31,7 @@
                   <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
                   {% verbatim %}
                 </li>
+                <li><a ng-if="item.geogig_link" href="{{ item.geogig_link}}" target="_blank" class="fa fa-code-fork">&nbsp;GeoGig</a></li>
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
               </ul>
             </div>
