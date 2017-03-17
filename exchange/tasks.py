@@ -98,7 +98,13 @@ def create_new_csw(record_id):
         )
         return
 
-    parsed = etree.fromstring(response.content)
+    try:
+        parsed = etree.fromstring(response.content)
+    except (ValueError, etree.XMLSyntaxError):
+        record.status = "Error"
+        record.save()
+        logger.exception("error while parsing response from registry")
+        return
 
     exceptiontext = parsed.xpath("//ows:ExceptionText", namespaces=namespaces)
     totalinserted = parsed.xpath("//csw:totalInserted", namespaces=namespaces)
@@ -112,8 +118,19 @@ def create_new_csw(record_id):
             logger.error("Error during record creation: {}".format(x.text))
         return
 
-    if totalinserted > 0:
+    elif not totalinserted or len(totalinserted) != 1:
+        record.status = "Error"
+        record.save()
+        logger.error("response XML did not contain one //csw:totalInserted")
+        return
+
+    elif int(totalinserted[0].text) > 0:
         record.status = "Complete"
         record.save()
         logger.info("Record successfully created: {}".format(response.content))
         return
+
+    # Fell through, no totalinserted or it was 0
+    record.status = "Error"
+    record.save()
+    logger.error("No record created but no error reported")
