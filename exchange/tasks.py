@@ -10,11 +10,19 @@ from exchange.core.models import CSWRecord
 logger = get_task_logger(__name__)
 
 
-@task
-def create_new_csw(record_id):
+class UpstreamServiceImpairment(Exception):
+    pass
+
+
+@task(
+    bind=True,
+    max_retries=1,
+)
+def create_new_csw(self, record_id):
     """
     Attempt to create a new CSW record in Registry
     """
+
     csw_record_template = """
         <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
         xmlns:ows="http://www.opengis.net/ows"
@@ -64,6 +72,13 @@ def create_new_csw(record_id):
     record.status = "Pending"
     record.save()
 
+    def fail(message):
+        record.status = "Error"
+        record.save()
+        logger.error(message)
+        error = UpstreamServiceImpairment(message)
+        raise self.retry(exc=error)
+
     registry_url = settings.REGISTRYURL
     catalog = settings.REGISTRY_CAT
     csw_url = urljoin(registry_url, "catalog/{}/csw".format(catalog))
@@ -89,22 +104,16 @@ def create_new_csw(record_id):
     response = requests.post(csw_url, data=post_data)
 
     if response.status_code != 200:
-        record.status = "Error"
-        record.save()
-        logger.error("{} during CSW record creation: {}".format(
-                response.status_code,
-                response.content,
-            )
+        message = "{} during CSW record creation: {}".format(
+            response.status_code,
+            response.content,
         )
-        return
+        return fail(message)
 
     try:
         parsed = etree.fromstring(response.content)
     except (ValueError, etree.XMLSyntaxError):
-        record.status = "Error"
-        record.save()
-        logger.exception("error while parsing response from registry")
-        return
+        return fail("Error while parsing response from registry")
 
     exceptiontext = parsed.xpath("//ows:ExceptionText", namespaces=namespaces)
     totalinserted = parsed.xpath("//csw:totalInserted", namespaces=namespaces)
@@ -112,17 +121,12 @@ def create_new_csw(record_id):
     if exceptiontext:
         # we're going to consider this an "error" even if registry returns a
         # positive TransactionSummary/totalInserted value along with the error
-        record.status = "Error"
-        record.save()
-        for x in exceptiontext:
-            logger.error("Error during record creation: {}".format(x.text))
-        return
+        return fail("Error(s) during record creation" + ", ".join(
+            x.text for x in exceptiontext
+        ))
 
     elif not totalinserted or len(totalinserted) != 1:
-        record.status = "Error"
-        record.save()
-        logger.error("response XML did not contain one //csw:totalInserted")
-        return
+        return fail("response XML did not contain one //csw:totalInserted")
 
     elif int(totalinserted[0].text) > 0:
         record.status = "Complete"
@@ -131,6 +135,4 @@ def create_new_csw(record_id):
         return
 
     # Fell through, no totalinserted or it was 0
-    record.status = "Error"
-    record.save()
-    logger.error("No record created but no error reported")
+    fail("No record created but no error reported")
