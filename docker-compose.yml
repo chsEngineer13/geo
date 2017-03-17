@@ -139,11 +139,7 @@ services:
             - "80"
             # export ssl version as well.
             - "443"
-        environment: 
-            - ES_URL=http://search:9200
-            - ES_UNIFIED_SEARCH=True
-            - REGISTRYURL=http://172.16.238.6:8001
-            
+
     # Container running registry        
     registry:
         container_name: registry
