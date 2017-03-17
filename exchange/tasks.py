@@ -67,22 +67,23 @@ def create_new_csw(record_id):
     registry_url = settings.REGISTRYURL
     catalog = settings.REGISTRY_CAT
     csw_url = urljoin(registry_url, "catalog/{}/csw".format(catalog))
-    post_data = csw_record_template.format(uuid=record_id,
-                                           title=record.title,
-                                           creator=record.creator,
-                                           record_type=record.record_type,
-                                           alternative=record.alternative,
-                                           modified=record.modified,
-                                           abstract=record.abstract,
-                                           record_format=record.record_format,
-                                           source=record.source,
-                                           relation=record.relation,
-                                           gold=record.gold,
-                                           category=record.category,
-                                           contact=record.contact_information,
-                                           bbox_l=record.bbox_lower_corner,
-                                           bbox_u=record.bbox_upper_corner,
-                                           )
+    post_data = csw_record_template.format(
+        uuid=record_id,
+        title=record.title,
+        creator=record.creator,
+        record_type=record.record_type,
+        alternative=record.alternative,
+        modified=record.modified,
+        abstract=record.abstract,
+        record_format=record.record_format,
+        source=record.source,
+        relation=record.relation,
+        gold=record.gold,
+        category=record.category,
+        contact=record.contact_information,
+        bbox_l=record.bbox_lower_corner,
+        bbox_u=record.bbox_upper_corner,
+    )
 
     logger.info("Creating new CSW with: \n{}".format(post_data))
     response = requests.post(csw_url, data=post_data)
@@ -91,15 +92,16 @@ def create_new_csw(record_id):
         record.status = "Error"
         record.save()
         logger.error("{} during CSW record creation: {}".format(
-            response.status_code,
-            response.content))
+                response.status_code,
+                response.content,
+            )
+        )
         return
 
     parsed = etree.fromstring(response.content)
-    exceptiontext = parsed.xpath("//ows:ExceptionText",
-                                 namespaces=namespaces)
-    totalinserted = parsed.xpath("//csw:totalInserted",
-                                 namespaces=namespaces)
+
+    exceptiontext = parsed.xpath("//ows:ExceptionText", namespaces=namespaces)
+    totalinserted = parsed.xpath("//csw:totalInserted", namespaces=namespaces)
 
     if exceptiontext:
         # we're going to consider this an "error" even if registry returns a
