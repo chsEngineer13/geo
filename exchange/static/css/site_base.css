@@ -143,3 +143,21 @@ input[value='Invite User'] {
 span[id^="error_"].help-inline {
   color: #d9534f;
 }
+
+resource-cart span.cart-label {
+    display: inline-block;
+    overflow: hidden;
+}
+
+
+@media screen and (min-width: 960px) {
+    resource-cart span.cart-label {
+        max-width: 150px;
+    }
+}
+
+@media screen and (min-width: 1200px) { 
+    resource-cart span.cart-label {
+        max-width: 200px;
+    }
+}
