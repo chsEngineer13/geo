@@ -149,7 +149,9 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
         self._test_meta(shapefile)
 
     # Test uploading a basic geojson file.
-    def test_geojson_upload(self):
+    # 20 March 2017: Test being skipped as not all uploaders
+    #                support GeoJson
+    def _test_geojson_upload(self):
         shapefile = {
             'base_file': './bbox.geojson'
         }
@@ -160,8 +162,13 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
     #
     # Refs: NODE-804
     def test_bbox_issues(self):
+        data_path = './bbox.'
+
         shapefile = {
-            'base_file': './bbox.geojson'
+            'base_file': data_path+'shp',
+            'dbf_file': data_path+'dbf',
+            'shx_file': data_path+'shx',
+            'prj_file': data_path+'prj'
         }
 
         params = {
