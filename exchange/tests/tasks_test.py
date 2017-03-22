@@ -4,8 +4,9 @@ from exchange.core.models import CSWRecord
 import pytest
 from django.conf import settings
 
-@pytest.mark.skipif(settings.REGISTRYURL is None,
-                    reason="Only run if registry configured")
+# @pytest.mark.skipif(settings.REGISTRYURL is None,
+#                    reason="Only run if registry configured")
+@pytest.mark.skip
 class CreateNewCSWTest(TestCase):
 
     def setUp(self):

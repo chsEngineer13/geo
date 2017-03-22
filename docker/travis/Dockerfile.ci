@@ -8,6 +8,8 @@ RUN chmod -Rf 755 /tmp/geoserver
 
 # install geonode-exchange and dependencies
 ADD . /opt/boundless/exchange
+RUN mkdir -p /opt/boundless/exchange/.storage/media/fileservice
+
 RUN echo "GEOS_LIBRARY_PATH = '/opt/boundless/vendor/lib/libgeos_c.so'" >> /opt/boundless/exchange/exchange/settings/default.py
 
 # install python dependencies

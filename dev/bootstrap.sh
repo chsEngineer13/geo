@@ -73,6 +73,10 @@ exchange_setup()
 
     mkdir -p /vagrant/dev/.logs
 
+    # leave fileservice media folder there if it exists as it will only have user uploaded files.
+    # create it though to make sure we have it.
+    mkdir -p /vagrant/.storage/media/fileservice
+
     /usr/local/bin/virtualenv /vagrant/.venv
     source /vagrant/.venv/bin/activate
     pip install -r /vagrant/requirements.txt
