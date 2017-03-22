@@ -80,7 +80,7 @@
   	</div>
   </section>
 
-  <section id="showcase">
+  <section id="showcase" style="display:none">
     <div class="container">
       <div class="row">
         <h2>Featured Datasets</h2>
@@ -116,6 +116,7 @@
       module.run(function($http, $rootScope){
         $http.get(FEATURED_URL).success(function(data){
           $rootScope.featured = data.objects;
+          document.getElementById('showcase').style.display = 'block';
         });
       });
     })();
