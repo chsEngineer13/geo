@@ -1,7 +1,7 @@
 --index-url https://pypi.python.org/simple/
 
 git+git://github.com/boundlessgeo/django-exchange-maploom.git@master#django-exchange-maploom
-git+git://github.com/boundlessgeo/geonode@536bd596548fad69585061897047506b302adc0f#egg=geonode
+git+git://github.com/boundlessgeo/geonode@exchange/1.2.0#egg=geonode
 git+git://github.com/GeoNode/django-osgeo-importer@master#egg=django-osgeo-importer
 numpy==1.11.3
 django-geonode-client==0.0.23
