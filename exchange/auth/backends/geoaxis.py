@@ -2,6 +2,7 @@
 GeoAxis OAuth2 backend:
 """
 import ssl
+import base64
 
 from social_core.backends.oauth import BaseOAuth2
 
@@ -23,7 +24,12 @@ class GeoAxisOAuth2(BaseOAuth2):
         ('user_id', 'user_id'),
         ('postal_code', 'postal_code')
     ]
-
+    
+    def auth_headers(self):
+        b64Val = base64.b64encode('3d1c9d20aced4bd1b480ef114d6b3f92:wIBhcabK')
+        return {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                'Authorization': "Basic %s" % b64Val}
+    
     def get_user_details(self, response):
         """Return user details from GeoAxis account"""
         fullname, first_name, last_name = self.get_user_names('',
@@ -58,5 +64,5 @@ class GeoAxisOAuth2(BaseOAuth2):
         
         """
         response = self.get_json('https://' + self.HOST + '/ms_oauth/resources/userprofile/me',
-                                 params={'access_token': access_token})
+                                 params={'access_token': access_token}, headers={'Authorization': access_token})
         return response
