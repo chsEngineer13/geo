@@ -10,7 +10,14 @@
         var items = cart.getCart().items;
         var params = '';
         for(var i=0; i<items.length; i++){
-          params += 'layer=' + items[i].detail_url.split('/')[2] +'&';
+          // check to see if the item is a registry layer.
+          var layer_name = '';
+          if(items[i].registry_url) {
+            layer_name = 'registry:' + items[i].id;
+          } else {
+            layer_name = items[i].detail_url.split('/')[2];
+          }
+          params += 'layer=' + layer_name + '&';
         }
         window.location = '/maps/new?' + params;
       }
