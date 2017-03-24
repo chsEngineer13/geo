@@ -3,6 +3,15 @@ import os
 from default import * 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.join(BASE_DIR, '../.storage/static_root')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../.storage/media')
+
+FILESERVICE_CONFIG = {
+    'store_dir': os.path.join(MEDIA_ROOT, 'fileservice'),
+    'types_allowed': ['.jpg', '.jpeg', '.png'],
+    'streaming_supported': True
+}
+
 SECRET_KEY = '6((ie#5#8yu%r4j)s@*qzhp!o2*6lu07s846(xahxi^uoy52h6'
 DEBUG = True
 ALLOWED_HOSTS = ['testserver']

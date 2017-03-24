@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'flat',
     'exchange.core',
     'exchange.themes',
+    'exchange.fileservice',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
@@ -393,6 +394,11 @@ if 'osgeo_importer' in INSTALLED_APPS:
         'data/'
     )
 
+FILESERVICE_CONFIG = {
+    'store_dir': os.getenv('FILESERVICE_MEDIA_ROOT', os.path.join(MEDIA_ROOT, 'fileservice')),
+    'types_allowed': ['.jpg', '.jpeg', '.png'],
+    'streaming_supported': False
+}
 
 try:
     from local_settings import *  # noqa
@@ -412,6 +418,7 @@ SESSION_COOKIE_AGE = 60 * 60 * 24
 # manually
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
+
 
 ENABLE_SOCIAL_LOGIN = str2bool(os.getenv('ENABLE_SOCIAL_LOGIN', 'False'))
 
