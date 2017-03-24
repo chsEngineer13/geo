@@ -76,7 +76,7 @@ a.navbar-brand {
 }
 
 .shim, .footer {
-    background-color: #273b51;
+    background-color: #273b51 !important;
 }
 
 .home #showcase .col-md-3 img {
