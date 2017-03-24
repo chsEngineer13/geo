@@ -74,3 +74,57 @@ a.navbar-brand {
     background-color: transparent !important;
     color: white !important;
 }
+
+.shim, .footer {
+    background-color: #273b51;
+}
+
+.home #showcase .col-md-3 img {
+    border: 1px solid #dbddde;
+    padding: 8px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 500 !important;
+}
+
+.shim {
+    padding-bottom: .5em;
+    padding-top: .5em;
+}
+
+.jumbotron > div {
+    min-height: 80px;
+}
+
+.jumbotron > .container > .search {
+
+    left: 0;
+    position: relative;
+    color: #444;
+    top: 20px;
+    padding-bottom: 2em;
+    margin: auto;
+    width: 50%;
+}
+
+.jumbotron > .container > h1 {
+    text-align: center;
+    font-size: 41px;
+}
+
+#search span {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+}
+
+.jumbotron #search_input {
+    text-indent: 64px;
+    width: 100%;
+    height: 56px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    outline-width: 0;
+    font-size: 1.5em;
+}
