@@ -1,45 +1,24 @@
 import os
-import django
-from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
-from django.conf import settings
 import pytest
+from . import ExchangeTest
+from exchange import settings
 
-django.setup()
+TEST_IMG = os.path.join(os.path.dirname(__file__), 'test.png')
+TESTDIR = os.path.dirname(os.path.realpath(__file__))
 
-test_img = os.path.join(os.path.dirname(__file__), 'test.png')
-testdir = os.path.dirname(os.path.realpath(__file__))
-User = get_user_model()
 
 # bury these warnings for testing
-
-
 class RemovedInDjango19Warning(Exception):
     pass
 
 
-class ViewTestCase(TestCase):
+class ViewTestCase(ExchangeTest):
 
-    def common_setup(self):
-        self.client = Client()
-        admin_users = User.objects.filter(
-            is_superuser=True
-        )
-        if admin_users.count() > 0:
-            self.admin_user = admin_users[0]
-        else:
-            self.admin_user = User.objects.create_superuser(
-                username='admin',
-                email=''
-            )
-        self.admin_user.set_password('admin')
-        self.admin_user.save()
-        logged_in = self.client.login(
-            username='admin',
-            password='admin'
-        )
-        self.assertTrue(logged_in)
+    def setUp(self):
+        super(ViewTestCase, self).setUp()
+        self.login()
 
+        self.url = '/'
         self.expected_status = 200
 
     def get_response(self):
@@ -68,10 +47,6 @@ class ViewTestCase(TestCase):
 
 class HomeScreenTest(ViewTestCase):
 
-    def setUp(self):
-        self.common_setup()
-        self.url = '/'
-
     def test(self):
         self.doit()
 
@@ -79,10 +54,11 @@ class HomeScreenTest(ViewTestCase):
 class LayerMetadataDetailTest(ViewTestCase):
 
     def setUp(self):
+        super(LayerMetadataDetailTest, self).setUp()
+
         from geonode.layers.utils import file_upload
-        self.common_setup()
         self.layer = file_upload(
-            os.path.join(testdir, 'test_point.shp'),
+            os.path.join(TESTDIR, 'test_point.shp'),
             name='testlayer'
         )
         self.url = '/layers/geonode:testlayer/metadata_detail'
@@ -91,13 +67,14 @@ class LayerMetadataDetailTest(ViewTestCase):
         self.doit()
 
     def test_thumb(self):
-        self.postfile(test_img, 'thumbnail_image')
+        self.postfile(TEST_IMG, 'thumbnail_image')
 
 
 class MapMetadataDetailTest(ViewTestCase):
     def setUp(self):
+        super(MapMetadataDetailTest, self).setUp()
+
         from geonode.maps.models import Map
-        self.common_setup()
         self.map = Map.objects.create(
             owner=self.admin_user,
             zoom=0,
@@ -110,13 +87,13 @@ class MapMetadataDetailTest(ViewTestCase):
         self.doit()
 
     def test_thumb(self):
-        self.postfile(test_img, 'thumbnail_image')
+        self.postfile(TEST_IMG, 'thumbnail_image')
 
 
 class GeoServerReverseProxyTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(GeoServerReverseProxyTest, self).setUp()
         self.url = '/wfsproxy/'
 
     def test(self):
@@ -126,7 +103,7 @@ class GeoServerReverseProxyTest(ViewTestCase):
 class HelpDocumentationPageTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(HelpDocumentationPageTest, self).setUp()
         self.expected_status = 302
         self.url = '/help/'
 
@@ -137,7 +114,7 @@ class HelpDocumentationPageTest(ViewTestCase):
 class DeveloperDocumentationPageTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(DeveloperDocumentationPageTest, self).setUp()
         self.expected_status = 302
         self.url = '/developer/'
 
@@ -148,7 +125,7 @@ class DeveloperDocumentationPageTest(ViewTestCase):
 class InsertCSWTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(InsertCSWTest, self).setUp()
         self.url = '/csw/new/'
 
     def test(self):
@@ -174,8 +151,8 @@ class InsertCSWTest(ViewTestCase):
 class CSWStatusTest(ViewTestCase):
 
     def setUp(self):
+        super(CSWStatusTest, self).setUp()
         self.url = '/csw/status/'
-        self.common_setup()
 
     def test(self):
         self.doit()
@@ -188,18 +165,19 @@ class CSWStatusTest(ViewTestCase):
 class CSWStatusTableTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(CSWStatusTableTest, self).setUp()
         self.url = '/csw/status_table/'
 
     def test(self):
         self.doit()
 
-@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH==False,
+
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
                     reason="Only run if using unified search")
 class UnifiedSearchTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(UnifiedSearchTest, self).setUp()
         self.url = '/api/base/search/?limit=100&offset=0&q=test'
         self.expected_status = 200
 
