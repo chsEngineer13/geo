@@ -69,5 +69,7 @@ RUN rm -rf /env/lib/python2.7/site-packages/maploom/static/maploom && \
     rm /env/lib/python2.7/site-packages/maploom/templates/maps/maploom.html && \
     ln -s /mnt/maploom/build/maploom.html /env/lib/python2.7/site-packages/maploom/templates/maps/maploom.html
 
+RUN mkdir fileservice
+
 WORKDIR /scratch
 CMD ["/root/exchange.sh"]
