@@ -1,7 +1,76 @@
 .navbar-nav .dropdown-menu .divider {
-    background-color: #3F3F3F;
+    background-color: #384056;
 }
+
+body {
+    padding-top: 50px;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 15px;
+    font-weight: 300;
+    color: #dedede !important;
+}
+
+.dropdown-menu > li > a {
+    font-size: 15px;
+    font-weight: 300;
+}
+
+a.navbar-brand {
+    height: 45px;
+    background-size: 65%;
+}
+
 .navbar-inverse {
-    background-color: #0F1A2C;
-    border: 0;
+    background: #262c3a;
+    background: linear-gradient(107deg, #262c3a 8%, #29648e 140%);
+}
+
+.navbar-nav .dropdown-menu {
+    background-color: #262c3a !important;
+}
+
+.navbar-nav .search {
+    top: 10px;
+    margin-left: 25px;
+    margin-right: 0;
+}
+
+.navbar-nav .search input {
+    font-weight: 300;
+    font-style: italic;
+    font-size: 15px;
+}
+
+.navbar-nav .search .fa-search:hover {
+    color: #777777;
+}
+
+.navbar-nav {
+    float: right;
+}
+
+.dropdown-toggle .fa-caret-down {
+    font-size: 12px;
+    margin-left: 3px;
+}
+
+.dropdown-toggle .fa-caret-down:hover {
+    color: white;
+}
+
+.navbar-nav .avatar img {
+    border: 1px solid #313b52;
+    height: 25px;
+    width: 25px;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus,
+.navbar-inverse .navbar-nav > .open > a {
+    background-color: transparent !important;
+    color: white !important;
 }
