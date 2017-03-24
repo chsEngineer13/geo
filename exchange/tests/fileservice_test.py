@@ -7,7 +7,9 @@ from django.http import HttpResponse
 from mock import mock_open
 import mock
 
-class FileItemResourceTest(ResourceTestCaseMixin, TestCase):
+from . import ExchangeTest
+
+class FileItemResourceTest(ResourceTestCaseMixin, ExchangeTest):
 
     def setUp(self):
         super(FileItemResourceTest, self).setUp()
