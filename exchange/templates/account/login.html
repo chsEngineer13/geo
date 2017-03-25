@@ -8,7 +8,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <h2>{% trans "Log in to an existing account" %}</h2>
+  <h2>{% trans "Log In to an existing account" %}</h2>
 </div>
 <div class="row">
   <div class="col-md-8">
@@ -22,37 +22,29 @@
         <p><a href="{% url "forgot_username" %}">{% trans "Forgot your username?" %}</a></p>
         <p><a href="{% url "account_password_reset" %}">{% trans "Forgot your password?" %}</a></p>
       </div>
-      <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
+      <button type="submit" class="btn btn-primary">{% trans "Log In" %}</button>
     </form>
+
   </div>
+
    {% if ENABLE_SOCIAL_LOGIN %}
-    <div class="row">
+
+    <div class="col-md-4" style="float:right;">
+
         {% if ENABLE_FACEBOOK_LOGIN %}
-    	<div class="col-sm-4">
-            <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">
-                <div class="facebook-btn btn btn-md bg-ms btn-block">
-                    <i class="fa fa-facebook"></i> Log In with Facebook
-                </div>
+            <a class="btn-facebook btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'facebook' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+                <i class="fa fa-facebook"></i> Log In with Facebook
             </a>
-        </div>
         {% endif %}
         {% if ENABLE_GOOGLE_LOGIN %}
-        <div class="col-sm-4">
-            <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
-                <div class="google-btn btn btn-md bg-ms btn-block">
-                    <i class="fa fa-google"></i> Log In with Google
-                </div>
+            <a class="btn-google btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'google-oauth2' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+                <i class="fa fa-google"></i> Log In with Google
             </a>
-        </div>
         {% endif %}
         {% if ENABLE_GEOAXIS_LOGIN %}
-         <div class="col-sm-4">
-            <a href="{% url 'social:begin' 'geoaxis' %}?next={{ request.path }}">
-                <div class="google-btn btn btn-md bg-ms btn-block">
-                    Log In with GeoAxis
-                </div>
+            <a class="btn-geoaxis btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'geoaxis' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+                <i class="fa fa-lock"></i> Log In with GeoAxis
             </a>
-        </div>
         {% endif %}
     </div>
     {% endif %}
