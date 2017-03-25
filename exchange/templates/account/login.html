@@ -29,7 +29,7 @@
     <div class="row">
         {% if ENABLE_FACEBOOK_LOGIN %}
     	<div class="col-sm-4">
-            <a href="{% url 'social:begin' 'facebook' %}">
+            <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">
                 <div class="facebook-btn btn btn-md bg-ms btn-block">
                     <i class="fa fa-facebook"></i> Log In with Facebook
                 </div>
@@ -38,7 +38,7 @@
         {% endif %}
         {% if ENABLE_GOOGLE_LOGIN %}
         <div class="col-sm-4">
-            <a href="{% url 'social:begin' 'google-oauth2' %}">
+            <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
                 <div class="google-btn btn btn-md bg-ms btn-block">
                     <i class="fa fa-google"></i> Log In with Google
                 </div>
@@ -47,7 +47,7 @@
         {% endif %}
         {% if ENABLE_GEOAXIS_LOGIN %}
          <div class="col-sm-4">
-            <a href="{% url 'social:begin' 'geoaxis' %}">
+            <a href="{% url 'social:begin' 'geoaxis' %}?next={{ request.path }}">
                 <div class="google-btn btn btn-md bg-ms btn-block">
                     Log In with GeoAxis
                 </div>
