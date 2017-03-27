@@ -1,4 +1,6 @@
 import os
+import re
+
 
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
@@ -172,9 +174,45 @@ def csw_status_table(request):
                                },
                               context_instance=RequestContext(request))
 
+# Reformat objects for use in the results.
+#
+# The ES objects need some reformatting in order to be useful
+# for output to the client.
+#
+def get_unified_search_result_objects(hits):
+    objects = []
+    for hit in hits:
+        try:
+            source = hit.get('_source')
+        except:  # No source
+            pass
+        result = {}
+        result['index'] = hit.get('_index', None)
+        for key, value in source.iteritems():
+            if key == 'bbox':
+                result['bbox_left'] = value[0]
+                result['bbox_bottom'] = value[1]
+                result['bbox_right'] = value[2]
+                result['bbox_top'] = value[3]
+                bbox_str = ','.join(map(str,value))
+            elif key == 'links':
+                # Get source link from Registry
+                xml = value['xml']
+                js = '%s/%s' % (settings.REGISTRYURL,
+                                re.sub(r"xml$", "js", xml))
+                png = '%s/%s' % (settings.REGISTRYURL,
+                                value['png'])
+                result['registry_url'] = js
+                result['thumbnail_url'] = png
+
+            else:
+                result[key] = source.get(key, None)
+        objects.append(result)
+
+    return objects
+
 
 def unified_elastic_search(request, resourcetype='base'):
-    import re
     import requests
     from elasticsearch import Elasticsearch
     from six import iteritems
@@ -385,35 +423,7 @@ def unified_elastic_search(request, resourcetype='base'):
             facet_results[f][bucket.key] = bucket.doc_count
 
     # Get results
-    objects = []
-
-    for hit in results.hits.hits:
-        try:
-            source = hit.get('_source')
-        except:  # No source
-            pass
-        result = {}
-        result['index'] = hit.get('_index', None)
-        for key, value in source.iteritems():
-            if key == 'bbox':
-                result['bbox_left'] = value[0]
-                result['bbox_bottom'] = value[1]
-                result['bbox_right'] = value[2]
-                result['bbox_top'] = value[3]
-                bbox_str = ','.join(map(str,value))
-            elif key == 'links':
-                # Get source link from Registry
-                xml = value['xml']
-                js = '%s/%s' % (settings.REGISTRYURL,
-                                re.sub(r"xml$", "js", xml))
-                png = '%s/%s' % (settings.REGISTRYURL,
-                                value['png'])
-                result['registry_url'] = js
-                result['thumbnail_url'] = png
-
-            else:
-                result[key] = source.get(key, None)
-        objects.append(result)
+    objects = get_unified_search_result_objects(results.hits.hits)
 
     object_list = {
         "meta": {

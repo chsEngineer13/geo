@@ -3,6 +3,7 @@ import pytest
 from . import ExchangeTest
 from exchange import settings
 
+
 TEST_IMG = os.path.join(os.path.dirname(__file__), 'test.png')
 TESTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -275,3 +276,45 @@ class UnifiedSearchTest(ViewTestCase):
     def test_search_layer_by_id(self):
         self.url = '/api/layers/search/?id=1'
         self.doit()
+
+
+# This doesn't test a view but performs a functional
+# test on one of the views transformational objects.
+#
+class ViewFunctionTests(ViewTestCase):
+
+    def test_get_unified_search_result_objects(self):
+        from exchange.views import get_unified_search_result_objects
+
+        test_hits = [{
+            '_index': 'registry',
+            '_source': {
+                'bbox': [1,2,3,4],
+            }
+        }, {
+            '_index': 'exchange',
+            '_source': {
+                'links' : {
+                    'xml' : 'layers/exchange:dummy.xml',
+                    'png' : 'layers/exchange:dummy/thumby.png'
+                }
+            }
+        }]
+
+        test_objects = get_unified_search_result_objects(test_hits)
+
+        # validate that the bbox parses correct in 
+        # the first result.
+
+        self.assertEqual(test_objects[0]['bbox_left'], 1, 
+                         'BBOX Was not formatted correctly!')
+
+        self.assertEqual(test_objects[0]['bbox_top'], 4, 
+                         'BBOX Was not formatted correctly!')
+
+
+        # ensure the thumbnail link is generated.
+
+        self.assertEqual(test_objects[1]['thumbnail_url'],
+                         'http://172.16.238.6:8001/layers/exchange:dummy/thumby.png',
+                         'Wrong thumbnail URL (%s)' % test_objects[1]['thumbnail_url'])
