@@ -154,3 +154,8 @@ class ThemeViewTest(ExchangeTest):
         r = self.client.get('/admin/themes/theme/add/')
 
         self.assertEqual(r.status_code, 200, 'Did not get admin theme add')
+
+        r = self.client.get('/admin/themes/theme/1/')
+        r = self.client.get('/admin/themes/theme/2/')
+
+
