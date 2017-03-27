@@ -42,7 +42,7 @@ if str2bool(os.environ.get('LDAP_IS_AD', 'False')):
     AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType()
 else:
     AUTH_LDAP_USER = '(uid=%(user)s)'
-    AUTH_LDAP_GROUP_TYPE = MemberDNGroupType()
+    AUTH_LDAP_GROUP_TYPE = MemberDNGroupType('member')
 
 AUTHENTICATION_BACKENDS = (
     'django_auth_ldap.backend.LDAPBackend',
