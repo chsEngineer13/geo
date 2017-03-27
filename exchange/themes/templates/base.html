@@ -48,6 +48,7 @@
             </button>
             <a class="navbar-brand" href="{% url "home" %}">Exchange</a>
           </div>
+          {% if not LOCKDOWN_EXCHANGE or LOCKDOWN_EXCHANGE and user.is_authenticated %}
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav toolbar">
               {% block tabs %}
@@ -128,7 +129,7 @@
                   </ul>
                 </li>
               {% else %}
-                <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
+                <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Log In" %} </a></li>
               {% endif %}
 
               <li>
@@ -145,6 +146,7 @@
               </li>
             </ul>
           </div> <!--/.nav-collapse -->
+          {% endif %}
         </div>
       </nav>
     {% endblock header %}
@@ -218,7 +220,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Log In" %}</h4>
           </div>
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
             <div class="modal-body">
@@ -236,7 +238,7 @@
               </label>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
+              <button type="submit" class="btn btn-primary btn-block">{% trans "Log In" %}</button>
             </div>
           </form>
         </div>

@@ -137,7 +137,7 @@ h1, h2, h3, h4, h5, h6 {
     border-color: rgba(0,0,0,0.2);
 }
 
-.btn-google:hover{
+.btn-google:hover {
     color:#fff;
     background-color:#c23321;
     border-color:rgba(0,0,0,0.2);
@@ -150,7 +150,7 @@ h1, h2, h3, h4, h5, h6 {
     border-color: rgba(0,0,0,0.2);
 }
 
-.btn-facebook:hover{
+.btn-facebook:hover {
     color:#fff;
     background-color:#2d4373;
     border-color:rgba(0,0,0,0.2);
@@ -165,7 +165,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-.btn-geoaxis:hover{
+.btn-geoaxis:hover {
     color:#fff;
     background-color:#008000;
     border-color:rgba(0,0,0,0.2);
@@ -183,6 +183,7 @@ h1, h2, h3, h4, h5, h6 {
     text-decoration: none;
     font-weight: 300;
     font-size: 15px;
+    max-width: 270px;
 }
 
 .btn-social>:first-child {
@@ -195,4 +196,19 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.6em;
     text-align: center;
     border-right: 1px solid rgba(0,0,0,0.2);
+}
+
+.login-warning {
+    width: 100%;
+    margin: 1em 0;
+    padding: 2em;
+    background-color: #fff;
+    text-align: left;
+    box-shadow: 0 0 0 5px rgba(0,0,0,.03), inset 0 0 0 1px;
+}
+
+.login-root {
+    align-items: center;
+    flex-direction: column;
+    display: flex;
 }
