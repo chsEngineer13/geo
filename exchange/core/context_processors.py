@@ -37,7 +37,7 @@ def resource_variables(request):
         GEOAXIS_ENABLED=getattr(settings, 'GEOAXIS_ENABLED', False),
         MAP_PREVIEW_LAYER=getattr(settings, 'MAP_PREVIEW_LAYER', "''"),
         LOCKDOWN_EXCHANGE=getattr(settings, 'LOCKDOWN_GEONODE', False),
-        LOGIN_WARNING=getattr(settings, 'LOGIN_WARNING', False),
+        LOGIN_WARNING=getattr(settings, 'LOGIN_WARNING_ENABLED', False),
         LOGIN_WARNING_TEXT=getattr(settings, 'LOGIN_WARNING_TEXT', "''")
     )
 
