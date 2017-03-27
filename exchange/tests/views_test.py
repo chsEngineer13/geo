@@ -69,6 +69,12 @@ class LayerMetadataDetailTest(ViewTestCase):
     def test_thumb(self):
         self.postfile(TEST_IMG, 'thumbnail_image')
 
+    # Test that a back-up thumbnail gets created when
+    # uploading the new thumbnail twice.
+    def test_backup_thumbnail(self):
+        self.postfile(TEST_IMG, 'thumbnail_image')
+        self.postfile(TEST_IMG, 'thumbnail_image')
+
 
 class MapMetadataDetailTest(ViewTestCase):
     def setUp(self):
@@ -87,6 +93,10 @@ class MapMetadataDetailTest(ViewTestCase):
         self.doit()
 
     def test_thumb(self):
+        self.postfile(TEST_IMG, 'thumbnail_image')
+
+    def test_backup_thumbnail(self):
+        self.postfile(TEST_IMG, 'thumbnail_image')
         self.postfile(TEST_IMG, 'thumbnail_image')
 
 
@@ -249,4 +259,19 @@ class UnifiedSearchTest(ViewTestCase):
         self.url = '/api/base/search/' \
                    '?limit=100&offset=0&q=test&' \
                    'order_by=-popular_count'
+        self.doit()
+
+    def test_search_types(self):
+        url = '/api/%s/search/?q=test'
+        self.url = url % 'layers' 
+        self.doit()
+
+        self.url = url % 'documents' 
+        self.doit()
+
+        self.url = url % 'maps' 
+        self.doit()
+
+    def test_search_layer_by_id(self):
+        self.url = '/api/layers/search/?id=1'
         self.doit()
