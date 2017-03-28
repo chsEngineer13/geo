@@ -316,6 +316,22 @@ CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_IMPORTS += ('exchange.tasks',)
 
+# audit settings
+AUDIT_ENABLED = str2bool(os.getenv('AUDIT_ENABLED', 'True'))
+if AUDIT_ENABLED:
+    INSTALLED_APPS = INSTALLED_APPS + (
+        'exchange.audit',
+    )
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+        'exchange.audit.middleware.audit.ExchangeAuditMiddleware',
+    )
+
+    AUDIT_TO_FILE = str2bool(os.getenv('AUDIT_TO_FILE', 'True'))
+    AUDIT_LOGFILE_LOCATION = os.getenv(
+        'AUDIT_LOGFILE_LOCATION',
+        os.path.join(LOCAL_ROOT, 'exchange_audit_log.json')
+    )
+
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
 DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'ERROR')
