@@ -21,7 +21,7 @@
   </div>
 
   <div class="container">
-    <h1>Search for Data</h1>
+    <h1>Search for Content</h1>
     <div class="search">
       <form id="search" action="/search/">
         <span class="fa fa-search fa-2x"></span>
@@ -42,7 +42,7 @@
   <div class="container">
     <div class="row">
       <div class="container text-center">
-        <h2>Discover the available datasets</h2>
+        <h2>Discover the available content</h2>
         {% for category in categories %}
         <div class="col-xs-4 col-sm-2" style="height:200px">
           <a href="/search/?limit=100&offset=0&category__identifier__in={{ category.identifier }}" data-toggle="tooltip" data-placement="auto"
@@ -62,7 +62,7 @@
 <section id="showcase" style="display:none">
   <div class="container">
     <div class="row">
-      <h2>Featured Datasets</h2>
+      <h2>Featured Content</h2>
       {% verbatim %}
       <div ng-app="featured">
         <div ng-repeat="item in featured | limitTo:4">
@@ -74,7 +74,7 @@
       </div>
       {% endverbatim %}
     </div>
-    <p><a href="/search/">Explore all datasets</a></p>
+    <p><a href="/search/">Explore all Content</a></p>
   </div>
 </section>
 
