@@ -24,10 +24,11 @@ a.navbar-brand {
     background-size: 65%;
 }
 
-.navbar-inverse {
+.navbar-inverse, .modal-header {
     background: #262c3a;
     background: linear-gradient(107deg, #262c3a 8%, #29648e 140%);
 }
+
 
 .navbar-nav .dropdown-menu {
     background-color: #262c3a !important;
@@ -211,4 +212,8 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     flex-direction: column;
     display: flex;
+}
+
+.modal-header {
+    color: white;
 }
