@@ -7,6 +7,8 @@ from django.test import TestCase, RequestFactory
 from exchange.themes.models import Theme
 from shutil import rmtree
 
+from . import ExchangeTest
+
 test_img = os.path.join(os.path.dirname(__file__), 'test.png')
 theme_dir = os.path.join(
     settings.MEDIA_ROOT,
@@ -16,6 +18,7 @@ theme_dir = os.path.join(
 
 class MockRequest:
     pass
+
 
 request = MockRequest()
 
@@ -131,3 +134,28 @@ class ThemeTestCase(TestCase):
 
     def tearDown(self):
             rmtree(theme_dir)
+
+
+class ThemeViewTest(ExchangeTest):
+
+    def setUp(self):
+        super(ThemeViewTest, self).setUp()
+
+        self.login()
+
+    def test_model_admin(self):
+        r = self.client.get('/admin/themes/theme/')
+
+        self.assertEqual(r.status_code, 200,
+                         'Did not get admin theme list (status: %d)' % (
+                           r.status_code
+                         ))
+
+        r = self.client.get('/admin/themes/theme/add/')
+
+        self.assertEqual(r.status_code, 200, 'Did not get admin theme add')
+
+        r = self.client.get('/admin/themes/theme/1/')
+        r = self.client.get('/admin/themes/theme/2/')
+
+

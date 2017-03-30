@@ -29,6 +29,11 @@ def parse_bbox_from_html(html):
         return [float(x) for x in bboxes[0]]
     return None
 
+class TestBBOXParser(ExchangeTest):
+
+    def test_invalid_bbox(self):
+        self.assertIsNone(parse_bbox_from_html(''), 
+                          'BBOX parser failed to fail properly')
 
 class UploaderMixin:
     # Upload a shapefile and create a new layer.
@@ -70,10 +75,9 @@ class UploaderMixin:
 
         while('redirect_to' in next_step):
             next_r = self.client.get(next_step['redirect_to'])
+            next_step = {}
             if(next_r.status_code == 200):
                 next_step = json.loads(next_r.content)
-            else:
-                next_step = {}
             time.sleep(3)
 
         # If the last "step" did not produce a url
@@ -86,16 +90,11 @@ class UploaderMixin:
 
     # Remove a layer from the list.
     #
-    # @param layerName The name of the layer, formulates the url
     # @param uri       Uri to the layer info, appends 'remove' to the end.
     #
-    def drop_layer(self, layerName=None, uri=None):
+    def drop_layer(self, uri=None):
         working_uri = uri+'/remove'
-        if(layerName is not None):
-            working_uri = '/layers/'+layerName+'/remove'
-
         drop_r = self.client.post(working_uri, follow=False)
-
         self.assertEqual(drop_r.status_code, 302,
                          "Did not return expected forwaring code!")
 
