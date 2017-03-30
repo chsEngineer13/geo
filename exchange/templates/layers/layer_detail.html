@@ -54,7 +54,9 @@
 
     <div class="tab-content">
 
+    <article id="info" class="active tab-pane">
     {% include "base/resourcebase_info_panel.html" %}
+    </article>
 
      {% if resource.is_mosaic %}
       <article id="granules" class="description tab-pane {% if tab and tab == 'granules' %}active{% endif %}">
