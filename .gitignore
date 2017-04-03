@@ -81,3 +81,6 @@ exchange/static/vendor/
 #pytest + coverage
 exchange/db.sqlite3
 cov_html/
+
+# audit log
+exchange/settings/exchange_audit_log.json
