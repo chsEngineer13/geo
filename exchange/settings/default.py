@@ -21,7 +21,6 @@
 import os
 import dj_database_url
 import copy
-import django
 from geonode.settings import *  # noqa
 from geonode.settings import (
     MIDDLEWARE_CLASSES,
@@ -126,7 +125,7 @@ TEMPLATES = [
                 'classification',
                 'exchange.core.context_processors.resource_variables',
             ],
-            'debug': DEBUG,
+            'debug': False,
         },
     },
 ]
@@ -322,11 +321,8 @@ if AUDIT_ENABLED:
     INSTALLED_APPS = INSTALLED_APPS + (
         'exchange.audit',
     )
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-        'exchange.audit.middleware.audit.ExchangeAuditMiddleware',
-    )
 
-    AUDIT_TO_FILE = str2bool(os.getenv('AUDIT_TO_FILE', 'True'))
+    AUDIT_TO_FILE = str2bool(os.getenv('AUDIT_TO_FILE', 'False'))
     AUDIT_LOGFILE_LOCATION = os.getenv(
         'AUDIT_LOGFILE_LOCATION',
         os.path.join(LOCAL_ROOT, 'exchange_audit_log.json')
