@@ -1,10 +1,13 @@
 import os
 
-from default import * 
+from default import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, '../.storage/static_root')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../.storage/media')
+
+# ensures tests are run on writing to file
+AUDIT_TO_FILE = True
 
 FILESERVICE_CONFIG = {
     'store_dir': os.path.join(MEDIA_ROOT, 'fileservice'),
