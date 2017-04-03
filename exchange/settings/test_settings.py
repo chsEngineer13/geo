@@ -15,7 +15,7 @@ FILESERVICE_CONFIG = {
     'streaming_supported': True
 }
 
-SECRET_KEY = '6((ie#5#8yu%r4j)s@*qzhp!o2*6lu07s846(xahxi^uoy52h6'
+SECRET_KEY = os.getenv('SECRET_KEY', 'unit tests only not for production')
 DEBUG = True
 ALLOWED_HOSTS = ['testserver']
 _INSTALLED_APPS = (
