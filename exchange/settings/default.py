@@ -125,7 +125,7 @@ TEMPLATES = [
                 'classification',
                 'exchange.core.context_processors.resource_variables',
             ],
-            'debug': False,
+            'debug': DEBUG,
         },
     },
 ]
