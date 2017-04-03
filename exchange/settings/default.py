@@ -21,7 +21,6 @@
 import os
 import dj_database_url
 import copy
-import django
 from geonode.settings import *  # noqa
 from geonode.settings import (
     MIDDLEWARE_CLASSES,
@@ -315,6 +314,19 @@ CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
 CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_IMPORTS += ('exchange.tasks',)
+
+# audit settings
+AUDIT_ENABLED = str2bool(os.getenv('AUDIT_ENABLED', 'True'))
+if AUDIT_ENABLED:
+    INSTALLED_APPS = INSTALLED_APPS + (
+        'exchange.audit',
+    )
+
+    AUDIT_TO_FILE = str2bool(os.getenv('AUDIT_TO_FILE', 'False'))
+    AUDIT_LOGFILE_LOCATION = os.getenv(
+        'AUDIT_LOGFILE_LOCATION',
+        os.path.join(LOCAL_ROOT, 'exchange_audit_log.json')
+    )
 
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
