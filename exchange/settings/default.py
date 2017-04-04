@@ -21,7 +21,6 @@
 import os
 import dj_database_url
 import copy
-import django
 from geonode.settings import *  # noqa
 from geonode.settings import (
     MIDDLEWARE_CLASSES,
@@ -316,6 +315,19 @@ CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_IMPORTS += ('exchange.tasks',)
 
+# audit settings
+AUDIT_ENABLED = str2bool(os.getenv('AUDIT_ENABLED', 'True'))
+if AUDIT_ENABLED:
+    INSTALLED_APPS = INSTALLED_APPS + (
+        'exchange.audit',
+    )
+
+    AUDIT_TO_FILE = str2bool(os.getenv('AUDIT_TO_FILE', 'False'))
+    AUDIT_LOGFILE_LOCATION = os.getenv(
+        'AUDIT_LOGFILE_LOCATION',
+        os.path.join(LOCAL_ROOT, 'exchange_audit_log.json')
+    )
+
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
 DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'ERROR')
@@ -383,6 +395,7 @@ if GEOAXIS_ENABLED:
 REGISTRY = os.environ.get('ENABLE_REGISTRY', False)
 REGISTRYURL = os.environ.get('REGISTRYURL', None)
 REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
+REGISTRY_LOCAL_URL = os.environ.get('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:

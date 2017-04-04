@@ -27,3 +27,16 @@ Steps to run tests locally:
    py.test --ignore=tests/ \
            --cov-report html:cov_html \
            --cov=exchange exchange/tests/
+
+
+----------------------
+Settings Configuration
+----------------------
+
+**AUDITING**
+
+NOTE: All setting are configurable as environment variables
+
+- AUDIT_ENABLED - Boolean (default is True`)
+- AUDIT_TO_FILE - Boolean (default is False)
+- AUDIT_LOGFILE_LOCATION - Full path with filename (default is setting directory filename exchange_audit_log.json)

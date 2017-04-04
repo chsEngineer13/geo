@@ -79,7 +79,7 @@ def create_new_csw(self, record_id):
         error = UpstreamServiceImpairment(message)
         raise self.retry(exc=error)
 
-    registry_url = settings.REGISTRYURL
+    registry_url = settings.REGISTRY_LOCAL_URL
     catalog = settings.REGISTRY_CAT
     csw_url = urljoin(registry_url, "catalog/{}/csw".format(catalog))
     post_data = csw_record_template.format(
