@@ -9,11 +9,9 @@ from celery import Celery
 import pytest
 
 from exchange.core.models import CSWRecordForm
-
 from exchange.tasks import create_new_csw
 
 from . import ExchangeTest
-
 
 
 class TestCelery(TestCase):
@@ -43,26 +41,25 @@ class TestCSWRecord(ExchangeTest):
         self.login()
 
         record = {
-            'title' : 'Test CSW Layer',
-            'modified' : '01/01/2001',
-            'creator' : 'Automated Testing',
-            'record_type' : 'layer',
-            'alternative' : 'test',
-            'abstract' : 'This was created from automated testing.',
-            'source' : 'http://foo.org/a.html',
-            'relation' : '',
-            'record_format' : 'csw',
-            'bbox_upper_corner' : '45,45',
-            'bbox_lower_corner' : '0,0',
-            'contact_information' : 'test@boundlessgeo.fake',
-            'gold' : '',
-            'category' : ''
+            'title': 'Test CSW Layer',
+            'modified': '01/01/2001',
+            'creator': 'Automated Testing',
+            'record_type': 'layer',
+            'alternative': 'test',
+            'abstract': 'This was created from automated testing.',
+            'source': 'http://foo.org/a.html',
+            'relation': '',
+            'record_format': 'csw',
+            'bbox_upper_corner': '45,45',
+            'bbox_lower_corner': '0,0',
+            'contact_information': 'test@boundlessgeo.fake',
+            'gold': '',
+            'category': ''
         }
 
-        form = CSWRecordForm(record) 
+        form = CSWRecordForm(record)
         self.assertTrue(form.is_valid(), "Test record failed validation")
 
         new_record = form.save()
         new_record.save()
         create_new_csw.apply(args=(new_record.id,)).get()
-
