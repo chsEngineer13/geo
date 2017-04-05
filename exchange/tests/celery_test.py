@@ -10,6 +10,7 @@ import pytest
 
 from exchange.core.models import CSWRecordForm
 from exchange.tasks import create_new_csw
+from exchange import settings
 
 from . import ExchangeTest
 
