@@ -36,6 +36,8 @@ class TestCelery(TestCase):
 
 class TestCSWRecord(ExchangeTest):
 
+    @pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+                        reason="Only run if using unified search")
     @pytest.mark.celery(result_backend='rpc', broker_url='amqp://')
     def test_csw_insert(self):
         self.login()
