@@ -299,5 +299,5 @@ class ViewFunctionTests(ViewTestCase):
         # ensure the thumbnail link is generated.
 
         self.assertEqual(test_objects[1]['thumbnail_url'],
-                         'http://172.16.238.6:8001/layers/exchange:dummy/thumby.png',
+                         '%s/layers/exchange:dummy/thumby.png' % settings.REGISTRYURL,
                          'Wrong thumbnail URL (%s)' % test_objects[1]['thumbnail_url'])
