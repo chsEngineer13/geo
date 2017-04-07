@@ -104,10 +104,10 @@ class CSWRecord(models.Model):
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
-                                         default="180.0,85.0",
+                                         default="85.0 180",
                                          blank=True)
     bbox_lower_corner = models.CharField(max_length=128,
-                                         default="-180.0,-85.0",
+                                         default="-85.0 -180",
                                          blank=True)
     contact_information = models.CharField(max_length=128, blank=True)
     gold = models.BooleanField(max_length=128, default=False, blank=True)
