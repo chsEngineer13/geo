@@ -55,8 +55,8 @@ def load_service_layers(url, user_id):
                     record.alternative = layer['title_alternate']
                     record.contact_information = user.email
                     record.status = 'Incomplete'
-                    record.bbox_upper_corner = str(layer['xmax']) + ',' + str(layer['ymax'])
-                    record.bbox_lower_corner = str(layer['xmin']) + ',' + str(layer['ymin'])
+                    record.bbox_upper_corner = '{0} {1}'.format(str(layer['ymin']), str(layer['xmin']))
+                    record.bbox_lower_corner = '{0} {1}'.format(str(layer['ymax']), str(layer['xmax']))
                     record.save()
                 except Exception, e:
                     logger.error(e)
