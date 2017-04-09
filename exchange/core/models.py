@@ -93,14 +93,14 @@ class CSWRecord(models.Model):
     )
 
     classification = models.CharField(max_length=128, blank=True)
-    title = models.CharField(max_length=128, blank=False)
+    title = models.CharField(max_length=328, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
     # 'creator' is assumed to be distinct from logged-in User here
-    creator = models.CharField(max_length=128, blank=True)
+    creator = models.CharField(max_length=328, blank=True)
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
-    abstract = models.CharField(max_length=128, blank=True)
-    source = models.URLField(max_length=128, blank=False)
+    abstract = models.TextField(blank=True)
+    source = models.URLField(blank=False)
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
@@ -114,13 +114,17 @@ class CSWRecord(models.Model):
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
 
+    class Meta(object):
+        verbose_name = 'CSW Record'
+        verbose_name_plural = 'CSW Records'
+
 
 class CSWRecordForm(forms.ModelForm):
     class Meta:
         model = CSWRecord
-        fields = ('title', 'modified', 'creator', 'record_type', 'alternative', 'abstract',
-                  'source', 'relation', 'record_format', 'bbox_upper_corner',
-                  'bbox_lower_corner', 'contact_information', 'gold',
+        fields = ('source', 'title', 'modified', 'creator', 'record_type', 'alternative', 'abstract',
+                  'relation', 'bbox_upper_corner',
+                  'bbox_lower_corner', 'contact_information',
                   'category')
 
         labels = {
@@ -137,21 +141,11 @@ class CSWRecordForm(forms.ModelForm):
             'bbox_lower_corner': _('Bounding Box: Lower Corner'),
             'contact_information': _('Contact Information'),
             'gold': _('Gold'),
-            'category': _('Category'),
+            'category': _('Category')
         }
 
         help_texts = {
-            # 'title': _('Title'),
-            # 'creator': _('Creator'),
-            # 'record_type': _('Type'),
-            # 'alternative': _('Alternative'),
-            # 'abstract': _('Abstract'),
-            # 'source': _('Source'),
-            # 'relation': _('Relation'),
-            # 'record_format': _('Format'),
+            'source': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
             'bbox_upper_corner': _('Coordinates for upper left corner'),
-            'bbox_lower_corner': _('Coordinates for lower right corner'),
-            # 'contact_information': _('Contact Information'),
-            # 'gold': _('Gold'),
-            # 'category': _('Category'),
+            'bbox_lower_corner': _('Coordinates for lower right corner')
         }

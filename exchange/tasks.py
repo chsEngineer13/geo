@@ -4,14 +4,62 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 import requests
 from lxml import etree
-
+import arcrest
+from exchange.core.utils import process_service
 from exchange.core.models import CSWRecord
+from django.contrib.auth import get_user_model
+
+import time
 
 logger = get_task_logger(__name__)
 
 
 class UpstreamServiceImpairment(Exception):
     pass
+
+
+@task
+def load_service_layers(url, user_id):
+    folder = arcrest.Folder(url)
+
+    services = []
+
+    for item in folder.folders:
+        for s in item.services:
+            if hasattr(s, 'MapServer') or hasattr(s, 'ImageServer'):
+                    services.append(s)
+
+    logger.info('Found {} services to process!'.format(str(len(services))))
+
+    for i, service in enumerate(services):
+        if i % 5 == 0:
+            logger.info('Service Processing will sleep for 30 seconds.')
+            time.sleep(30)
+        data = process_service(service)
+        if data is not None:
+            for j, layer in enumerate(data['layers']):
+                if j % 5 == 0:
+                    logger.info('Layer Processing will sleep for 30 seconds.')
+                    time.sleep(30)
+                try:
+                    user = get_user_model().objects.get(id=user_id)
+                    record = CSWRecord()
+                    record.user = user
+                    record.id = layer['identifier']
+                    record.title = layer['title']
+                    record.record_type = layer['type']
+                    record.source = layer['source']
+                    record.creator = layer['creator']
+                    record.abstract = layer['abstract']
+                    record.relation = data['name']
+                    record.alternative = layer['title_alternate']
+                    record.contact_information = user.email
+                    record.status = 'Incomplete'
+                    record.bbox_upper_corner = str(layer['xmax']) + ',' + str(layer['ymax'])
+                    record.bbox_lower_corner = str(layer['xmin']) + ',' + str(layer['ymin'])
+                    record.save()
+                except Exception, e:
+                    logger.error(e)
 
 
 @task(
