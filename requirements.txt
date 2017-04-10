@@ -1,5 +1,6 @@
 --index-url https://pypi.python.org/simple/
 
+git+git://github.com/MapStory/composer.git@master#composer
 git+git://github.com/boundlessgeo/django-exchange-maploom.git@master#django-exchange-maploom
 git+git://github.com/boundlessgeo/geonode@exchange/1.2.0#egg=geonode
 git+git://github.com/GeoNode/django-osgeo-importer@master#egg=django-osgeo-importer
