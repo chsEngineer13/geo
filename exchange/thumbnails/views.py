@@ -15,17 +15,8 @@ import re
 # cache the blank gif for missing images.
 BLANK_GIF = open(os.path.join(os.path.dirname(__file__), 'static/blank.gif'),'r').read()
 
-# pattern for valid objectIds.
-ID_PATTERN = re.compile('^[A-Za-z0-9_\-]+$')
-
 def thumbnail_view(request, objectType, objectId):
     global BLANK_GIF, ID_PATTERN
-
-    if(objectType not in ['map', 'layer', 'document']):
-        return HttpResponse(status=400, content='Invalid objectType')
-
-    if(not ID_PATTERN.match(objectId)):
-        return HttpResponse(status=400, content='Invalid objectId')
 
     if(request.method == 'GET'):
         # check the database for a matching object type/id
