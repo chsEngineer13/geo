@@ -15,13 +15,21 @@ import re
 # cache the blank gif for missing images.
 BLANK_GIF = open(os.path.join(os.path.dirname(__file__), 'static/blank.gif'),'r').read()
 
+from .models import Thumbnail
+
 def thumbnail_view(request, objectType, objectId):
     global BLANK_GIF, ID_PATTERN
 
     if(request.method == 'GET'):
         # check the database for a matching object type/id
 
-        # if the image exists, return it.
+        try:
+            thumb = Thumbnail.objects.get(object_type=objectType, object_id=objectId)
+            # if the image exists, return it.
+            return HttpResponse(thumb.thumbnail_img, content_type=thumb.thumbnail_mime)
+        except Thumbnail.DoesNotExist:
+            # just move on to returning the blank image.
+            pass
 
         # else return the blank gif.
         return HttpResponse(BLANK_GIF, content_type='image/gif')
@@ -37,7 +45,7 @@ def thumbnail_view(request, objectType, objectId):
         max_bytes = 400000
 
         if(request.FILES['thumbnail'].size > max_bytes):
-            return HttpRsponse(status=400, content='Thumbnail too large.')
+            return HttpResponse(status=400, content='Thumbnail too large.')
 
         image_bytes = request.FILES['thumbnail'].read()
 
@@ -46,6 +54,16 @@ def thumbnail_view(request, objectType, objectId):
         if(image_type is None):
             return HttpResponse(status=400, content='Bad thumbnail format.')
 
+        try:
+            thumb = Thumbnail.objects.get(object_type=objectType, object_id=objectId)
+            # update the thumbnail
+            thumb.thumbnail_mime = 'image/'+image_type
+            thumb.thumbnail_img = image_bytes
+        except Thumbnail.DoesNotExist:
+            thumb = Thumbnail(object_type=objectType, object_id=objectId,
+                      thumbnail_mime='image/'+image_type, thumbnail_img=image_bytes)
+
+        thumb.save()
 
         # return a success message.
         return HttpResponse(status=201)
