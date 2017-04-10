@@ -38,7 +38,8 @@ def resource_variables(request):
         MAP_PREVIEW_LAYER=getattr(settings, 'MAP_PREVIEW_LAYER', "''"),
         LOCKDOWN_EXCHANGE=getattr(settings, 'LOCKDOWN_GEONODE', False),
         LOGIN_WARNING=getattr(settings, 'LOGIN_WARNING_ENABLED', False),
-        LOGIN_WARNING_TEXT=getattr(settings, 'LOGIN_WARNING_TEXT', "''")
+        LOGIN_WARNING_TEXT=getattr(settings, 'LOGIN_WARNING_TEXT', "''"),
+        STORYSCAPES_ENABLED=getattr(settings, 'STORYSCAPES_ENABLED', False)
     )
 
     return defaults
