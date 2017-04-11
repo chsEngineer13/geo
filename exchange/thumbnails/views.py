@@ -59,14 +59,9 @@ def thumbnail_view(request, objectType, objectId):
             return HttpResponse(status=400, content='Bad thumbnail format.')
 
         # if the thumbnail does not exist, create a new one.
-        if(thumb is None):
-            thumb = Thumbnail(object_type=objectType, object_id=objectId,
-                              thumbnail_mime='image/'+image_type,
-                              thumbnail_img=image_bytes)
-        else:
-            # update the thumbnail
-            thumb.thumbnail_mime = 'image/'+image_type
-            thumb.thumbnail_img = image_bytes
+        thumb = Thumbnail(object_type=objectType, object_id=objectId,
+                          thumbnail_mime='image/'+image_type,
+                          thumbnail_img=image_bytes, is_automatic=False)
 
         # save the updates
         thumb.save()

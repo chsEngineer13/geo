@@ -13,23 +13,35 @@ from . import get_gs_thumbnail
 
 class Thumbnail(models.Model):
 
-    object_type = models.CharField(max_length=255, blank=False)
+    object_type = models.CharField(max_length=255,
+                                   blank=False, primary_key=True)
     object_id = models.CharField(max_length=255, blank=False)
 
     thumbnail_mime = models.CharField(max_length=127, null=True, blank=True)
     thumbnail_img = models.BinaryField(null=True, blank=True)
 
+    is_automatic = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ('object_type', 'object_id')
 
 
-# Check to see if an object already has a thumbnail.
-def has_thumbnail(objectType, objectId):
+# Check to see if this is an 'automatic' type
+# of thumbnail.
+#
+# If "is_automatic" is set to true then Exchange/GeoServer
+# will generate the thumbnail for the layer.  When it is set to False,
+# that means the user has set a thumbnail and it will not be updated
+# when the signals trigger it.
+#
+def is_automatic(objectType, objectId):
     try:
-        Thumbnail.objects.get(object_type=objectType, object_id=objectId)
-        return True
+        t = Thumbnail.objects.get(object_type=objectType, object_id=objectId)
+    # when no legend exists, then one should be generated automatically.
     except Thumbnail.DoesNotExist:
-        return False
+        return True
+
+    return t.is_automatic
 
 
 # This is used as a post-save signal that will
@@ -45,7 +57,7 @@ def generate_thumbnail(instance, sender, **kwargs):
         object_id = instance.typename
         obj_type = 'layers'
 
-    if(object_id is not None and not has_thumbnail(obj_type, object_id)):
+    if(object_id is not None and is_automatic(obj_type, object_id)):
         # have geoserver generate a preview png and return it.
         thumb_png = get_gs_thumbnail(instance)
 
@@ -53,7 +65,7 @@ def generate_thumbnail(instance, sender, **kwargs):
             # create a new thumbnail.
             thumb = Thumbnail(object_type=obj_type, object_id=object_id,
                               thumbnail_mime='image/png',
-                              thumbnail_img=thumb_png)
+                              thumbnail_img=thumb_png, is_automatic=True)
             thumb.save()
 
 

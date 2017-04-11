@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
                 ('object_type', models.CharField(max_length=255, blank=False)),
                 ('object_id', models.CharField(max_length=255, blank=False)),
                 ('thumbnail_mime', models.CharField(max_length=127, null=True, blank=True)),
-                ('thumbnail_img', models.BinaryField(null=True, blank=True))
+                ('thumbnail_img', models.BinaryField(null=True, blank=True)),
+                ('is_automatic', models.BooleanField(default=True)),
             ]
         )
     ]
