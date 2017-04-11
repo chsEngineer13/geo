@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'exchange.core',
     'exchange.themes',
     'exchange.fileservice',
+    'exchange.thumbnails',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
