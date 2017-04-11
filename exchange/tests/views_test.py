@@ -67,16 +67,6 @@ class LayerMetadataDetailTest(ViewTestCase):
     def test(self):
         self.doit()
 
-    def test_thumb(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-
-    # Test that a back-up thumbnail gets created when
-    # uploading the new thumbnail twice.
-    def test_backup_thumbnail(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-        self.postfile(TEST_IMG, 'thumbnail_image')
-
-
 class MapMetadataDetailTest(ViewTestCase):
     def setUp(self):
         super(MapMetadataDetailTest, self).setUp()
@@ -92,13 +82,6 @@ class MapMetadataDetailTest(ViewTestCase):
 
     def test(self):
         self.doit()
-
-    def test_thumb(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-
-    def test_backup_thumbnail(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-        self.postfile(TEST_IMG, 'thumbnail_image')
 
 
 class GeoServerReverseProxyTest(ViewTestCase):
