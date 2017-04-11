@@ -5,7 +5,8 @@
 
 from . import ExchangeTest
 
-from StringIO import StringIO
+from base64 import b64encode
+
 
 class ThumbnailTest(ExchangeTest):
 
@@ -26,18 +27,17 @@ class ThumbnailTest(ExchangeTest):
         #       *and* a blank image?
         self.assertEqual(r.status_code, 200)
 
-        # the blank gif has 43 characters in it. 
-        self.assertEqual(len(r.content), 43, "This image does not appear to be blank")
-
+        # the blank gif has 43 characters in it.
+        self.assertEqual(len(r.content), 43,
+                         "This image does not appear to be blank")
 
     def test_basic_upload(self, img='test_thumbnail0.png'):
-        global TEST_DIR
-
-        test_legend_png = open(self.get_file_path(img), 'r')
+        test_thumb = open(self.get_file_path(img), 'r').read()
 
         # post up a legend
-        r = self.client.post('/thumbnails/map/0', 
-                             {'thumbnail' : test_legend_png})
+        r = self.client.post('/thumbnails/map/0',
+                             test_thumb,
+                             content_type='application/octet-stream')
 
         # success!
         self.assertEqual(r.status_code, 201)
@@ -53,26 +53,28 @@ class ThumbnailTest(ExchangeTest):
 
         # and check that we have somehting more like test_thumbnail1.png
 
-        r = self.get_thumbnail('/thumbnails/map/0');
-        self.assertEqual(len(r.content), 4911, 'This does not look like thumbnail 1')
+        r = self.get_thumbnail('/thumbnails/map/0')
+        self.assertEqual(len(r.content), 4911,
+                         'This does not look like thumbnail 1')
 
     def test_bad_image(self):
 
         # first a test without any thumbnail
         r = self.client.post('/thumbnails/map/0')
-        self.assertEqual(r.status_code, 400, 'Tried to process a missing thumbnail.')
+        self.assertEqual(r.status_code, 400,
+                         'Tried to process a missing thumbnail.')
 
         # now a post with a *bad* thumbnail string.
-        r = self.client.post('/thumbnails/map/0', {
-            'thumbnail' : open(self.get_file_path('test_point.shp'), 'r')
-        })
-        self.assertEqual(r.status_code, 400, 'Tried to process a poorly formatted thumbnail.')
-
+        shp_file = open(self.get_file_path('test_point.shp'), 'r')
+        r = self.client.post('/thumbnails/map/0',
+                             data=shp_file,
+                             content_type='application/octet-stream')
+        self.assertEqual(r.status_code, 400,
+                         'Tried to process a poorly formatted thumbnail.')
 
     def test_bad_object_type(self):
         r = self.client.post('/thumbnails/chicken/feed')
         self.assertEqual(r.status_code, 404)
-
 
     def test_huge_thumbnail(self):
         # thumbnails are limited in size, luckily we
@@ -81,9 +83,29 @@ class ThumbnailTest(ExchangeTest):
 
         big_string = '*' * 400001
 
-        r = self.client.post('/thumbnails/map/0', {
-            'thumbnail' : StringIO(big_string)
-        })
+        r = self.client.post('/thumbnails/map/0', big_string,
+                             content_type='text/plain')
 
         self.assertEqual(r.status_code, 400)
 
+    # The client needs to be able to upload the image as a
+    # base 64 encoded string.  This tests that capability.
+    #
+    def test_base64_pngs(self):
+        thumbpng = open(self.get_file_path('test_thumbnail0.png'), 'rb').read()
+
+        header = 'data:image/png;base64,'
+
+        base64_png = header + b64encode(thumbpng)
+
+        r = self.client.post('/thumbnails/map/0',
+                             base64_png,
+                             content_type='image/png')
+
+        self.assertEqual(r.status_code, 201, 'Error: '+r.content)
+
+        # then test the correct image came back.
+        r = self.client.get('/thumbnails/map/0')
+        test_b64 = b64encode(r.content)
+        self.assertEqual(test_b64, b64encode(thumbpng),
+                         'Images appear to differ.')

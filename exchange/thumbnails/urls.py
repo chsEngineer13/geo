@@ -1,5 +1,5 @@
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url
 
 from .views import thumbnail_view
 
