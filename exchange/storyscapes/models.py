@@ -50,7 +50,7 @@ class Story(ResourceBase):
         config = {
             'id': self.id,
             'about': about,
-            'chapters': [chapter.viewer_json(user) for chapter in self.chapters],
+            'chapters': [chapter.map.viewer_json(user, None) for chapter in self.chapters.all()],
             'thumbnail_url': '/static/geonode/img/missing_thumb.png'
         }
 
