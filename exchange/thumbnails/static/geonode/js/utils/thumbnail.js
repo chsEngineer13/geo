@@ -11,6 +11,12 @@ var getThumbnailPathFromUrl = function() {
     return '/thumbnails/' + path_info[0] + '/' + path_info[1];
 }
 
+var refreshThumbnail = function() {
+        var thumb = $('#thumbnail');
+        var time_str = (new Date()).getTime();
+        thumb.attr('src', thumb.attr('src').split('?')[0] + '?.ck=' + time_str);
+}
+
 var createMapThumbnail = function() {
     var canvas = $('.ol-viewport canvas');
 
@@ -45,8 +51,43 @@ var createMapThumbnail = function() {
         url: url,
         data: png_data,
         success: function(data, status, jqXHR) {
+            refreshThumbnail();
             return true;
         }
     });
+    return true;
+}
+
+var uploadThumbnail = function(inputId) {
+    var url = getThumbnailPathFromUrl();
+
+    var reader = new FileReader();
+
+    var input = document.getElementById(inputId);
+
+    // when the file reader gets the new file,
+    //  send it up to the server.
+    //reader.onload = function(e) {
+    var upload = function() {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: input.files[0],
+            processData: false,
+            success: function(data, status, jqXHR) {
+                refreshThumbnail();
+            }
+        });
+    }
+
+
+    // use jquery to normalize the event handling
+    $('#'+inputId).on('change', function() {
+        //reader.readAsBinaryString(input.files[0]);
+        upload();
+    });
+
+    // use the click event to open the file upload dialog.
+    $('#'+inputId).click();
     return true;
 }
