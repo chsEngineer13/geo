@@ -7,6 +7,7 @@ from django.test import TestCase
 from exchange.core.models import ThumbnailImage
 from exchange.core.context_processors import resource_variables
 from shutil import rmtree
+from urlparse import urlparse
 
 test_img = os.path.join(os.path.dirname(__file__), 'test.png')
 thumbs_dir = os.path.join(
@@ -93,3 +94,24 @@ class resource_variablesTestCase(TestCase):
             'GEOAXIS_ENABLED',
             self.defaults
         )
+        self.assertIn(
+            'NOMINATIM_ENABLED',
+            self.defaults
+        )
+        self.assertIn(
+            'GEOQUERY_ENABLED',
+            self.defaults
+        )
+        self.assertIn(
+            'NOMINATIM_URL',
+            self.defaults
+        )
+        self.assertIn(
+            'GEOQUERY_URL',
+            self.defaults
+        )
+
+        if self.defaults['GEOQUERY_ENABLED'] is True:
+            self.assertIsNotNone(self.defaults['GEOQUERY_URL'], "GEOQUERY_URL was not defined.")
+            # Minimal validation that GEOQUERY_URL is a valid URL
+            self.assertNotEqual(urlparse(self.defaults['GEOQUERY_URL']).netloc, '')
