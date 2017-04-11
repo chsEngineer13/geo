@@ -21,7 +21,7 @@ class ThumbnailTest(ExchangeTest):
         return r
 
     def test_blank(self):
-        r = self.client.get('/thumbnails/map/no-id')
+        r = self.client.get('/thumbnails/maps/no-id')
 
         # TODO: should this really return a 404
         #       *and* a blank image?
@@ -35,7 +35,7 @@ class ThumbnailTest(ExchangeTest):
         test_thumb = open(self.get_file_path(img), 'r').read()
 
         # post up a legend
-        r = self.client.post('/thumbnails/map/0',
+        r = self.client.post('/thumbnails/maps/0',
                              test_thumb,
                              content_type='application/octet-stream')
 
@@ -53,20 +53,20 @@ class ThumbnailTest(ExchangeTest):
 
         # and check that we have somehting more like test_thumbnail1.png
 
-        r = self.get_thumbnail('/thumbnails/map/0')
+        r = self.get_thumbnail('/thumbnails/maps/0')
         self.assertEqual(len(r.content), 4911,
                          'This does not look like thumbnail 1')
 
     def test_bad_image(self):
 
         # first a test without any thumbnail
-        r = self.client.post('/thumbnails/map/0')
+        r = self.client.post('/thumbnails/maps/0')
         self.assertEqual(r.status_code, 400,
                          'Tried to process a missing thumbnail.')
 
         # now a post with a *bad* thumbnail string.
         shp_file = open(self.get_file_path('test_point.shp'), 'r')
-        r = self.client.post('/thumbnails/map/0',
+        r = self.client.post('/thumbnails/maps/0',
                              data=shp_file,
                              content_type='application/octet-stream')
         self.assertEqual(r.status_code, 400,
@@ -83,7 +83,7 @@ class ThumbnailTest(ExchangeTest):
 
         big_string = '*' * 400001
 
-        r = self.client.post('/thumbnails/map/0', big_string,
+        r = self.client.post('/thumbnails/maps/0', big_string,
                              content_type='text/plain')
 
         self.assertEqual(r.status_code, 400)
@@ -98,14 +98,14 @@ class ThumbnailTest(ExchangeTest):
 
         base64_png = header + b64encode(thumbpng)
 
-        r = self.client.post('/thumbnails/map/0',
+        r = self.client.post('/thumbnails/maps/0',
                              base64_png,
                              content_type='image/png')
 
         self.assertEqual(r.status_code, 201, 'Error: '+r.content)
 
         # then test the correct image came back.
-        r = self.client.get('/thumbnails/map/0')
+        r = self.client.get('/thumbnails/maps/0')
         test_b64 = b64encode(r.content)
         self.assertEqual(test_b64, b64encode(thumbpng),
                          'Images appear to differ.')
