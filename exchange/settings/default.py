@@ -160,6 +160,10 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
+    'exchange.storyscapes',
+    'exchange.storyscapes.annotations',
+    'exchange.storyscapes.boxes',
+    'composer'
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
 if OSGEO_IMPORTER_ENABLED:
@@ -176,12 +180,8 @@ else:
 if GEONODE_CLIENT_ENABLED:
     INSTALLED_APPS = ('geonode-client',) + INSTALLED_APPS
     LAYER_PREVIEW_LIBRARY = 'react'
-
-if STORYSCAPES_ENABLED:
-    INSTALLED_APPS = ('exchange.storyscapes', 
-    'exchange.storyscapes.annotations', 
-    'exchange.storyscapes.boxes', 'composer',) + INSTALLED_APPS
          
+
 # authorized exempt urls
 ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
     'ADDITIONAL_AUTH_EXEMPT_URLS',
