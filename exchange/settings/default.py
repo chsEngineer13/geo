@@ -161,8 +161,8 @@ INSTALLED_APPS = (
     'solo',
     'exchange-docs',
     'exchange.storyscapes',
-    'exchange.storyscapes.annotations',
-    'exchange.storyscapes.boxes',
+    #'exchange.storyscapes.annotations',
+    #'exchange.storyscapes.boxes',
     'composer'
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
