@@ -100,7 +100,10 @@ LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
 
 # static files storage
-STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
+STATICFILES_DIRS = [
+    os.path.join(APP_ROOT, "static"),
+    os.path.join(APP_ROOT, "thumbnails", "static"),
+] + STATICFILES_DIRS
 
 # template settings
 TEMPLATES = [
@@ -285,7 +288,7 @@ ES_ENGINE = os.environ.get(
     'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
 )
 HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
-if ES_UNIFIED_SEARCH == True:
+if ES_UNIFIED_SEARCH:
     HAYSTACK_SEARCH = True
 if HAYSTACK_SEARCH:
     HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
@@ -509,3 +512,12 @@ if ENABLE_SOCIAL_LOGIN:
         AUTHENTICATION_BACKENDS += (
             'exchange.auth.backends.geoaxis.GeoAxisOAuth2',
         )
+
+# MapLoom search options
+NOMINATIM_URL = os.environ.get('NOMINATIM_URL', '//nominatim.openstreetmap.org')
+GEOQUERY_ENABLED = os.environ.get('GEOQUERY_ENABLED', False)
+GEOQUERY_URL = os.environ.get('GEOQUERY_URL', None)
+if GEOQUERY_ENABLED:
+    NOMINATIM_ENABLED = False
+else:
+    NOMINATIM_ENABLED = True
