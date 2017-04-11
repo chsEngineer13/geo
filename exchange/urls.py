@@ -28,6 +28,10 @@ from geonode.urls import urlpatterns as geonode_urls
 from . import views
 from django.views.defaults import page_not_found
 
+from storyscapes.annotations.urls import urlpatterns as annotations_urls
+from storyscapes.boxes.urls import urlpatterns as boxes_urls
+from storyscapes.urls import urlpatterns as story_urls
+
 js_info_dict = {
     'packages': ('geonode.layers',),
 }
@@ -73,6 +77,11 @@ if 'osgeo_importer' in settings.INSTALLED_APPS:
     # Add django-osgeo-importer URLs
     from osgeo_importer.urls import urlpatterns as osgeo_importer_urls
     urlpatterns += osgeo_importer_urls
+
+if settings.STORYSCAPES_ENABLED:
+    urlpatterns += annotations_urls
+    urlpatterns += boxes_urls
+    urlpatterns += story_urls
 
 # use combined registry/geonode elastic search rather than geonode search
 if settings.ES_UNIFIED_SEARCH:

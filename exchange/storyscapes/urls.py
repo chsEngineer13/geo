@@ -6,7 +6,7 @@ urlpatterns = patterns(
     '',
     # maploom
     url(r'^story/new', 'geonode.maps.views.new_map',
-        {'template': 'maps/story.html'}, name='new_story'),
+        {'template': 'composer/v1/story.html'}, name='new_story'),
     url(r'^story/(?P<storyid>[^/]+)/save$', save_story,
         name='save_story')
 

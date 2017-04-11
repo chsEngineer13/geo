@@ -7,7 +7,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0025_auto_20170410_2043'),
         ('maps', '24_initial'),
     ]
 
