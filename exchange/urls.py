@@ -47,6 +47,7 @@ urlpatterns = patterns(
     url(r'^csw/new/$', views.insert_csw, name='insert_csw'),
     url(r'^csw/status/$', views.csw_status, name='csw_status'),
     url(r'^csw/status_table/$', views.csw_status_table, name='csw_status_table'),
+    url(r'^autocomplete', views.empty_page, name='autocomplete_override'),
 )
 
 if settings.REGISTRY is False:
