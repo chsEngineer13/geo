@@ -59,7 +59,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         default=0,
         boost=20)
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
-    rating = indexes.IntegerField(null=True)
+    num_chapters = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField(stored=False)
     num_comments = indexes.IntegerField(stored=False)
     # Need to grab the owner's first and last name as well as published status
@@ -85,6 +85,12 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
             return float(str(rating or "0"))
         except OverallRating.DoesNotExist:
             return 0.0
+
+    def prepare_num_chapters(self, obj):
+        try:
+            return obj.chapters.all().count()
+        except:
+            return 0
 
     def prepare_num_ratings(self, obj):
         ct = ContentType.objects.get_for_model(obj)
