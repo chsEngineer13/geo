@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from .views import save_story, new_story_json, new_chapter_json
+from .views import save_story, new_story_json, new_chapter_json, draft_view
 
 from tastypie.api import Api
 
@@ -20,5 +20,7 @@ urlpatterns = patterns(
     url(r'^story/(?P<storyid>[^/]+)/save$', save_story,
         name='save_story'),
     url(r'^api/', include(v1_api.urls)),
+    url(r'^story/(?P<story_id>[^/]+)/draft$',
+    draft_view, {'template': 'composer/editor.html'}, name='composer-draft-view'),
 
 )

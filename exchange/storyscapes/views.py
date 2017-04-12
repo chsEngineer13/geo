@@ -7,6 +7,14 @@ from geonode.maps.views import clean_config
 
 from .models import StoryChapter
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
+from geonode.utils import resolve_object
+
+from geonode.layers.views import _PERMISSION_MSG_GENERIC, _PERMISSION_MSG_VIEW, _PERMISSION_MSG_DELETE
+
 _PERMISSION_MSG_LOGIN = 'You must be logged in to save this story'
 _PERMISSION_MSG_SAVE = 'You are not permitted to save or edit this story'
 
@@ -37,6 +45,7 @@ def save_story(request, storyid):
                 status=400
         )
 
+
 def new_chapter_json(request):
 
     '''
@@ -66,7 +75,7 @@ def new_chapter_json(request):
 
             if isinstance(body, basestring):
                 body = json.loads(body)
-                story_id = body.get('story_id',0)
+                story_id = body.get('story_id', 0)
                 story_obj = Story.objects.get(id=story_id)
                 mapping = StoryChapter()
                 mapping.chapter_index = body['chapter_index']
@@ -94,6 +103,35 @@ def new_chapter_json(request):
             )
     else:
         return HttpResponse(status=405)
+
+
+def draft_view(request, story_id, template='composer/editor.html'):
+
+    story_obj = _resolve_story(request, story_id, 'base.change_resourcebase', _PERMISSION_MSG_SAVE)
+
+    config = story_obj.viewer_json(request.user)
+
+    return render_to_response(template, RequestContext(request, {
+        'config': json.dumps(config),
+        'story': story_obj
+    }))
+
+@login_required
+def story_draft(request, storyid, template):
+    return draft_view(request, storyid, template)
+
+
+def _resolve_story(request, id, permission='base.change_resourcebase',
+                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    '''
+    Resolve the Map by the provided typename and check the optional permission.
+    '''
+    if id.isdigit():
+        key = 'pk'
+    else:
+        key = 'urlsuffix'
+    return resolve_object(request, Story, {key: id}, permission=permission,
+                          permission_msg=msg, **kwargs)
 
 
 def new_story_json(request):
