@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('the_geom', models.TextField(null=True, blank=True)),
                 ('start_time', models.BigIntegerField(null=True, blank=True)),
                 ('end_time', models.BigIntegerField(null=True, blank=True)),
-                ('object_id', models.PositiveIntegerField()),
+                ('map', models.ForeignKey(to='maps.Map')),
                 ('title', models.CharField(max_length=100)),
                 ('description', models.TextField(null=True, blank=True)),
                 ('data', models.TextField(null=True, blank=True)),
@@ -33,7 +33,6 @@ class Migration(migrations.Migration):
                 ('zoom', models.IntegerField(null=True, blank=True)),
                 ('layers', models.TextField(null=True, blank=True)),
                 ('resolution', models.TextField(null=True, blank=True)),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],
             options={
                 'verbose_name_plural': 'Frame',

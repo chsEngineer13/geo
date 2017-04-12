@@ -1,8 +1,8 @@
 from django.db import transaction
 from django.http import HttpResponse
-from .models import Annotation
-from .forms import AnnotationForm
-from .utils import unicode_csv_dict_reader
+from exchange.storyscapes.models.marker import Marker
+from .forms import MarkerForm
+from exchange.storyscapes.utils import unicode_csv_dict_reader
 from geonode.utils import resolve_object
 from geonode.maps.models import Map
 from geonode.utils import json_response
@@ -14,7 +14,7 @@ import json
 def _annotations_get(req, mapid):
     mapobj = resolve_object(req, Map, {'id': mapid}, permission='base.view_resourcebase')
     cols = ['title', 'content', 'media', 'start_time', 'end_time', 'in_map', 'in_timeline', 'appearance', 'auto_show', 'pause_playback']
-    ann = Annotation.objects.filter(map=mapid)
+    ann = Marker.objects.filter(map=mapid)
     ann = ann.order_by('start_time', 'end_time', 'title')
     if bool(req.GET.get('in_map', False)):
         ann = ann.filter(in_map=True)
@@ -101,9 +101,9 @@ def _annotations_post(req, mapid):
         form_mode = 'csv'
         content_type = 'text/html'
         get_props = lambda r: r
-        ids = list(Annotation.objects.filter(map=mapobj).values_list('id', flat=True))
+        ids = list(Marker.objects.filter(map=mapobj).values_list('id', flat=True))
         # delete existing, we overwrite
-        finish = lambda: Annotation.objects.filter(id__in=ids).delete()
+        finish = lambda: Marker.objects.filter(id__in=ids).delete()
         overwrite = True
 
         def error_format(row_errors):
@@ -115,7 +115,7 @@ def _annotations_post(req, mapid):
             return 'The following rows had problems:<ul><li>' + '</li><li>'.join(response) + "</li></ul>"
 
     if action == 'delete':
-        Annotation.objects.filter(pk__in=data['ids'], map=mapobj).delete()
+        Marker.objects.filter(pk__in=data['ids'], map=mapobj).delete()
         return json_response({'success': True})
 
     if action != 'upsert':
@@ -147,13 +147,13 @@ def _write_annotations(data, get_props, id_collector, mapobj, overwrite, form_mo
         ann = None
         id = r.get('id', None)
         if id and not overwrite:
-            ann = Annotation.objects.get(map=mapobj, pk=id)
+            ann = Marker.objects.get(map=mapobj, pk=id)
 
         # form expects everything in the props, copy geometry in
         if 'geometry' in r:
             props['geometry'] = r['geometry']
         props.pop('id', None)
-        form = AnnotationForm(props, instance=ann, form_mode=form_mode)
+        form = MarkerForm(props, instance=ann, form_mode=form_mode)
         if not form.is_valid():
             errors.append((i, form.errors))
         else:

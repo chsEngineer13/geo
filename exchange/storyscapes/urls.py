@@ -1,5 +1,7 @@
 from django.conf.urls import patterns, url, include
 from .views import save_story, new_story_json, new_chapter_json, draft_view
+from .annotations.views import annotations
+from .boxes.views import boxes
 
 from tastypie.api import Api
 
@@ -20,7 +22,9 @@ urlpatterns = patterns(
     url(r'^story/(?P<storyid>[^/]+)/save$', save_story,
         name='save_story'),
     url(r'^api/', include(v1_api.urls)),
-    url(r'^story/(?P<story_id>[^/]+)/draft$',
-    draft_view, {'template': 'composer/editor.html'}, name='composer-draft-view'),
+    url(r'^story/(?P<story_id>[^/]+)/draft$', draft_view, {'template': 'composer/editor.html'},
+        name='composer-draft-view'),
+    url(r'^maps/(?P<mapid>[^/]+)/boxes$', boxes, name='boxes'),
+    url(r'^maps/(?P<mapid>[^/]+)/annotations', annotations, name='annotations'),
 
 )

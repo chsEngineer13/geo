@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
 
+from geonode.maps.models import Map
+
 from .mixins import SpatioTemporalMixin
 
 import logging
@@ -45,9 +47,11 @@ class Frame(SpatioTemporalMixin):
                      ('weeks', 'Weeks'), ('months', 'Months'),
                      ('years', 'Years'),)
 
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = fields.GenericForeignKey('content_type', 'object_id')
+    #content_type = models.ForeignKey(ContentType)
+    #object_id = models.PositiveIntegerField()
+    #content_object = fields.GenericForeignKey('content_type', 'object_id')
+
+    map = models.ForeignKey(Map)
 
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

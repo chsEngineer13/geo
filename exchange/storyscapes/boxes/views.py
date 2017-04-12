@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.http import HttpResponse
-from .models import StoryBox
-from .forms import StoryBoxForm
-from .utils import unicode_csv_dict_reader
+from exchange.storyscapes.models.frame import Frame
+from .forms import FrameForm
+from exchange.storyscapes.utils import unicode_csv_dict_reader
 from geonode.utils import resolve_object
 from geonode.maps.models import Map
 from geonode.utils import json_response
+
+from django.contrib.contenttypes.models import ContentType
 
 import csv
 import json
@@ -28,7 +30,7 @@ def _boxes_get(req, mapid):
         'intervalRate',
         'zoom',
         ]
-    box = StoryBox.objects.filter(map=mapid)
+    box = Frame.objects.filter(map=mapid)
     box = box.order_by('start_time', 'end_time', 'title')
     if bool(req.GET.get('in_map', False)):
         box = box.filter(in_map=True)
@@ -129,10 +131,10 @@ def _boxes_post(req, mapid):
         form_mode = 'csv'
         content_type = 'text/html'
         get_props = lambda r: r
-        ids = list(StoryBox.objects.filter(map=mapobj).values_list('id',
+        ids = list(Frame.objects.filter(map=mapobj).values_list('id',
                                                                    flat=True))
         # delete existing, we overwrite
-        finish = lambda: StoryBox.objects.filter(id__in=ids).delete()
+        finish = lambda: Frame.objects.filter(id__in=ids).delete()
         overwrite = True
 
         def error_format(row_errors):
@@ -145,7 +147,7 @@ def _boxes_post(req, mapid):
                 + '</li><li>'.join(response) + '</li></ul>'
 
     if action == 'delete':
-        StoryBox.objects.filter(pk__in=data['ids'], map=mapobj).delete()
+        Frame.objects.filter(pk__in=data['ids'], map=mapobj).delete()
         return json_response({'success': True})
 
     if action != 'upsert':
@@ -181,16 +183,20 @@ def _write_boxes(data, get_props, id_collector, mapobj, overwrite, form_mode):
     for i, r in enumerate(data):
         props = get_props(r)
         props['map'] = mapobj.id
+        #props['object_id'] = mapobj.id
+        #props['content_type'] = ContentType.objects.get(id=mapobj.id).id
         box = None
         id = r.get('id', None)
         if id and not overwrite:
-            box = StoryBox.objects.get(map=mapobj, pk=id)
+            box = Frame.objects.get(map=mapobj, pk=id)
+            #box = Frame.objects.get(pk=id)
 
         # form expects everything in the props, copy geometry in
         if 'geometry' in r:
             props['geometry'] = r['geometry']
         props.pop('id', None)
-        form = StoryBoxForm(props, instance=box, form_mode=form_mode)
+        form = FrameForm(props, instance=box, form_mode=form_mode)
+        #form.content_type = ContentType.objects.get_for_model(Map)
         if not form.is_valid():
             errors.append((i, form.errors))
         else:
