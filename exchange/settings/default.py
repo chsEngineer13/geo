@@ -100,7 +100,10 @@ LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
 
 # static files storage
-STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
+STATICFILES_DIRS = [
+    os.path.join(APP_ROOT, "static"),
+    os.path.join(APP_ROOT, "thumbnails", "static"),
+] + STATICFILES_DIRS
 
 # template settings
 TEMPLATES = [
@@ -152,6 +155,7 @@ INSTALLED_APPS = (
     'exchange.core',
     'exchange.themes',
     'exchange.fileservice',
+    'exchange.thumbnails',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
