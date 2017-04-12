@@ -4,7 +4,6 @@ import json
 import uuid
 
 from django import core, db
-from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -13,7 +12,7 @@ class Story(ResourceBase):
     chapters = db.models.ManyToManyField(Map, through='StoryChapter')
 
     def get_absolute_url(self):
-        return ''#core.urlresolvers.reverse('mapstory.views.map_detail', None, [str(self.id)])
+        return core.urlresolvers.reverse('storyscapes.views.story_detail', None, [str(self.id)])
 
     def update_from_viewer(self, conf):
 
@@ -105,9 +104,6 @@ class StoryChapter(db.models.Model):
         if isinstance(conf, basestring):
             conf = json.loads(conf)
 
-        #super allows us to call base class function implementation from geonode
-        super(Map, self).update_from_viewer(conf)
-
         self.viewer_playbackmode = conf['viewer_playbackmode'] or 'Instant'
 
         self.chapter_index = conf['chapter_index']
@@ -116,12 +112,12 @@ class StoryChapter(db.models.Model):
         self.story = story_obj
         self.save()
 
-    def viewer_json(self, user, access_token=None, *added_layers):
-        base_config = super(Map, self).viewer_json(user, access_token, *added_layers)
-        base_config['viewer_playbackmode'] = self.viewer_playbackmode
-        base_config['tools'] = [{'outputConfig': {'playbackMode': self.viewer_playbackmode}, 'ptype': 'gxp_playback'}]
+    #def viewer_json(self, user, access_token=None, *added_layers): access_token, *added_
+    #    base_config = super(Map, self).viewer_json(user,layers)
+    #    base_config['viewer_playbackmode'] = self.viewer_playbackmode
+    #    base_config['tools'] = [{'outputConfig': {'playbackMode': self.viewer_playbackmode}, 'ptype': 'gxp_playback'}]
 
-        return base_config
+    #    return base_config
 
     class Meta(ResourceBase.Meta):
         verbose_name_plural = 'Chapters'

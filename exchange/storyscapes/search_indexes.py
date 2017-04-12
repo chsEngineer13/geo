@@ -3,7 +3,7 @@ from dialogos.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from haystack import indexes
-from exchange.storyscapes.models import Story
+from .models.base import Story
 
 
 class StoryIndex(indexes.SearchIndex, indexes.Indexable):

@@ -1,11 +1,11 @@
-from .models import Story
+from .models.base import Story
 from django.http import HttpResponse
 import json
 
 from geonode.maps.models import Map, MapSnapshot
 from geonode.maps.views import clean_config
 
-from .models import StoryChapter
+from .models.base import StoryChapter
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
