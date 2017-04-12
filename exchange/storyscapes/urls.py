@@ -1,6 +1,13 @@
-from django.conf.urls import patterns, url
-from exchange.storyscapes.annotations.urls import urlpatterns as _urlpatterns
+from django.conf.urls import patterns, url, include
 from .views import save_story, new_story_json, new_chapter_json
+
+from tastypie.api import Api
+
+from api import StoryResource
+
+v1_api = Api(api_name='v1')
+
+v1_api.register(StoryResource())
 
 urlpatterns = patterns(
     '',
@@ -11,8 +18,7 @@ urlpatterns = patterns(
     url(r'^story$', new_story_json,
         name='new_story_json'),
     url(r'^story/(?P<storyid>[^/]+)/save$', save_story,
-        name='save_story')
+        name='save_story'),
+    url(r'^api/', include(v1_api.urls)),
 
 )
-
-urlpatterns += _urlpatterns

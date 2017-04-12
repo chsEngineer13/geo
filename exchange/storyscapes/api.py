@@ -1,6 +1,6 @@
 from django.conf import settings
 from geonode.api.resourcebase_api import CommonModelApi, CommonMetaApi
-from storyscapes.models import Story
+from .models import Story
 
 
 class StoryResource(CommonModelApi):
