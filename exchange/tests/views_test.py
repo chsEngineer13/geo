@@ -142,23 +142,6 @@ class InsertCSWTest(ViewTestCase):
     def test(self):
         self.doit()
 
-    @pytest.mark.skip
-    def test_post(self):
-        response = self.client.post(
-            self.url,
-            {
-                'title': 'foo',
-                'creator': 'me',
-                'modified': '2017-01-01',
-                'source': 'http://google.com'
-            }
-        )
-        self.assertEqual(
-            response.status_code,
-            302
-        )
-
-
 class CSWStatusTest(ViewTestCase):
 
     def setUp(self):
@@ -316,5 +299,5 @@ class ViewFunctionTests(ViewTestCase):
         # ensure the thumbnail link is generated.
 
         self.assertEqual(test_objects[1]['thumbnail_url'],
-                         'http://172.16.238.6:8001/layers/exchange:dummy/thumby.png',
+                         '%s/layers/exchange:dummy/thumby.png' % settings.REGISTRYURL,
                          'Wrong thumbnail URL (%s)' % test_objects[1]['thumbnail_url'])
