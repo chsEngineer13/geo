@@ -47,7 +47,6 @@ urlpatterns = patterns(
     url(r'^csw/new/$', views.insert_csw, name='insert_csw'),
     url(r'^csw/status/$', views.csw_status, name='csw_status'),
     url(r'^csw/status_table/$', views.csw_status_table, name='csw_status_table'),
-    url(r'^autocomplete', views.empty_page, name='autocomplete_override'),
 )
 
 if settings.REGISTRY is False:
@@ -92,6 +91,9 @@ if settings.ES_UNIFIED_SEARCH:
     urlpatterns += [url(r'^api/(?P<resourcetype>registry)/search/$',
                         views.unified_elastic_search,
                         name='unified_elastic_search')]
+    urlpatterns += [url(r'^autocomplete', 
+                        views.empty_page, 
+                        name='autocomplete_override')]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls
