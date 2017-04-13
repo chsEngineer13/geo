@@ -49,6 +49,8 @@ class Migration(migrations.Migration):
                 ('content', models.TextField(null=True, blank=True)),
                 ('media', models.TextField(null=True, blank=True)),
                 ('in_timeline', models.BooleanField(default=False)),
+                ('auto_show', models.BooleanField(default=False)),
+                ('pause_playback', models.BooleanField(default=False)),
                 ('in_map', models.BooleanField(default=False)),
                 ('appearance', models.TextField(null=True, blank=True)),
                 ('map', models.ForeignKey(to='maps.Map')),
