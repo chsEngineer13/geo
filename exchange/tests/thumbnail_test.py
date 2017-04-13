@@ -109,3 +109,28 @@ class ThumbnailTest(ExchangeTest):
         test_b64 = b64encode(r.content)
         self.assertEqual(test_b64, b64encode(thumbpng),
                          'Images appear to differ.')
+
+    # Ensure that layer legends are preserved when set.
+    #
+    def test_two_layers(self):
+        png1 = open(self.get_file_path('test_thumbnail0.png'), 'rb').read()
+        png2 = open(self.get_file_path('test_thumbnail1.png'), 'rb').read()
+
+        self.client.post('/thumbnails/layers/layer1', png1,
+                         content_type='image/png')
+
+
+        self.client.post('/thumbnails/layers/layer2', png2,
+                         content_type='image/png')
+
+        r = self.client.get('/thumbnails/layers/layer1')
+        self.assertEqual(r.status_code, 200, 'failed to retrieve thumbnail')
+        data1 = r.content
+
+        r = self.client.get('/thumbnails/layers/layer2')
+        self.assertEqual(r.status_code, 200, 'failed to retrieve thumbnail')
+        data2 = r.content
+
+        self.assertEqual(data1, png1, 'Mismatch in thumbnail 1')
+        self.assertEqual(data2, png2, 'Mismatch in thumbnail 2')
+
