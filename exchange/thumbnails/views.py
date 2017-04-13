@@ -12,7 +12,7 @@ from base64 import b64decode
 import imghdr
 import os
 
-from .models import Thumbnail
+from .models import Thumbnail, save_thumbnail
 
 # cache the blank gif for missing images.
 TEST_DIR = os.path.dirname(__file__)
@@ -59,12 +59,7 @@ def thumbnail_view(request, objectType, objectId):
             return HttpResponse(status=400, content='Bad thumbnail format.')
 
         # if the thumbnail does not exist, create a new one.
-        thumb = Thumbnail(object_type=objectType, object_id=objectId,
-                          thumbnail_mime='image/'+image_type,
-                          thumbnail_img=image_bytes, is_automatic=False)
-
-        # save the updates
-        thumb.save()
+        save_thumbnail(objectType, objectId, 'image/'+image_type, image_bytes, False)
 
         # return a success message.
         return HttpResponse(status=201)
