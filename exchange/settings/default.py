@@ -148,6 +148,7 @@ if isinstance(ADDITIONAL_APPS, str):
 
 OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'False'))
 GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
+STORYSCAPES_ENABLED = str2bool(os.getenv('STORYSCAPES_ENABLED', 'False'))
 
 # installed applications
 INSTALLED_APPS = (
@@ -163,6 +164,8 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
+    'exchange.storyscapes',
+    'composer',
     'social_django',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
@@ -180,6 +183,7 @@ else:
 if GEONODE_CLIENT_ENABLED:
     INSTALLED_APPS = ('geonode-client',) + INSTALLED_APPS
     LAYER_PREVIEW_LIBRARY = 'react'
+         
 
 # authorized exempt urls
 ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
