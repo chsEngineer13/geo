@@ -9,8 +9,11 @@
   <link href="{% static "theme/css/site_base.css"%}" rel="stylesheet"/>
   <style>
     {% if theme.banner_logo %}
-        .navbar-brand {
+        a.navbar-brand {
             background: url('{{ theme.banner_logo_url }}')  0 10px no-repeat;
+            {% ifequal theme.name  "GEOINT" %}
+                background-size: 30%;
+            {% endifequal %}
         }
     {% else %}
         .navbar-brand {

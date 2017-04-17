@@ -100,7 +100,10 @@ LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
 
 # static files storage
-STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
+STATICFILES_DIRS = [
+    os.path.join(APP_ROOT, "static"),
+    os.path.join(APP_ROOT, "thumbnails", "static"),
+] + STATICFILES_DIRS
 
 # template settings
 TEMPLATES = [
@@ -153,6 +156,7 @@ INSTALLED_APPS = (
     'exchange.core',
     'exchange.themes',
     'exchange.fileservice',
+    'exchange.thumbnails',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
@@ -290,7 +294,7 @@ ES_ENGINE = os.environ.get(
     'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
 )
 HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
-if ES_UNIFIED_SEARCH == True:
+if ES_UNIFIED_SEARCH:
     HAYSTACK_SEARCH = True
 if HAYSTACK_SEARCH:
     HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
@@ -508,9 +512,20 @@ if ENABLE_SOCIAL_LOGIN:
     SOCIAL_AUTH_GEOAXIS_KEY = os.environ.get('OAUTH_GEOAXIS_KEY', None)
     SOCIAL_AUTH_GEOAXIS_SECRET = os.environ.get('OAUTH_GEOAXIS_SECRET', None)
     SOCIAL_AUTH_GEOAXIS_HOST = os.environ.get('OAUTH_GEOAXIS_HOST', None)
+    OAUTH_GEOAXIS_SCOPES = os.environ.get('OAUTH_GEOAXIS_SCOPES', 'UserProfile.me')
+    SOCIAL_AUTH_GEOAXIS_SCOPE = map(str.strip, OAUTH_GEOAXIS_SCOPES.split(','))
     ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
     # GeoAxisOAuth2 will cause all login attempt to fail if SOCIAL_AUTH_GEOAXIS_HOST is None
     if ENABLE_GEOAXIS_LOGIN:
         AUTHENTICATION_BACKENDS += (
             'exchange.auth.backends.geoaxis.GeoAxisOAuth2',
         )
+
+# MapLoom search options
+NOMINATIM_URL = os.environ.get('NOMINATIM_URL', '//nominatim.openstreetmap.org')
+GEOQUERY_ENABLED = os.environ.get('GEOQUERY_ENABLED', False)
+GEOQUERY_URL = os.environ.get('GEOQUERY_URL', None)
+if GEOQUERY_ENABLED:
+    NOMINATIM_ENABLED = False
+else:
+    NOMINATIM_ENABLED = True

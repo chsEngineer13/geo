@@ -15,10 +15,10 @@ class GeoAxisOAuth2(BaseOAuth2):
     ID_KEY = 'user_id'
     AUTHORIZATION_URL = 'https://' + HOST + '/ms_oauth/oauth2/endpoints/oauthservice/authorize'
     ACCESS_TOKEN_URL = 'https://' + HOST + '/ms_oauth/oauth2/endpoints/oauthservice/tokens'
-    DEFAULT_SCOPE = ['UserProfile']
+    DEFAULT_SCOPE = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_SCOPE', '')
     REDIRECT_STATE = False
     ACCESS_TOKEN_METHOD = 'POST'
-    SSL_PROTOCOL = ssl.PROTOCOL_TLSv1
+
     EXTRA_DATA = [
         ('refresh_token', 'refresh_token', True),
         ('user_id', 'user_id'),

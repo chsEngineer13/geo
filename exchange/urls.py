@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from maploom.geonode.urls import urlpatterns as maploom_urls
 from fileservice.urls import urlpatterns as fileservice_urls
+from thumbnails.urls import urlpatterns as thumbnail_urls
 from geonode.urls import urlpatterns as geonode_urls
 from . import views
 from django.views.defaults import page_not_found
@@ -100,3 +101,4 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls
 urlpatterns += fileservice_urls
+urlpatterns += thumbnail_urls
