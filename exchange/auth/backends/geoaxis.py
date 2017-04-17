@@ -12,6 +12,8 @@ from django.conf import settings
 class GeoAxisOAuth2(BaseOAuth2):
     name = 'geoaxis'
     HOST = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_HOST', 'localhost')
+    CLIENT_KEY = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_KEY', '')
+    CLIENT_SECRET = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_SECRET', '')
     ID_KEY = 'user_id'
     AUTHORIZATION_URL = 'https://' + HOST + '/ms_oauth/oauth2/endpoints/oauthservice/authorize'
     ACCESS_TOKEN_URL = 'https://' + HOST + '/ms_oauth/oauth2/endpoints/oauthservice/tokens'
@@ -26,7 +28,7 @@ class GeoAxisOAuth2(BaseOAuth2):
     ]
     
     def auth_headers(self):
-        b64Val = base64.b64encode('3d1c9d20aced4bd1b480ef114d6b3f92:wIBhcabK')
+        b64Val = base64.b64encode('{}:{}'.format(self.CLIENT_KEY, self.CLIENT_SECRET))
         return {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
                 'Authorization': "Basic %s" % b64Val}
     
