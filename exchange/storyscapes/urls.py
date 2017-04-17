@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from .views import save_story, new_story_json, new_chapter_json, draft_view
+from .views import save_story, new_story_json, new_chapter_json, draft_view, story_view, story_detail
 from .annotations.views import annotations
 from .boxes.views import boxes
 
@@ -26,5 +26,8 @@ urlpatterns = patterns(
         name='composer-draft-view'),
     url(r'^maps/(?P<mapid>[^/]+)/boxes$', boxes, name='boxes'),
     url(r'^maps/(?P<mapid>[^/]+)/annotations', annotations, name='annotations'),
+    url(r'^story/(?P<story_id>\d+)/?$', story_detail, name='story_detail'),
+    url(r'^story/(?P<storyid>\d+)/view$', story_view, name='story_view'),
+
 
 )

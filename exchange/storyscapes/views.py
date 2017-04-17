@@ -159,3 +159,58 @@ def new_story_json(request):
                 status=200,
                 content_type='application/json'
         )
+
+
+def story_view(request, storyid, snapshot=None, template='viewer/story_viewer.html'):
+    """
+    The view that returns the map viewer opened to
+    the story with the given ID.
+    """
+
+    story_obj = _resolve_story(request, storyid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+
+    if snapshot is None:
+        config = story_obj.viewer_json(request.user)
+
+    return render_to_response(template, RequestContext(request, {
+        'config': json.dumps(config)
+    }))
+
+
+def story_detail(request, story_id, snapshot=None, template='viewer/story_detail.html'):
+    '''
+    The view that show details of each map
+    '''
+
+    story_obj = _resolve_story(request, story_id, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    if request.user != story_obj.owner and not request.user.is_superuser:
+        Story.objects.filter(id=story_obj.id).update(popular_count=F('popular_count') + 1)
+
+    config = story_obj.viewer_json(request.user)
+
+    config = json.dumps(config)
+    chapters = story_obj.chapters.all()
+    layers = []
+    for chapter in chapters:
+        layers = layers + list(chapter.local_layers)
+
+    keywords = json.dumps([tag.name for tag in story_obj.keywords.all()])
+
+    context_dict = {
+        'config': config,
+        'resource': story_obj,
+        'layers': layers,
+        'keywords': keywords,
+        #'permissions_json': _perms_info_json(map_obj),
+        #'documents': get_related_documents(map_obj),
+        #'keywords_form': keywords_form,
+        #'published_form': published_form,
+        #'thumbnail': map_thumbnail,
+        #'thumb_form': map_thumb_form
+    }
+
+    return render_to_response(template, RequestContext(request, context_dict))
+
