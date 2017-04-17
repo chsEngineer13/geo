@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
+    'social_django',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
 if OSGEO_IMPORTER_ENABLED:
@@ -466,7 +467,6 @@ if SITEURL.startswith('https'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 if ENABLE_SOCIAL_LOGIN:
-    INSTALLED_APPS = ('social_django',) + INSTALLED_APPS
     SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
 
     AUTHENTICATION_BACKENDS += (
@@ -509,7 +509,8 @@ if ENABLE_SOCIAL_LOGIN:
     OAUTH_GEOAXIS_SCOPES = os.environ.get('OAUTH_GEOAXIS_SCOPES', 'UserProfile.me')
     SOCIAL_AUTH_GEOAXIS_SCOPE = map(str.strip, OAUTH_GEOAXIS_SCOPES.split(','))
     ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
-    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    if SITEURL.startswith('https'):
+        SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
     # GeoAxisOAuth2 will cause all login attempt to fail if SOCIAL_AUTH_GEOAXIS_HOST is None
     if ENABLE_GEOAXIS_LOGIN:
         AUTHENTICATION_BACKENDS += (
