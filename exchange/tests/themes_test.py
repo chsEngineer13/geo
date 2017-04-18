@@ -1,10 +1,11 @@
+import cStringIO
 import os
 import sys
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.management import call_command
+from django.core.management import call_command, CommandError
 from django.test import TestCase, RequestFactory
 from django.utils.six import StringIO
 from exchange.themes.models import Theme
@@ -162,11 +163,26 @@ class ThemeViewTest(ExchangeTest):
         r = self.client.get('/admin/themes/theme/2/')
 
 
-class SetActiveThemeTest(TestCase):
+class ListThemeTest(TestCase):
     def test_command_output(self):
-        args = [1]
-        opts = {}
         out = StringIO()
-        sys.stout = out
-        call_command('set_active_theme', *args, **opts, stdout=out)
-        self.assertIn('Successfully activated theme "StoryScapes"', out.getvalue())
+        call_command('list_themes', stdout=out)
+        self.assertTrue('Available Themes:' in out.getvalue())
+
+
+class SetActiveThemeByIdTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command('set_active_theme_by_id', theme_id=1, stdout=out)
+        self.assertTrue('Successfully' in out.getvalue())
+
+
+class SetActiveThemeByNameTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command(
+            'set_active_theme_by_name',
+            theme_name='GEOINT',
+            stdout=out
+        )
+        self.assertTrue('Successfully' in out.getvalue())
