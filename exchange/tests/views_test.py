@@ -67,16 +67,6 @@ class LayerMetadataDetailTest(ViewTestCase):
     def test(self):
         self.doit()
 
-    def test_thumb(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-
-    # Test that a back-up thumbnail gets created when
-    # uploading the new thumbnail twice.
-    def test_backup_thumbnail(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-        self.postfile(TEST_IMG, 'thumbnail_image')
-
-
 class MapMetadataDetailTest(ViewTestCase):
     def setUp(self):
         super(MapMetadataDetailTest, self).setUp()
@@ -92,13 +82,6 @@ class MapMetadataDetailTest(ViewTestCase):
 
     def test(self):
         self.doit()
-
-    def test_thumb(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-
-    def test_backup_thumbnail(self):
-        self.postfile(TEST_IMG, 'thumbnail_image')
-        self.postfile(TEST_IMG, 'thumbnail_image')
 
 
 class GeoServerReverseProxyTest(ViewTestCase):
@@ -141,23 +124,6 @@ class InsertCSWTest(ViewTestCase):
 
     def test(self):
         self.doit()
-
-    @pytest.mark.skip
-    def test_post(self):
-        response = self.client.post(
-            self.url,
-            {
-                'title': 'foo',
-                'creator': 'me',
-                'modified': '2017-01-01',
-                'source': 'http://google.com'
-            }
-        )
-        self.assertEqual(
-            response.status_code,
-            302
-        )
-
 
 class CSWStatusTest(ViewTestCase):
 
@@ -316,5 +282,5 @@ class ViewFunctionTests(ViewTestCase):
         # ensure the thumbnail link is generated.
 
         self.assertEqual(test_objects[1]['thumbnail_url'],
-                         'http://172.16.238.6:8001/layers/exchange:dummy/thumby.png',
+                         '%s/layers/exchange:dummy/thumby.png' % settings.REGISTRYURL,
                          'Wrong thumbnail URL (%s)' % test_objects[1]['thumbnail_url'])

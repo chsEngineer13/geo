@@ -100,7 +100,10 @@ LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_ROOT = os.path.join(LOCAL_ROOT, os.pardir)
 
 # static files storage
-STATICFILES_DIRS.append(os.path.join(APP_ROOT, "static"),)
+STATICFILES_DIRS = [
+    os.path.join(APP_ROOT, "static"),
+    os.path.join(APP_ROOT, "thumbnails", "static"),
+] + STATICFILES_DIRS
 
 # template settings
 TEMPLATES = [
@@ -145,6 +148,7 @@ if isinstance(ADDITIONAL_APPS, str):
 
 OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'False'))
 GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
+STORYSCAPES_ENABLED = str2bool(os.getenv('STORYSCAPES_ENABLED', 'False'))
 
 # installed applications
 INSTALLED_APPS = (
@@ -152,6 +156,7 @@ INSTALLED_APPS = (
     'exchange.core',
     'exchange.themes',
     'exchange.fileservice',
+    'exchange.thumbnails',
     'geonode',
     'geonode.contrib.geogig',
     'geonode.contrib.slack',
@@ -159,6 +164,9 @@ INSTALLED_APPS = (
     'maploom',
     'solo',
     'exchange-docs',
+    'exchange.storyscapes',
+    'composer',
+    'social_django',
 ) + ADDITIONAL_APPS + INSTALLED_APPS
 
 if OSGEO_IMPORTER_ENABLED:
@@ -175,6 +183,7 @@ else:
 if GEONODE_CLIENT_ENABLED:
     INSTALLED_APPS = ('geonode-client',) + INSTALLED_APPS
     LAYER_PREVIEW_LIBRARY = 'react'
+         
 
 # authorized exempt urls
 ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
@@ -397,6 +406,23 @@ REGISTRYURL = os.environ.get('REGISTRYURL', None)
 REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 REGISTRY_LOCAL_URL = os.environ.get('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
+# NearSight Options, adding NEARSIGHT_ENABLED to env will enable nearsight.
+if os.getenv('NEARSIGHT_ENABLED'):
+    NEARSIGHT_UPLOAD = os.getenv("NEARSIGHT_UPLOAD", '/opt/nearsight/store')
+    NEARSIGHT_LAYER_PREFIX = os.getenv("NEARSIGHT_LAYER_PREFIX", 'nearsight')
+    NEARSIGHT_CATEGORY_NAME = os.getenv('NEARSIGHT_CATEGORY_NAME', 'NearSight')
+    NEARSIGHT_GEONODE_RESTRICTIONS = os.getenv('NEARSIGHT_GEONODE_RESTRICTIONS', "NearSight Data")
+    DATABASES['nearsight'] = DATABASES['exchange_imports']
+    CACHES = locals().get('CACHES', {})
+    CACHES['nearsight'] = CACHES.get('nearsight', {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': NEARSIGHT_UPLOAD,
+    })
+    CACHES['default'] = CACHES.get('default', CACHES.get('nearsight'))
+    NEARSIGHT_SERVICE_UPDATE_INTERVAL = os.getenv("NEARSIGHT_SERVICE_UPDATE_INTERVAL", 5)
+    SSL_VERIFY = os.getenv("SSL_VERIFY", False)
+    INSTALLED_APPS += ('nearsight',)
+
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
     import pyproj
@@ -462,7 +488,6 @@ if SITEURL.startswith('https'):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 if ENABLE_SOCIAL_LOGIN:
-    INSTALLED_APPS = ('social_django',) + INSTALLED_APPS
     SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
 
     AUTHENTICATION_BACKENDS += (
@@ -502,7 +527,13 @@ if ENABLE_SOCIAL_LOGIN:
     SOCIAL_AUTH_GEOAXIS_KEY = os.environ.get('OAUTH_GEOAXIS_KEY', None)
     SOCIAL_AUTH_GEOAXIS_SECRET = os.environ.get('OAUTH_GEOAXIS_SECRET', None)
     SOCIAL_AUTH_GEOAXIS_HOST = os.environ.get('OAUTH_GEOAXIS_HOST', None)
+    OAUTH_GEOAXIS_USER_FIELDS = os.environ.get('OAUTH_GEOAXIS_USER_FIELDS', 'username, email, last_name, first_name')
+    SOCIAL_AUTH_GEOAXIS_USER_FIELDS = map(str.strip, OAUTH_GEOAXIS_USER_FIELDS.split(','))
+    OAUTH_GEOAXIS_SCOPES = os.environ.get('OAUTH_GEOAXIS_SCOPES', 'UserProfile.me')
+    SOCIAL_AUTH_GEOAXIS_SCOPE = map(str.strip, OAUTH_GEOAXIS_SCOPES.split(','))
     ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
+    if SITEURL.startswith('https'):
+        SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
     # GeoAxisOAuth2 will cause all login attempt to fail if SOCIAL_AUTH_GEOAXIS_HOST is None
     if ENABLE_GEOAXIS_LOGIN:
         AUTHENTICATION_BACKENDS += (
@@ -517,3 +548,4 @@ if GEOQUERY_ENABLED:
     NOMINATIM_ENABLED = False
 else:
     NOMINATIM_ENABLED = True
+

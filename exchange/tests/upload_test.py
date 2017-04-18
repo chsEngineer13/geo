@@ -9,6 +9,10 @@ import time
 
 from . import ExchangeTest
 
+import pytest
+
+from exchange import settings
+
 
 # This is a dummy exception class
 #  used to make back tracing easier.
@@ -103,6 +107,8 @@ class UploaderMixin:
 #
 # Performs various uploads and drops of layers.
 #
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+                    reason="Only run if using unified search")
 class UploadLayerTest(UploaderMixin, ExchangeTest):
 
     def setUp(self):

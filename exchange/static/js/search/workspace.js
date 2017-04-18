@@ -129,6 +129,11 @@
           return 'fa-remove'
         }
       }
+
+      this.getThumbnailUrl = function(item) {
+        var parts = item.detail_url.split('/').slice(-2);
+        return '/thumbnails/' + parts[0] + '/' + parts[1];
+      }
     })
 
     .run(['cart', function(cart){
