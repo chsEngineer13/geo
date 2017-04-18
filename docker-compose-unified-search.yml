@@ -36,3 +36,4 @@ services:
             - ES_URL=http://search:9200
             - ES_UNIFIED_SEARCH=True
             - REGISTRYURL=http://172.16.238.6:8001
+            - REGISTRY_LOCAL_URL=http://172.16.238.6:8001

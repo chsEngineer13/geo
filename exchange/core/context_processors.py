@@ -20,6 +20,17 @@
 
 from django.conf import settings
 from exchange.version import get_version
+import logging
+from urlparse import urlparse
+
+logger = logging.getLogger(__name__)
+
+if settings.GEOQUERY_ENABLED:
+    if settings.GEOQUERY_URL is None:
+        logger.warn('No search endpoint defined.')
+        logger.warn('GEOQUERY_ENABLED was set to True, but GEOQUERY_URL was not defined.')
+    elif urlparse(settings.GEOQUERY_URL).netloc is '':
+        logger.warn('GEOQUERY_URL improperly defined or is not a valid URL.')
 
 
 def resource_variables(request):
@@ -38,7 +49,12 @@ def resource_variables(request):
         MAP_PREVIEW_LAYER=getattr(settings, 'MAP_PREVIEW_LAYER', "''"),
         LOCKDOWN_EXCHANGE=getattr(settings, 'LOCKDOWN_GEONODE', False),
         LOGIN_WARNING=getattr(settings, 'LOGIN_WARNING_ENABLED', False),
-        LOGIN_WARNING_TEXT=getattr(settings, 'LOGIN_WARNING_TEXT', "''")
+        LOGIN_WARNING_TEXT=getattr(settings, 'LOGIN_WARNING_TEXT', "''"),
+        STORYSCAPES_ENABLED=getattr(settings, 'STORYSCAPES_ENABLED', False),
+        NOMINATIM_ENABLED=getattr(settings, 'NOMINATIM_ENABLED', True),
+        NOMINATIM_URL=getattr(settings, 'NOMINATIM_URL', '//nominatim.openstreetmap.org'),
+        GEOQUERY_ENABLED=getattr(settings, 'GEOQUERY_ENABLED', False),
+        GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None)
     )
 
     return defaults
