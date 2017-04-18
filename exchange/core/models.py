@@ -100,7 +100,7 @@ class CSWRecord(models.Model):
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
-    source = models.URLField(blank=False)
+    source = models.URLField(max_length=512, blank=False)
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
