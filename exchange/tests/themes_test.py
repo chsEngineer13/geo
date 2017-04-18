@@ -1,9 +1,12 @@
 import os
+import sys
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.test import TestCase, RequestFactory
+from django.utils.six import StringIO
 from exchange.themes.models import Theme
 from shutil import rmtree
 
@@ -159,3 +162,11 @@ class ThemeViewTest(ExchangeTest):
         r = self.client.get('/admin/themes/theme/2/')
 
 
+class SetActiveThemeTest(TestCase):
+    def test_command_output(self):
+        args = [1]
+        opts = {}
+        out = StringIO()
+        sys.stout = out
+        call_command('set_active_theme', *args, **opts, stdout=out)
+        self.assertIn('Successfully activated theme "StoryScapes"', out.getvalue())
