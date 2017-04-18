@@ -4,7 +4,7 @@ from exchange.themes.models import Theme
 
 
 class Command(BaseCommand):
-    help = 'Set a specific Theme as the active Theme.'
+    help = 'List available themes by name and id'
 
     def handle(self, *args, **options):
         themes = all_entries = Theme.objects.all()
