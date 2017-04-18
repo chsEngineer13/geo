@@ -23,8 +23,9 @@ class GeoAxisOAuth2(BaseOAuth2):
 
     EXTRA_DATA = [
         ('refresh_token', 'refresh_token', True),
-        ('user_id', 'user_id'),
-        ('postal_code', 'postal_code')
+        ('personatypecode', 'personatypecode'),
+        ('DN', 'DN'),
+        ('uri', 'uri')
     ]
     
     def auth_headers(self):
@@ -32,16 +33,20 @@ class GeoAxisOAuth2(BaseOAuth2):
         return {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
                 'Authorization': "Basic %s" % b64Val}
     
+    def get_user_id(self, details, response):
+        return details['uid']
+
     def get_user_details(self, response):
         """Return user details from GeoAxis account"""
         fullname, first_name, last_name = self.get_user_names('',
                                                               response.get('firstname'),
                                                               response.get('lastname'))
-        return {'username': response.get('username'),
-                'email': response.get('email'),
+        return {'username': response.get('username').lower(),
+                'email': response.get('email').lower(),
                 'fullname': fullname,
-                'firstname': first_name,
-                'lastname': last_name}
+                'first_name': first_name,
+                'last_name': last_name,
+                'uid': response.get('uid').lower()}
 
     def user_data(self, access_token, *args, **kwargs):
         """Grab user profile information from GeoAxis.
