@@ -406,8 +406,8 @@ REGISTRYURL = os.environ.get('REGISTRYURL', None)
 REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 REGISTRY_LOCAL_URL = os.environ.get('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
-# NearSight Options, adding NEARSIGHT to env will enable nearsight.
-if os.getenv('NEARSIGHT'):
+# NearSight Options, adding NEARSIGHT_ENABLED to env will enable nearsight.
+if os.getenv('NEARSIGHT_ENABLED'):
     NEARSIGHT_UPLOAD = os.getenv("NEARSIGHT_UPLOAD", '/opt/nearsight/store')
     NEARSIGHT_LAYER_PREFIX = os.getenv("NEARSIGHT_LAYER_PREFIX", 'nearsight')
     NEARSIGHT_CATEGORY_NAME = os.getenv('NEARSIGHT_CATEGORY_NAME', 'NearSight')
