@@ -28,4 +28,7 @@ export SOCIAL_BUTTONS='False'
 export SECRET_KEY='exchange@q(6+mnr&=jb@z#)e_cix10b497vzaav61=de5@m3ewcj9%ctc'
 export DEFAULT_ANONYMOUS_VIEW_PERMISSION='False'
 export DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION='False'
+export NEARSIGHT=True
+export DJANGO_LOG_LEVEL=DEBUG
+export PATH=$PATH:/opt/boundless/vendor/bin/:/opt/boundless/vendor/lib/
 # export WGS84_MAP_CRS=True

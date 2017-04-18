@@ -406,6 +406,23 @@ REGISTRYURL = os.environ.get('REGISTRYURL', None)
 REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 REGISTRY_LOCAL_URL = os.environ.get('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
+# NearSight Options, adding NEARSIGHT to env will enable nearsight.
+if os.getenv('NEARSIGHT'):
+    NEARSIGHT_UPLOAD = os.getenv("NEARSIGHT_UPLOAD", '/opt/nearsight/store')
+    NEARSIGHT_LAYER_PREFIX = os.getenv("NEARSIGHT_LAYER_PREFIX", 'nearsight')
+    NEARSIGHT_CATEGORY_NAME = os.getenv('NEARSIGHT_CATEGORY_NAME', 'NearSight')
+    NEARSIGHT_GEONODE_RESTRICTIONS = os.getenv('NEARSIGHT_GEONODE_RESTRICTIONS', "NearSight Data")
+    DATABASES['nearsight'] = DATABASES['exchange_imports']
+    CACHES = locals().get('CACHES', {})
+    CACHES['nearsight'] = CACHES.get('nearsight', {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': NEARSIGHT_UPLOAD,
+    })
+    CACHES['default'] = CACHES.get('default', CACHES.get('nearsight'))
+    NEARSIGHT_SERVICE_UPDATE_INTERVAL = os.getenv("NEARSIGHT_SERVICE_UPDATE_INTERVAL", 5)
+    SSL_VERIFY = os.getenv("SSL_VERIFY", False)
+    INSTALLED_APPS += ('nearsight',)
+
 # If django-osgeo-importer is enabled, give it the settings it needs...
 if 'osgeo_importer' in INSTALLED_APPS:
     import pyproj
@@ -529,3 +546,4 @@ if GEOQUERY_ENABLED:
     NOMINATIM_ENABLED = False
 else:
     NOMINATIM_ENABLED = True
+
