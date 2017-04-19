@@ -35,7 +35,7 @@ class AuthZeroOAuth2(BaseOAuth2):
                                                               response.get('firstname'),
                                                               response.get('lastname'))
 
-        return {'username': response.get('username'),
+        return {'username': response.get('nickname'),
                 'email': response.get('email'),
                 'fullname': fullname,
                 'first_name': first_name,
