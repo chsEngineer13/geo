@@ -13,7 +13,7 @@
     <h1>Welcome to {{ SITE_NAME }}!</h1>
     <div class="login-warning">
         {% autoescape off %}
-            {{ LOGIN_WARNING_TEXT }}
+        {{ LOGIN_WARNING_TEXT }}
         {% endautoescape%}
     </div>
     {% if ENABLE_GEOAXIS_LOGIN %}
@@ -29,43 +29,49 @@
 
 {% else %}
 <div class="page-header">
-  <h2>{% trans "Log In to an existing account" %}</h2>
+    <h2>{% trans "Log In to an existing account" %}</h2>
 </div>
 <div class="row">
-  <div class="col-md-8">
-    <form role="form" method="POST" action="{% url "account_login" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
-      {% csrf_token %}
-      {{ form|as_bootstrap }}
-      {% if redirect_field_value %}
-      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-      {% endif %}
-      <div class="form-group">
-        <p><a href="{% url "forgot_username" %}">{% trans "Forgot your username?" %}</a></p>
-        <p><a href="{% url "account_password_reset" %}">{% trans "Forgot your password?" %}</a></p>
-      </div>
-      <button type="submit" class="btn btn-primary">{% trans "Log In" %}</button>
-    </form>
+    <div class="col-md-8">
+        <form role="form" method="POST" action="{% url "account_login" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+        {% csrf_token %}
+        {{ form|as_bootstrap }}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <div class="form-group">
+            <p><a href="{% url "forgot_username" %}">{% trans "Forgot your username?" %}</a></p>
+            <p><a href="{% url "account_password_reset" %}">{% trans "Forgot your password?" %}</a></p>
+        </div>
+        <button type="submit" class="btn btn-primary">{% trans "Log In" %}</button>
+        </form>
 
-  </div>
+    </div>
 
-   {% if ENABLE_SOCIAL_LOGIN %}
+    {% if ENABLE_SOCIAL_LOGIN %}
 
     <div class="col-md-4" style="float:right;">
 
+        {% if ENABLE_AUTH0_LOGIN %}
+        <a class="btn-auth0 btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'auth0' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+            <i class="fa fa-lock"></i> Log In with {{ AUTH0_APP_NAME }}
+        </a>
+        {% endif %}
+
         {% if ENABLE_FACEBOOK_LOGIN %}
-            <a class="btn-facebook btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'facebook' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
-                <i class="fa fa-facebook"></i> Log In with Facebook
-            </a>
+        <a class="btn-facebook btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'facebook' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+            <i class="fa fa-facebook"></i> Log In with Facebook
+        </a>
         {% endif %}
         {% if ENABLE_GOOGLE_LOGIN %}
-            <a class="btn-google btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'google-oauth2' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
-                <i class="fa fa-google"></i> Log In with Google
-            </a>
+        <a class="btn-google btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'google-oauth2' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+            <i class="fa fa-google"></i> Log In with Google
+        </a>
         {% endif %}
         {% if ENABLE_GEOAXIS_LOGIN %}
-            <a class="btn-geoaxis btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'geoaxis' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
-                <i class="fa fa-lock"></i> Log In with GeoAxis
-            </a>
+        <a class="btn-geoaxis btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'geoaxis' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
+            <i class="fa fa-lock"></i> Log In with GeoAxis
+        </a>
         {% endif %}
     </div>
     {% endif %}
