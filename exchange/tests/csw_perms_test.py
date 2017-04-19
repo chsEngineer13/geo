@@ -32,3 +32,13 @@ class CswPermissionsTest(ExchangeTest):
         self._test_url('/csw/new/', 200)
         self._test_url('/csw/status/', 200)
         self._test_url('/csw/status_table/', 200)
+
+    def test_menus_as_test(self):
+        self.login(asTest=True)
+        r = self.client.get('/')
+        self.assertNotIn('/csw/new/', r.content, 'Found CSW Menu in Test User Login!')
+
+    def test_menus_as_admin(self):
+        self.login()
+        r = self.client.get('/')
+        self.assertIn('/csw/new/', r.content, 'No CSW Menu in Admin Login!')
