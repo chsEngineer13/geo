@@ -354,7 +354,8 @@ def unified_elastic_search(request, resourcetype='base'):
         facet_results[f] = {}
         for bucket in results.aggregations[f].buckets:
             facet_results[f][bucket.key] = bucket.doc_count
-
+    # create alias for owners
+    facet_results['owners']=facet_results['owner__username']
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
 

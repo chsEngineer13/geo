@@ -298,6 +298,7 @@ ES_ENGINE = os.environ.get(
 HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
 if ES_UNIFIED_SEARCH:
     HAYSTACK_SEARCH = True
+    HAYSTACK_FACET_COUNTS = True
 if HAYSTACK_SEARCH:
     HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
     HAYSTACK_CONNECTIONS = {
