@@ -367,3 +367,7 @@ def unified_elastic_search(request, resourcetype='base'):
     }
 
     return JsonResponse(object_list)
+
+def empty_page(request):
+    return HttpResponse('')
+        

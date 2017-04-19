@@ -1,9 +1,13 @@
+import cStringIO
 import os
+import sys
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command, CommandError
 from django.test import TestCase, RequestFactory
+from django.utils.six import StringIO
 from exchange.themes.models import Theme
 from shutil import rmtree
 
@@ -159,3 +163,26 @@ class ThemeViewTest(ExchangeTest):
         r = self.client.get('/admin/themes/theme/2/')
 
 
+class ListThemeTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command('list_themes', stdout=out)
+        self.assertTrue('Available Themes:' in out.getvalue())
+
+
+class SetActiveThemeByIdTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command('set_active_theme_by_id', theme_id=1, stdout=out)
+        self.assertTrue('Successfully' in out.getvalue())
+
+
+class SetActiveThemeByNameTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command(
+            'set_active_theme_by_name',
+            theme_name='GEOINT',
+            stdout=out
+        )
+        self.assertTrue('Successfully' in out.getvalue())

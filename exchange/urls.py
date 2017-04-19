@@ -79,6 +79,10 @@ if 'osgeo_importer' in settings.INSTALLED_APPS:
 if settings.STORYSCAPES_ENABLED:
     urlpatterns += story_urls
 
+if 'nearsight' in settings.INSTALLED_APPS:
+    from nearsight.urls import urlpatterns as nearsight_urls
+    urlpatterns += nearsight_urls
+
 # use combined registry/geonode elastic search rather than geonode search
 if settings.ES_UNIFIED_SEARCH:
     urlpatterns += [url(r'^api/(?P<resourcetype>base)/search/$',
@@ -96,6 +100,9 @@ if settings.ES_UNIFIED_SEARCH:
     urlpatterns += [url(r'^api/(?P<resourcetype>registry)/search/$',
                         views.unified_elastic_search,
                         name='unified_elastic_search')]
+    urlpatterns += [url(r'^autocomplete', 
+                        views.empty_page, 
+                        name='autocomplete_override')]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls

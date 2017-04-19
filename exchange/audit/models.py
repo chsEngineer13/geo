@@ -27,7 +27,7 @@ class AuditEvent(models.Model):
                           auto_created=True,
                           primary_key=True)
     event = models.CharField(max_length=16, null=True, blank=True)
-    username = models.CharField(max_length=255, null=False, blank=False)
+    username = models.CharField(max_length=255, null=True, blank=False)
     ip = models.GenericIPAddressField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     fullname = models.CharField(max_length=255, null=True, blank=True)
