@@ -44,6 +44,8 @@ def resource_variables(request):
         ENABLE_GOOGLE_LOGIN=getattr(settings, 'ENABLE_GOOGLE_LOGIN', False),
         ENABLE_FACEBOOK_LOGIN=getattr(settings, 'ENABLE_FACEBOOK_LOGIN', False),
         ENABLE_GEOAXIS_LOGIN=getattr(settings, 'ENABLE_GEOAXIS_LOGIN', False),
+        ENABLE_AUTH0_LOGIN=getattr(settings, 'ENABLE_AUTH0_LOGIN', False),
+        AUTH0_APP_NAME=getattr(settings, 'AUTH0_APP_NAME', 'Boundless Connect'),
         INSTALLED_APPS=set(settings.INSTALLED_APPS),
         GEOAXIS_ENABLED=getattr(settings, 'GEOAXIS_ENABLED', False),
         MAP_PREVIEW_LAYER=getattr(settings, 'MAP_PREVIEW_LAYER', "''"),
