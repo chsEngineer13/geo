@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 
 import os.path
 
-TESTDIR = os.path.dirname(os.path.realpath(__file__))
+TESTDIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
 
 
 class ExchangeTest(TestCase):

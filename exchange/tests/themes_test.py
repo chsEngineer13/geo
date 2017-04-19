@@ -13,7 +13,6 @@ from shutil import rmtree
 
 from . import ExchangeTest
 
-test_img = os.path.join(os.path.dirname(__file__), 'test.png')
 theme_dir = os.path.join(
     settings.MEDIA_ROOT,
     'theme'
@@ -27,7 +26,7 @@ class MockRequest:
 request = MockRequest()
 
 
-class ThemeTestCase(TestCase):
+class ThemeTestCase(ExchangeTest):
     def setUp(self):
         self.factory = RequestFactory()
         self.site = AdminSite()
@@ -72,6 +71,8 @@ class ThemeTestCase(TestCase):
         self.t2.save()
 
     def test(self):
+        test_img = self.get_file_path('test.png')
+
         self.assertEqual(
             self.ma.get_fieldsets(request),
             [(None,
