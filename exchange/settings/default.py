@@ -21,6 +21,7 @@
 import os
 import dj_database_url
 import copy
+from ast import literal_eval as le
 from geonode.settings import *  # noqa
 from geonode.settings import (
     MIDDLEWARE_CLASSES,
@@ -89,11 +90,14 @@ if LOGIN_WARNING_ENABLED:
 
 # registration
 EMAIL_HOST = os.getenv('EMAIL_HOST', None)
-EMAIL_PORT = os.getenv('EMAIL_PORT', None)
+EMAIL_PORT = le(os.getenv('EMAIL_PORT', '25'))
+EMAIL_USE_TLS = str2bool(os.getenv('EMAIL_USE_TLS', 'False'))
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', None)
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv('THEME_ACCOUNT_CONTACT_EMAIL', None)
-ACCOUNT_ACTIVATION_DAYS = os.getenv('ACCOUNT_ACTIVATION_DAYS', 7)
+ACCOUNT_ACTIVATION_DAYS = le(os.getenv('ACCOUNT_ACTIVATION_DAYS', '7'))
 
 # path setup
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -202,7 +206,7 @@ GEOSERVER_URL = os.environ.get(
     'http://127.0.0.1:8080/geoserver/'
 )
 GEOSERVER_LOCAL_URL = os.environ.get(
-    'GEOSERVER__LOCAL_URL',
+    'GEOSERVER_LOCAL_URL',
     GEOSERVER_URL
 )
 GEOSERVER_USER = os.environ.get(
@@ -249,8 +253,7 @@ OGC_SERVER = {
         'GEOGIG_DATASTORE_DIR': GEOGIG_DATASTORE_DIR,
         'DATASTORE': PG_DATASTORE,
         'PG_GEOGIG': PG_GEOGIG,
-        'TIMEOUT': 10,
-        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout'
+        'TIMEOUT': 10
     }
 }
 
@@ -270,7 +273,7 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
 )
 DATABASES['exchange_imports']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
-WGS84_MAP_CRS = str2bool(os.environ.get('WGS84_MAP_CRS', False))
+WGS84_MAP_CRS = str2bool(os.environ.get('WGS84_MAP_CRS', 'False'))
 if WGS84_MAP_CRS:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
@@ -401,26 +404,27 @@ if GEOAXIS_ENABLED:
 
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
-REGISTRY = os.environ.get('ENABLE_REGISTRY', False)
+REGISTRY = str2bool(os.environ.get('ENABLE_REGISTRY', 'False'))
 REGISTRYURL = os.environ.get('REGISTRYURL', None)
 REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
 REGISTRY_LOCAL_URL = os.environ.get('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
 # NearSight Options, adding NEARSIGHT_ENABLED to env will enable nearsight.
-if os.getenv('NEARSIGHT_ENABLED'):
-    NEARSIGHT_UPLOAD = os.getenv("NEARSIGHT_UPLOAD", '/opt/nearsight/store')
-    NEARSIGHT_LAYER_PREFIX = os.getenv("NEARSIGHT_LAYER_PREFIX", 'nearsight')
+NEARSIGHT_ENABLED = str2bool(os.environ.get('NEARSIGHT_ENABLED', 'False'))
+if NEARSIGHT_ENABLED:
+    NEARSIGHT_UPLOAD_PATH = os.getenv('NEARSIGHT_UPLOAD_PATH', '/opt/nearsight/store')
+    NEARSIGHT_LAYER_PREFIX = os.getenv('NEARSIGHT_LAYER_PREFIX', 'nearsight')
     NEARSIGHT_CATEGORY_NAME = os.getenv('NEARSIGHT_CATEGORY_NAME', 'NearSight')
-    NEARSIGHT_GEONODE_RESTRICTIONS = os.getenv('NEARSIGHT_GEONODE_RESTRICTIONS', "NearSight Data")
+    NEARSIGHT_GEONODE_RESTRICTIONS = os.getenv('NEARSIGHT_GEONODE_RESTRICTIONS', 'NearSight Data')
     DATABASES['nearsight'] = DATABASES['exchange_imports']
     CACHES = locals().get('CACHES', {})
     CACHES['nearsight'] = CACHES.get('nearsight', {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': NEARSIGHT_UPLOAD,
+        'LOCATION': NEARSIGHT_UPLOAD_PATH,
     })
     CACHES['default'] = CACHES.get('default', CACHES.get('nearsight'))
-    NEARSIGHT_SERVICE_UPDATE_INTERVAL = os.getenv("NEARSIGHT_SERVICE_UPDATE_INTERVAL", 5)
-    SSL_VERIFY = os.getenv("SSL_VERIFY", False)
+    NEARSIGHT_SERVICE_UPDATE_INTERVAL = le(os.getenv('NEARSIGHT_SERVICE_UPDATE_INTERVAL', '5'))
+    SSL_VERIFY = str2bool(os.getenv('SSL_VERIFY', 'False'))
     INSTALLED_APPS += ('nearsight',)
 
 # If django-osgeo-importer is enabled, give it the settings it needs...
@@ -476,9 +480,8 @@ SESSION_COOKIE_AGE = 60 * 60 * 24
 
 # Set default access to layers to all, user will need to deselect the checkbox
 # manually
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
-
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = str2bool(os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True'))
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = str2bool(os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True'))
 
 ENABLE_SOCIAL_LOGIN = str2bool(os.getenv('ENABLE_SOCIAL_LOGIN', 'False'))
 
@@ -542,10 +545,9 @@ if ENABLE_SOCIAL_LOGIN:
 
 # MapLoom search options
 NOMINATIM_URL = os.environ.get('NOMINATIM_URL', '//nominatim.openstreetmap.org')
-GEOQUERY_ENABLED = os.environ.get('GEOQUERY_ENABLED', False)
+GEOQUERY_ENABLED = str2bool(os.environ.get('GEOQUERY_ENABLED', 'False'))
 GEOQUERY_URL = os.environ.get('GEOQUERY_URL', None)
 if GEOQUERY_ENABLED:
     NOMINATIM_ENABLED = False
 else:
     NOMINATIM_ENABLED = True
-
