@@ -40,10 +40,12 @@
 {% endblock body %}
 
 {% block extra_script %}
-{% comment %}
+
 <script type="text/javascript">
 
     $(document).ready( function() {
+        $('input, textarea, select').addClass('form-control');
+        {% comment %}
         {% if request.user.is_superuser %}
         $('#id_source').change(function () {
 
@@ -106,8 +108,8 @@
                     }
         }
             {% endif %}
-
-        $('input, textarea, select').addClass('form-control');
+            {% endcomment %}
+       
     });
 
 
@@ -123,6 +125,6 @@
     }
 
 </style>
-{% endcomment %}
+
 {% endblock extra_script %}
 
