@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 Boundless Spatial
+# Copyright (C) 2017 Boundless Spatial
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,9 +18,25 @@
 #
 #########################################################################
 
-__version__ = '1.2.0b4'
+from __future__ import unicode_literals
+from django.db import migrations, models
 
 
-def get_version():
-    import exchange.version
-    return exchange.version.get_version(__version__)
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('audit', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='auditevent',
+            name='event',
+            field=models.CharField(max_length=16, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='auditevent',
+            name='username',
+            field=models.CharField(max_length=255, null=True),
+        ),
+    ]

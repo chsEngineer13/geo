@@ -4,9 +4,7 @@ from . import ExchangeTest
 from exchange import settings
 
 
-TEST_IMG = os.path.join(os.path.dirname(__file__), 'test.png')
-TESTDIR = os.path.dirname(os.path.realpath(__file__))
-
+TESTDIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
 
 # bury these warnings for testing
 class RemovedInDjango19Warning(Exception):
