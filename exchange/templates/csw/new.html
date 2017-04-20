@@ -7,8 +7,10 @@
 
 {% block body %}
 <div class="block">
-    <div class="col-md-10">
-        <h2 class="page-title">{% trans "Insert A New CSW Record" %}</h2>
+    <div class="col-md-12">
+        <div class="page-header">
+            <h2 class="page-title">{% trans "Submit A New CSW Record" %}</h2>
+        </div>
         {% if errors %}
         <div id="errors">
             {% for error in errors %}
@@ -25,33 +27,102 @@
 
             <form method="post" action="">
                 {% csrf_token %}
-
                 {{ form.as_p }}
-
-                <!--
-                {% if form.errors %}
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <div class="alert alert-danger">
-                                <strong>{{ error|escape }}</strong>
-                            </div>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                -->
-
-             <div class="form_group">
-                 <input type="submit" class="btn btn-primary" value="{% trans 'Insert Record' %}"/>
-             </div>
+                <div class="form_group">
+                    <input type="submit" class="btn btn-primary" value="{% trans 'Submit Record' %}"/>
+                </div>
 
             </form>
         </div>
     </div>
 </div>
+
 {% endblock body %}
+
+{% block extra_script %}
+{% comment %}
+<script type="text/javascript">
+
+    $(document).ready( function() {
+        {% if request.user.is_superuser %}
+        $('#id_source').change(function () {
+
+            var val = $('#id_source').val();
+
+            if(isURL(val) && val.indexOf('arcgis/rest/services') > 0) {
+                var url =  getLocation(val).protocol + '//' + getLocation(val).host;
+                var message = 'Would you like {{ SITE_NAME }} to search '+ getLocation(val).host +' for all supported layers?';
+
+                $('<div></div>').appendTo('body')
+                        .html('<div><h6>'+message+"</h6><span id='service-error' style='color:red; font-size:small;'></span></div>")
+                        .dialog({
+                            modal: true, title: 'ArcGIS Rest Service', zIndex: 10000, autoOpen: true,
+                            width: '400', resizable: false,
+                            buttons: {
+                                "Yes": function () {
+
+                                    var _this =  $(this);
+
+                                    $.post( "{% url 'csw_arcgis_search' %}", { url: url }, function( data ) {
+                                        _this.dialog("close");
+                                        window.location.replace("{% url 'csw_status' %}");
+                                    }).fail(function() {
+                                        $('#service-error').html("Something went wrong, Please try again later.");
+                                    });
+
+                                },
+                                "No": function () {
+
+                                    $(this).dialog("close");
+                                }
+                            },
+                            close: function (event, ui) {
+                                $(this).remove();
+                            }
+                        });
+
+
+            }
+
+        });
+
+
+        function isURL(str) {
+            var urlRegex = '^(?:(?:http|https)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
+            var url = new RegExp(urlRegex, 'i');
+            return str.length < 2083 && url.test(str);
+        }
+
+        function getLocation(href) {
+            var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+            return match && {
+                        protocol: match[1],
+                        host: match[2],
+                        hostname: match[3],
+                        port: match[4],
+                        pathname: match[5],
+                        search: match[6],
+                        hash: match[7]
+                    }
+        }
+            {% endif %}
+
+        $('input, textarea, select').addClass('form-control');
+    });
+
+
+</script>
+<style>
+
+    .helptext {
+        font-size: small;
+    }
+
+    .errorlist {
+        color: red;
+    }
+
+</style>
+{% endcomment %}
+{% endblock extra_script %}
 

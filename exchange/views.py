@@ -12,7 +12,7 @@ from django.core.serializers import serialize
 from django.contrib.admin.views.decorators import staff_member_required
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecordForm, CSWRecord
 from geonode.base.models import TopicCategory
-from exchange.tasks import create_new_csw
+from exchange.tasks import create_new_csw, load_service_layers
 from geonode.maps.views import _resolve_map
 import requests
 import logging
@@ -80,6 +80,20 @@ def insert_csw(request):
                               {"form": form,
                                },
                               context_instance=RequestContext(request))
+
+
+@staff_member_required
+def csw_arcgis_search(request):
+    default_response = HttpResponse(status=404)
+    if request.method == 'GET':
+        return default_response
+    elif request.method == 'POST':
+        url = request.POST.get("url", None)
+        if url and request.user.is_superuser:
+            load_service_layers.delay(url + '/arcgis/rest/services/', request.user.id)
+            return HttpResponse(status=201)
+        else:
+            return default_response
 
 
 @staff_member_required
