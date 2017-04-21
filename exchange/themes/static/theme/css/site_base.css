@@ -158,6 +158,20 @@ h1, h2, h3, h4, h5, h6 {
     text-decoration: none;
 }
 
+.btn-auth0 {
+    color:#fff;
+    background-color: #eb5424;
+    border-color:rgba(0,0,0,0.2);
+    text-decoration: none;
+}
+
+.btn-auth0:hover {
+    color:#fff;
+    background-color:#eb5424;
+    border-color:rgba(0,0,0,0.2);
+    text-decoration: none;
+}
+
 .btn-geoaxis {
     color:#fff;
     background-color: #16aa3e;

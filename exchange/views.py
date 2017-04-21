@@ -9,9 +9,10 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.core.serializers import serialize
+from django.contrib.admin.views.decorators import staff_member_required
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecordForm, CSWRecord
 from geonode.base.models import TopicCategory
-from exchange.tasks import create_new_csw
+from exchange.tasks import create_new_csw, load_service_layers
 from geonode.maps.views import _resolve_map
 import requests
 import logging
@@ -62,6 +63,7 @@ def geoserver_reverse_proxy(request):
     return HttpResponse(req.content, content_type='application/xml')
 
 
+@staff_member_required
 def insert_csw(request):
     if request.method == 'POST':
         form = CSWRecordForm(request.POST)
@@ -80,6 +82,21 @@ def insert_csw(request):
                               context_instance=RequestContext(request))
 
 
+@staff_member_required
+def csw_arcgis_search(request):
+    default_response = HttpResponse(status=404)
+    if request.method == 'GET':
+        return default_response
+    elif request.method == 'POST':
+        url = request.POST.get("url", None)
+        if url and request.user.is_superuser:
+            load_service_layers.delay(url + '/arcgis/rest/services/', request.user.id)
+            return HttpResponse(status=201)
+        else:
+            return default_response
+
+
+@staff_member_required
 def csw_status(request):
     format = request.GET.get('format', "")
     records = CSWRecord.objects.filter(user=request.user)
@@ -94,6 +111,7 @@ def csw_status(request):
                                   context_instance=RequestContext(request))
 
 
+@staff_member_required
 def csw_status_table(request):
     records = CSWRecord.objects.filter(user=request.user)
 
@@ -350,7 +368,8 @@ def unified_elastic_search(request, resourcetype='base'):
         facet_results[f] = {}
         for bucket in results.aggregations[f].buckets:
             facet_results[f][bucket.key] = bucket.doc_count
-
+    # create alias for owners
+    facet_results['owners']=facet_results['owner__username']
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
 

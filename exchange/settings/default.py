@@ -301,6 +301,7 @@ ES_ENGINE = os.environ.get(
 HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
 if ES_UNIFIED_SEARCH:
     HAYSTACK_SEARCH = True
+    HAYSTACK_FACET_COUNTS = True
 if HAYSTACK_SEARCH:
     HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
     HAYSTACK_CONNECTIONS = {
@@ -500,6 +501,7 @@ if ENABLE_SOCIAL_LOGIN:
         'social_core.backends.google.GoogleOpenId',
         'social_core.backends.google.GoogleOAuth2',
         'social_core.backends.facebook.FacebookOAuth2',
+        'exchange.auth.backends.auth0.AuthZeroOAuth2',
     )
 
     DEFAULT_AUTH_PIPELINE = (
@@ -516,9 +518,27 @@ if ENABLE_SOCIAL_LOGIN:
         'social_core.pipeline.user.user_details'
     )
 
+    SOCIAL_AUTH_AUTH0_KEY = os.environ.get('OAUTH_AUTH0_KEY', None)
+    SOCIAL_AUTH_AUTH0_SECRET = os.environ.get('OAUTH_AUTH0_SECRET', None)
+    SOCIAL_AUTH_AUTH0_HOST = os.environ.get('OAUTH_AUTH0_HOST', None)
+    ENABLE_AUTH0_LOGIN = isValid(SOCIAL_AUTH_AUTH0_KEY)
+    AUTH0_APP_NAME = os.environ.get('AUTH0_APP_NAME', 'Connect')
+    OAUTH_AUTH0_ADMIN_ROLES = os.environ.get(
+        'OAUTH_AUTH0_ADMIN_ROLES', 
+        ""
+    )
+    OAUTH_AUTH0_ALLOWED_ROLES = os.environ.get(
+        'OAUTH_AUTH0_ALLOWED_ROLES', 
+        ""
+    )
+
+    if OAUTH_AUTH0_ADMIN_ROLES.strip():
+        AUTH0_ADMIN_ROLES = map(str.strip, OAUTH_AUTH0_ADMIN_ROLES.split(','))
+    if OAUTH_AUTH0_ALLOWED_ROLES.strip():
+        AUTH0_ALLOWED_ROLES = map(str.strip, OAUTH_AUTH0_ALLOWED_ROLES.split(','))
+
     SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('OAUTH_FACEBOOK_KEY', None)
     SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('OAUTH_FACEBOOK_SECRET', None)
-
     OAUTH_FACEBOOK_SCOPES = os.environ.get('OAUTH_FACEBOOK_SCOPES', 'email')
     SOCIAL_AUTH_FACEBOOK_SCOPE = map(str.strip, OAUTH_FACEBOOK_SCOPES.split(','))
     SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
