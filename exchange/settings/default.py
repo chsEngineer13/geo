@@ -154,6 +154,9 @@ OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'False'))
 GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
 STORYSCAPES_ENABLED = str2bool(os.getenv('STORYSCAPES_ENABLED', 'False'))
 
+if STORYSCAPES_ENABLED:
+    RESOURCE_PUBLISHING = True
+
 # installed applications
 INSTALLED_APPS = (
     'flat',
