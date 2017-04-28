@@ -32,8 +32,8 @@ class Story(ResourceBase):
         removed_chapter_ids = conf['removed_chapters']
         if removed_chapter_ids is not None and len(removed_chapter_ids) > 0:
             for chapter_id in removed_chapter_ids:
-                map_obj = Map.objects.get(id=chapter_id)
-                self.chapter_list.remove(map_obj)
+                chapter_obj = StoryChapter.objects.get(map_id=chapter_id)
+                self.chapters.get(storychapter=chapter_obj).delete()
 
         #self.keywords.add(*conf['map'].get('keywords', []))
         self.save()
