@@ -64,6 +64,7 @@ def new_chapter_json(request):
 
         map_obj = Map(owner=request.user, zoom=0,
                       center_x=0, center_y=0)
+        map_obj.is_published = False
         map_obj.save()
         map_obj.set_default_permissions()
 
@@ -142,7 +143,9 @@ def new_story_json(request):
                 status=401
         )
     story_obj = Story(owner=request.user)
+    story_obj.thumbnail_url = '/static/geonode/img/missing_thumb.png'
     story_obj.save()
+    story_obj.set_default_permissions()
 
     try:
         body = request.body

@@ -12,7 +12,7 @@ class Story(ResourceBase):
     chapters = db.models.ManyToManyField(Map, through='StoryChapter')
 
     def get_absolute_url(self):
-        return core.urlresolvers.reverse('storyscapes.views.story_detail', None, [str(self.id)])
+        return core.urlresolvers.reverse('story_detail', None, [str(self.id)])
 
     def update_from_viewer(self, conf):
 
@@ -22,6 +22,7 @@ class Story(ResourceBase):
         self.title = conf['title']
         self.abstract = conf['abstract']
         self.is_published = conf['is_published']
+        self.detail_url = self.get_absolute_url()
         if conf['category'] is not None:
             self.category = TopicCategory(conf['category'])
 
@@ -31,8 +32,8 @@ class Story(ResourceBase):
         removed_chapter_ids = conf['removed_chapters']
         if removed_chapter_ids is not None and len(removed_chapter_ids) > 0:
             for chapter_id in removed_chapter_ids:
-                map_obj = Map.objects.get(id=chapter_id)
-                self.chapter_list.remove(map_obj)
+                chapter_obj = StoryChapter.objects.get(map_id=chapter_id)
+                self.chapters.get(storychapter=chapter_obj).delete()
 
         #self.keywords.add(*conf['map'].get('keywords', []))
         self.save()
