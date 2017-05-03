@@ -95,8 +95,8 @@ class CSWRecord(models.Model):
     classification = models.CharField(max_length=128, blank=True)
     title = models.CharField(max_length=328, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
-    # 'creator' is assumed to be distinct from logged-in User here
-    creator = models.CharField(max_length=328, blank=True)
+    # 'agency' is assumed to be distinct from logged-in User here
+    agency = models.CharField(max_length=128, blank=True)
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
@@ -130,7 +130,7 @@ class CSWRecordForm(forms.ModelForm):
         labels = {
             'title': _('Title'),
             'modified': _('Date Last Modified'),
-            'creator': _('Creator'),
+            'agency': _('Agency'),
             'record_type': _('Type'),
             'alternative': _('Alternative'),
             'abstract': _('Abstract'),
@@ -146,6 +146,13 @@ class CSWRecordForm(forms.ModelForm):
 
         help_texts = {
             'source': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
+            # 'title': _('Title'),
+            # 'agency': _('Agency'),
+            # 'record_type': _('Type'),
+            # 'alternative': _('Alternative'),
+            # 'abstract': _('Abstract'),
+            # 'relation': _('Relation'),
+            # 'record_format': _('Format'),
             'bbox_upper_corner': _('Coordinates for upper left corner'),
             'bbox_lower_corner': _('Coordinates for lower right corner')
         }
