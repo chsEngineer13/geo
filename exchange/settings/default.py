@@ -150,7 +150,7 @@ ADDITIONAL_APPS = os.environ.get(
 if isinstance(ADDITIONAL_APPS, str):
     ADDITIONAL_APPS = tuple(map(str.strip, ADDITIONAL_APPS.split(',')))
 
-OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'False'))
+OSGEO_IMPORTER_ENABLED = str2bool(os.getenv('OSGEO_IMPORTER_ENABLED', 'True'))
 GEONODE_CLIENT_ENABLED = str2bool(os.getenv('GEONODE_CLIENT_ENABLED', 'True'))
 STORYSCAPES_ENABLED = str2bool(os.getenv('STORYSCAPES_ENABLED', 'False'))
 
@@ -456,7 +456,8 @@ if 'osgeo_importer' in INSTALLED_APPS:
         'osgeo_importer.handlers.geoserver.GenericSLDHandler',
         'osgeo_importer.handlers.geonode.GeoNodePublishHandler',
         'osgeo_importer.handlers.geoserver.GeoServerStyleHandler',
-        'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler'
+        'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler',
+        'exchange.importer.geonode_timeextent_handler.GeoNodeTimeExtentHandler',
     ]
     PROJECTION_DIRECTORY = os.path.join(
         os.path.dirname(pyproj.__file__),

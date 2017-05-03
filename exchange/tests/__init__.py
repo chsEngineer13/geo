@@ -54,7 +54,8 @@ class ExchangeTest(TestCase):
         else:
             self.admin_user = User.objects.create_superuser(
                 username='admin',
-                email=''
+                email='',
+                password='admin',
             )
         self.admin_user.set_password('admin')
         self.admin_user.save()
