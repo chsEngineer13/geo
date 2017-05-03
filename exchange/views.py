@@ -306,19 +306,13 @@ def unified_elastic_search(request, resourcetype='base'):
             {'range': {'layer_date': {'lte': date_end}}})
         search = search.query(q)
 
-    if extent_start and extent_end:
-        q = Q(
-                {'range': {'temporal_extent_start': {'lte': extent_end}}}
-            ) & Q(
-                {'range': {'temporal_extent_end': {'gte': extent_start}}}
-            )
-        search = search.query(q)
-    elif extent_start:
+    if extent_start:
         q = Q(
                 {'range': {'temporal_extent_end': {'gte': extent_start}}}
             )
         search = search.query(q)
-    elif extent_end:
+
+    if extent_end:
         q = Q(
                 {'range': {'temporal_extent_start': {'lte': extent_end}}}
             )
