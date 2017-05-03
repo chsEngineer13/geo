@@ -101,7 +101,6 @@ class CSWRecord(models.Model):
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
     service_endpoint_url = models.URLField(max_length=128, blank=False)
-    relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
                                          default="85.0 180",
@@ -123,7 +122,7 @@ class CSWRecordForm(forms.ModelForm):
     class Meta:
         model = CSWRecord
         fields = ('service_endpoint_url', 'title', 'modified', 'agency', 'record_type', 
-                  'alternative', 'abstract', 'relation', 'record_format', 'bbox_upper_corner',
+                  'alternative', 'abstract', 'record_format', 'bbox_upper_corner',
                   'bbox_lower_corner', 'contact_information', 'gold', 'category')
 
         labels = {
@@ -134,7 +133,6 @@ class CSWRecordForm(forms.ModelForm):
             'record_type': _('Type'),
             'alternative': _('Alternative'),
             'abstract': _('Abstract'),
-            'relation': _('Relation'),
             'record_format': _('Format'),
             'bbox_upper_corner': _('Bounding Box: Upper Corner'),
             'bbox_lower_corner': _('Bounding Box: Lower Corner'),
@@ -150,7 +148,6 @@ class CSWRecordForm(forms.ModelForm):
             # 'record_type': _('Type'),
             # 'alternative': _('Alternative'),
             # 'abstract': _('Abstract'),
-            # 'relation': _('Relation'),
             # 'record_format': _('Format'),
             'bbox_upper_corner': _('Coordinates for upper left corner'),
             'bbox_lower_corner': _('Coordinates for lower right corner')
