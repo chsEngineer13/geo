@@ -10,7 +10,7 @@ from osgeo_importer.handlers.geonode.backward_compatibility import set_attribute
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-logger = logging.getLogger('rootqq')
+logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 
 
