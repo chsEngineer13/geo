@@ -100,7 +100,7 @@ class CSWRecord(models.Model):
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
-    source = models.URLField(max_length=512, blank=False)
+    service_endpoint_url = models.URLField(max_length=128, blank=False)
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
@@ -122,19 +122,18 @@ class CSWRecord(models.Model):
 class CSWRecordForm(forms.ModelForm):
     class Meta:
         model = CSWRecord
-        fields = ('source', 'title', 'modified', 'creator', 'record_type', 'alternative', 'abstract',
-                  'relation', 'bbox_upper_corner',
-                  'bbox_lower_corner', 'contact_information',
-                  'category')
+        fields = ('service_endpoint_url', 'title', 'modified', 'agency', 'record_type', 
+                  'alternative', 'abstract', 'relation', 'record_format', 'bbox_upper_corner',
+                  'bbox_lower_corner', 'contact_information', 'gold', 'category')
 
         labels = {
+            'service_endpoint_url': _('Service Endpoint Url'),
             'title': _('Title'),
             'modified': _('Date Last Modified'),
             'agency': _('Agency'),
             'record_type': _('Type'),
             'alternative': _('Alternative'),
             'abstract': _('Abstract'),
-            'source': _('Source'),
             'relation': _('Relation'),
             'record_format': _('Format'),
             'bbox_upper_corner': _('Bounding Box: Upper Corner'),
@@ -145,7 +144,7 @@ class CSWRecordForm(forms.ModelForm):
         }
 
         help_texts = {
-            'source': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
+            'service_endpoint_url': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
             # 'title': _('Title'),
             # 'agency': _('Agency'),
             # 'record_type': _('Type'),
