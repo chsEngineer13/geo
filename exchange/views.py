@@ -246,7 +246,7 @@ def unified_elastic_search(request, resourcetype='base'):
             # Match exact phrase
             phrase = query.replace('"', '')
             search = search.query(
-                "multi_match", type='phrase', query=phrase, fields=fields)
+                "multi_match", type='phrase_prefix', query=phrase, fields=fields)
         else:
             words = [
                 w for w in re.split(
@@ -256,15 +256,15 @@ def unified_elastic_search(request, resourcetype='base'):
             for i, search_word in enumerate(words):
                 if i == 0:
                     word_query = Q(
-                        "multi_match", query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
                 elif search_word.upper() in ["AND", "OR"]:
                     pass
                 elif words[i - 1].upper() == "OR":
                     word_query = word_query | Q(
-                        "multi_match", query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
                 else:  # previous word AND this word
                     word_query = word_query & Q(
-                        "multi_match", query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
             # logger.debug('******* WORD_QUERY %s', word_query.to_dict())
             search = search.query(word_query)
 
