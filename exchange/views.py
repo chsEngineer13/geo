@@ -332,6 +332,9 @@ def unified_elastic_search(request, resourcetype='base'):
         if esfield != '_index':
             esfield = esfield + '_exact'
         getparams = parameters.getlist(paramfield)
+        if not getparams:
+            getparams = parameters.getlist(paramfield.replace('__in',''))
+
         if getparams:
             q = Q({'terms': {esfield: getparams}})
             if esfield == 'type_exact':
