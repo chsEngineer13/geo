@@ -96,11 +96,11 @@ class CSWRecord(models.Model):
     title = models.CharField(max_length=328, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
     # 'agency' is assumed to be distinct from logged-in User here
-    agency = models.CharField(max_length=128, blank=True)
+    agency = models.CharField(max_length=328, blank=True)
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
-    service_endpoint_url = models.URLField(max_length=128, blank=False)
+    service_endpoint_url = models.URLField(max_length=512, blank=False)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
                                          default="85.0 180",
