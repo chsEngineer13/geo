@@ -202,8 +202,22 @@ def unified_elastic_search(request, resourcetype='base'):
                                   parameters.getlist('keywords__slug__in', None))
 
     # Publication date range (start,end)
+    date_range = parameters.get("date__range", None)
     date_end = parameters.get("date__lte", None)
     date_start = parameters.get("date__gte", None)
+    if date_range is not None:
+        dr = date_range.split(',')
+        date_start = dr[0]
+        date_end = dr[1]
+
+    # Time Extent range (start, end)
+    extent_range = parameters.get("extent__range", None)
+    extent_end = parameters.get("extent__lte", None)
+    extent_start = parameters.get("extent__gte", None)
+    if extent_range is not None:
+        er = extent_range.split(',')
+        extent_start = er[0]
+        extent_end = er[1]
 
     # Sort order
     sort = parameters.get("order_by", "relevance")
@@ -290,6 +304,24 @@ def unified_elastic_search(request, resourcetype='base'):
     if date_end:
         q = Q({'range': {'date': {'lte': date_end}}}) | Q(
             {'range': {'layer_date': {'lte': date_end}}})
+        search = search.query(q)
+
+    if extent_start and extent_end:
+        q = Q(
+                {'range': {'temporal_extent_start': {'lte': extent_end}}}
+            ) & Q(
+                {'range': {'temporal_extent_end': {'gte': extent_start}}}
+            )
+        search = search.query(q)
+    elif extent_start:
+        q = Q(
+                {'range': {'temporal_extent_end': {'gte': extent_start}}}
+            )
+        search = search.query(q)
+    elif extent_end:
+        q = Q(
+                {'range': {'temporal_extent_start': {'lte': extent_end}}}
+            )
         search = search.query(q)
 
     if categories:
