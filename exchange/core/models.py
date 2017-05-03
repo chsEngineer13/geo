@@ -108,7 +108,8 @@ class CSWRecord(models.Model):
     bbox_lower_corner = models.CharField(max_length=128,
                                          default="-85.0 -180",
                                          blank=True)
-    contact_information = models.CharField(max_length=128, blank=True)
+    contact_email = models.CharField(max_length=128, blank=True)
+    contact_phone = models.CharField(max_length=128, blank=True)
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
@@ -123,7 +124,7 @@ class CSWRecordForm(forms.ModelForm):
         model = CSWRecord
         fields = ('service_endpoint_url', 'title', 'modified', 'agency', 'record_type', 
                   'alternative', 'abstract', 'record_format', 'bbox_upper_corner',
-                  'bbox_lower_corner', 'contact_information', 'gold', 'category')
+                  'bbox_lower_corner', 'contact_email', 'contact_phone', 'gold', 'category')
 
         labels = {
             'service_endpoint_url': _('Service Endpoint Url'),
@@ -136,7 +137,8 @@ class CSWRecordForm(forms.ModelForm):
             'record_format': _('Format'),
             'bbox_upper_corner': _('Bounding Box: Upper Corner'),
             'bbox_lower_corner': _('Bounding Box: Lower Corner'),
-            'contact_information': _('Contact Information'),
+            'contact_email': _('Contact Email'),
+            'contact_phone': _('Contact Phone'),
             'gold': _('Gold'),
             'category': _('Category')
         }
@@ -150,5 +152,9 @@ class CSWRecordForm(forms.ModelForm):
             # 'abstract': _('Abstract'),
             # 'record_format': _('Format'),
             'bbox_upper_corner': _('Coordinates for upper left corner'),
-            'bbox_lower_corner': _('Coordinates for lower right corner')
+            'bbox_lower_corner': _('Coordinates for lower right corner'),
+            # 'contact_email': _('Contact Email'),
+            # 'contact_phone': _('Contact Phone'),
+            # 'gold': _('Gold'),
+            # 'category': _('Category'),
         }
