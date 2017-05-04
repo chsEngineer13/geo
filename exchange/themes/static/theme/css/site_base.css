@@ -235,3 +235,16 @@ h1, h2, h3, h4, h5, h6 {
 #datasets{
     background: url("/static/img/texture.png");
 }
+
+.item-thumb {
+    text-align: center;
+}
+
+.item-thumb .thumbnail {
+    display: inline-block;
+}
+
+.thumbnail {
+    max-width: 150px;
+    max-height: 150px;
+}
