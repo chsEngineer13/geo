@@ -19,8 +19,8 @@ registry_insert.short_description = 'Register selected CSW Records'
 
 
 class CSWRecordAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'status', 'service_endpoint_url')
-    list_filter = ('status', 'agency', 'record_type', 'category',)
+    list_display = ('title', 'category', 'status', 'source')
+    list_filter = ('status', 'creator', 'relation', 'record_type', 'category',)
     search_fields = ('title', 'abstract',)
     readonly_fields = ('status',)
     list_editable = ('category',)

@@ -95,12 +95,13 @@ class CSWRecord(models.Model):
     classification = models.CharField(max_length=128, blank=True)
     title = models.CharField(max_length=328, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
-    # 'agency' is assumed to be distinct from logged-in User here
-    agency = models.CharField(max_length=328, blank=True)
+    # 'creator' is assumed to be distinct from logged-in User here
+    creator = models.CharField(max_length=328, blank=True, verbose_name='Agency')
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
-    service_endpoint_url = models.URLField(max_length=512, blank=False)
+    source = models.URLField(max_length=512, blank=False)
+    relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
                                          default="85.0 180",
@@ -114,6 +115,11 @@ class CSWRecord(models.Model):
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
 
+    @property
+    def contact_information(self):
+        """Returns formatted contact information."""
+        return "Email: {}\nPhone: {}".format(self.contact_email, self.contact_phone)
+
     class Meta(object):
         verbose_name = 'CSW Record'
         verbose_name_plural = 'CSW Records'
@@ -122,15 +128,15 @@ class CSWRecord(models.Model):
 class CSWRecordForm(forms.ModelForm):
     class Meta:
         model = CSWRecord
-        fields = ('service_endpoint_url', 'title', 'modified', 'agency', 'record_type', 
+        fields = ('source', 'title', 'modified', 'creator', 'record_type', 
                   'alternative', 'abstract', 'record_format', 'bbox_upper_corner',
                   'bbox_lower_corner', 'contact_email', 'contact_phone', 'gold', 'category')
 
         labels = {
-            'service_endpoint_url': _('Service Endpoint Url'),
+            'source': _('Service Endpoint Url'),
             'title': _('Title'),
             'modified': _('Date Last Modified'),
-            'agency': _('Agency'),
+            'creator': _('Agency'),
             'record_type': _('Type'),
             'alternative': _('Alternative'),
             'abstract': _('Abstract'),
@@ -144,9 +150,9 @@ class CSWRecordForm(forms.ModelForm):
         }
 
         help_texts = {
-            'service_endpoint_url': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
+            'source': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
             # 'title': _('Title'),
-            # 'agency': _('Agency'),
+            # 'creator': _('Agency'),
             # 'record_type': _('Type'),
             # 'alternative': _('Alternative'),
             # 'abstract': _('Abstract'),
