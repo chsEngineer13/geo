@@ -202,8 +202,22 @@ def unified_elastic_search(request, resourcetype='base'):
                                   parameters.getlist('keywords__slug__in', None))
 
     # Publication date range (start,end)
+    date_range = parameters.get("date__range", None)
     date_end = parameters.get("date__lte", None)
     date_start = parameters.get("date__gte", None)
+    if date_range is not None:
+        dr = date_range.split(',')
+        date_start = dr[0]
+        date_end = dr[1]
+
+    # Time Extent range (start, end)
+    extent_range = parameters.get("extent__range", None)
+    extent_end = parameters.get("extent__lte", None)
+    extent_start = parameters.get("extent__gte", None)
+    if extent_range is not None:
+        er = extent_range.split(',')
+        extent_start = er[0]
+        extent_end = er[1]
 
     # Sort order
     sort = parameters.get("order_by", "relevance")
@@ -246,7 +260,7 @@ def unified_elastic_search(request, resourcetype='base'):
             # Match exact phrase
             phrase = query.replace('"', '')
             search = search.query(
-                "multi_match", type='phrase', query=phrase, fields=fields)
+                "multi_match", type='phrase_prefix', query=phrase, fields=fields)
         else:
             words = [
                 w for w in re.split(
@@ -256,15 +270,15 @@ def unified_elastic_search(request, resourcetype='base'):
             for i, search_word in enumerate(words):
                 if i == 0:
                     word_query = Q(
-                        "multi_match", query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
                 elif search_word.upper() in ["AND", "OR"]:
                     pass
                 elif words[i - 1].upper() == "OR":
                     word_query = word_query | Q(
-                        "multi_match", query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
                 else:  # previous word AND this word
                     word_query = word_query & Q(
-                        "multi_match", query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
             # logger.debug('******* WORD_QUERY %s', word_query.to_dict())
             search = search.query(word_query)
 
@@ -290,6 +304,18 @@ def unified_elastic_search(request, resourcetype='base'):
     if date_end:
         q = Q({'range': {'date': {'lte': date_end}}}) | Q(
             {'range': {'layer_date': {'lte': date_end}}})
+        search = search.query(q)
+
+    if extent_start:
+        q = Q(
+                {'range': {'temporal_extent_end': {'gte': extent_start}}}
+            )
+        search = search.query(q)
+
+    if extent_end:
+        q = Q(
+                {'range': {'temporal_extent_start': {'lte': extent_end}}}
+            )
         search = search.query(q)
 
     if categories:
