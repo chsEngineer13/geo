@@ -96,11 +96,11 @@ class CSWRecord(models.Model):
     title = models.CharField(max_length=328, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
     # 'creator' is assumed to be distinct from logged-in User here
-    creator = models.CharField(max_length=328, blank=True)
+    creator = models.CharField(max_length=328, blank=True, verbose_name='Agency')
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
-    source = models.URLField(max_length=512, blank=False)
+    source = models.URLField(max_length=512, blank=False, verbose_name='Service Endpoint')
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
@@ -109,10 +109,16 @@ class CSWRecord(models.Model):
     bbox_lower_corner = models.CharField(max_length=128,
                                          default="-85.0 -180",
                                          blank=True)
-    contact_information = models.CharField(max_length=128, blank=True)
+    contact_email = models.CharField(max_length=128, blank=True)
+    contact_phone = models.CharField(max_length=128, blank=True)
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
+
+    @property
+    def contact_information(self):
+        """Returns formatted contact information."""
+        return "Email: {}\nPhone: {}".format(self.contact_email, self.contact_phone)
 
     class Meta(object):
         verbose_name = 'CSW Record'
@@ -122,30 +128,39 @@ class CSWRecord(models.Model):
 class CSWRecordForm(forms.ModelForm):
     class Meta:
         model = CSWRecord
-        fields = ('source', 'title', 'modified', 'creator', 'record_type', 'alternative', 'abstract',
-                  'relation', 'bbox_upper_corner',
-                  'bbox_lower_corner', 'contact_information',
-                  'category')
+        fields = ('source', 'title', 'modified', 'creator', 'record_type', 
+                  'alternative', 'abstract', 'record_format', 'bbox_upper_corner',
+                  'bbox_lower_corner', 'contact_email', 'contact_phone', 'gold', 'category')
 
         labels = {
+            'source': _('Service Endpoint Url'),
             'title': _('Title'),
             'modified': _('Date Last Modified'),
-            'creator': _('Creator'),
+            'creator': _('Agency'),
             'record_type': _('Type'),
             'alternative': _('Alternative'),
             'abstract': _('Abstract'),
-            'source': _('Source'),
-            'relation': _('Relation'),
             'record_format': _('Format'),
             'bbox_upper_corner': _('Bounding Box: Upper Corner'),
             'bbox_lower_corner': _('Bounding Box: Lower Corner'),
-            'contact_information': _('Contact Information'),
+            'contact_email': _('Contact Email'),
+            'contact_phone': _('Contact Phone'),
             'gold': _('Gold'),
             'category': _('Category')
         }
 
         help_texts = {
             'source': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
+            # 'title': _('Title'),
+            # 'creator': _('Agency'),
+            # 'record_type': _('Type'),
+            # 'alternative': _('Alternative'),
+            # 'abstract': _('Abstract'),
+            # 'record_format': _('Format'),
             'bbox_upper_corner': _('Coordinates for upper left corner'),
-            'bbox_lower_corner': _('Coordinates for lower right corner')
+            'bbox_lower_corner': _('Coordinates for lower right corner'),
+            # 'contact_email': _('Contact Email'),
+            # 'contact_phone': _('Contact Phone'),
+            # 'gold': _('Gold'),
+            # 'category': _('Category'),
         }
