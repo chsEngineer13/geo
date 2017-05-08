@@ -55,7 +55,8 @@ class TestCSWRecord(ExchangeTest):
             'record_format': 'csw',
             'bbox_upper_corner': '45,45',
             'bbox_lower_corner': '0,0',
-            'contact_information': 'test@boundlessgeo.fake',
+            'contact_email': 'test@boundlessgeo.fake',
+            'contact_phone': '555-555-5555',
             'gold': '',
             'category': ''
         }

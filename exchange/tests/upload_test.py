@@ -107,7 +107,7 @@ class UploaderMixin:
 #
 # Performs various uploads and drops of layers.
 #
-@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+@pytest.mark.skipif(True or settings.ES_UNIFIED_SEARCH is False,
                     reason="Only run if using unified search")
 class UploadLayerTest(UploaderMixin, ExchangeTest):
 
@@ -230,3 +230,41 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
                             "Mismatched bounding Boxes! %s (geogig) != %s" % (
                                 s_geogig_bbox, s_bbox
                             ))
+
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+                    reason="Only run if using unified search")
+class NonAdminUploadTest(UploaderMixin, ExchangeTest):
+
+    def setUp(self):
+        super(UploadLayerTest, self).setUp()
+        # test user is not an admin
+        self.login(asTest=True)
+
+    # This is a meta function for executing uploader options.
+    #
+    # Uploads the shapefile, checks on the layer, and drops it.
+    #
+    def _test_meta(self, shapefile, uploaderParams={}):
+        layer_uri = self.upload_shapefile(shapefile).get('url', None)
+        if(layer_uri is not None):
+            self.drop_layer(uri=layer_uri)
+
+    # Test an upload to geogig of a basic single-point shapefile.
+    #
+    def test_geogig_upload(self):
+        data_path = './test_point.'
+        shapefile = [data_path+x for x in ['prj', 'shp', 'shx', 'dbf']]
+
+        shapefile = {
+            'base_file': data_path+'shp',
+            'dbf_file': data_path+'dbf',
+            'shx_file': data_path+'shx',
+            'prj_file': data_path+'prj'
+        }
+
+        params = {
+            'geogig': 'true',
+            'geogig_store': 'NoseTests'
+        }
+
+        self._test_meta(shapefile, uploaderParams=params)
