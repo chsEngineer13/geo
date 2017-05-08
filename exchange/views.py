@@ -186,7 +186,7 @@ def unified_elastic_search(request, resourcetype='base'):
     # Set base fields to search
     fields = ['title', 'text', 'abstract', 'title_alternate']
     facets = ['_index', 'type', 'subtype',
-              'owner__username', 'keywords', 'regions', 'category']
+              'owner__username', 'keywords', 'regions', 'category', 'has_time']
 
     # Text search
     query = parameters.get('q', None)
