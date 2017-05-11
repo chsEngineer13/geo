@@ -68,11 +68,9 @@
         <div ng-repeat="item in featured | limitTo:4">
           <div class="col-md-3">
             <a href="{{ item.detail_url }}">
-              <img class="thumbnail" ng-if="item.detail_url.indexOf('map') >= 0" src="/thumbnails/maps/{{ item.id }}" />
-              <img class="thumbnail" ng-if="item.detail_url.indexOf('document') >= 0" src="/thumbnails/maps/{{ item.id }}" />
-              <img class="thumbnail" ng-if="item.detail_url.indexOf('layer') >= 0" src="/thumbnails/{{ item.detail_url }}" />
+              <img class="thumbnail" src="/thumbnails/{{ item.detail_url }}" />
             </a>
-            <h4>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h4>
+            <h5>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h5>
           </div>
         </div>
       </div>
