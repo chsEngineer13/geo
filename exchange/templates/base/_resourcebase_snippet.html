@@ -9,11 +9,11 @@
     <div class="col-xs-12 item-container" ng-if="item.detail_url">
       <div class="col-xs-12 profile-avatar">
         <div class="col-xs-4 item-thumb">
-          <a href="{{ item.detail_url }}"><img class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ cart.getThumbnailUrl(item) }}" /></a>
+          <a href="{{ item.detail_url }}"><img style="margin-top: 20px;" class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ cart.getThumbnailUrl(item) }}" /></a>
         </div>
         <div class="col-xs-8 item-details">
           {% endverbatim %}
-          <button ng-if="cart && item.detail_url.indexOf('/layers/') > -1" class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+          <button style="margin-top:10px;" ng-if="cart && item.detail_url.indexOf('/layers/') > -1" class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% verbatim %}
           <p class="item-meta"><span class="item-category">{{ item.category__gn_description == '[]' ? '' : item.category__gn_description }}</span></p>
           <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
@@ -43,22 +43,21 @@
     <div class="col-xs-12 item-container" ng-if="!item.detail_url">
       <div class="col-xs-12 profile-avatar">
         <div class="col-xs-4 item-thumb">
-          <a href="{{ item.thumbnail_url }}"><img class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ item.thumbnail_url }}" /></a>
+          <a href="{{ item.thumbnail_url }}"><img style="margin-top: 20px;" class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ item.thumbnail_url }}" /></a>
         </div>
         <div class="col-xs-8 item-details">
           {% endverbatim %}
-          <button class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+          <button style="margin-top:10px;" class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% verbatim %}
-          <p class="item-meta"><span class="item-category">{{ item.registry.category }}</span></p>
-          <h4>{{ item.title }}</h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-xs-12 item-items">
-              <ul class="list-inline">
+              <ul class="dataset-resources list-inline">
                 <li ng-if="item.layer_originator"><a href="#"><i class="fa fa-user"></i>{{ item.layer_originator }}</a></li>
-                <li ng-if="item.layer_date"><a href="#"><i class="fa fa-calendar-o"></i>{{ item.layer_date|date:'d MMM y' }}</a></li>
-                <li><a href="{{ item.registry_url }}" target="_registry"><i class="fa fa-globe"></i>Registry JSON Information</a></li>
-                <li><a href="{{ item.source }}" target="_registry"><i class="fa fa-globe"></i>Source Service Endpoint</a></li>
+                <li ng-repeat="x in item.references">
+                  <a ng-if="x.scheme == 'WWW:LINK'"  href="{{ x.url }}"  class="label" target="_blank">{{ x.scheme }}</a>
+                  <a ng-if="x.scheme != 'WWW:LINK'" data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ x.url }}"  class="label copy-button" data-format="{{ x.scheme.split(':')[1] | lowercase }}" target="_registry">{{ x.scheme }}</a>
+                </li>
               </ul>
             </div>
           </div>
