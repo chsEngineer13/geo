@@ -68,7 +68,7 @@
         <div ng-repeat="item in featured | limitTo:4">
           <div class="col-md-3">
             <a href="{{ item.detail_url }}">
-              <img class="thumbnail" src="/thumbnails/{{ item.detail_url }}" />
+              <img class="thumbnail" src="/thumbnails{{ item.detail_url }}" />
             </a>
             <h5>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h5>
           </div>
