@@ -28,7 +28,7 @@ def save_story(request, storyid):
         )
 
     story_obj = Story.objects.get(id=storyid)
-    if not request.user.has_perm('change_resourcebase', story_obj):
+    if not request.user.has_perm('change_resourcebase', story_obj.get_self_resource()):
         return HttpResponse(
                 _PERMISSION_MSG_SAVE,
                 status=401,
