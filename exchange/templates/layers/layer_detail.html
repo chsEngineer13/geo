@@ -604,6 +604,7 @@
         $('#copy-button').tooltip();
         $('#copy-button').bind('click', function() {
           var input = document.querySelector('#copy-input');
+          input.focus();
           input.setSelectionRange(0, input.value.length + 1);
           try {
             var success = document.execCommand('copy');
