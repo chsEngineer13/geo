@@ -33,13 +33,13 @@
                 </li-->
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
                 <li><a ng-if="item.detail_url.indexOf('/story/') > -1" href="/story/{{item.id}}"><i class="fa fa-map"></i>View Story</a></li>
-                <li>
+                <li ng-if="item.geogig_link">
                   <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ item.geogig_link}}"  class="label copy-button" data-format="geogig" target="_registry">GEOGIG</a>
                 </li>
-                <li>
+                <li ng-if="item.subtype=='vector'">
                   <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ location }}/geoserver/geonode/wms"  class="label copy-button" data-format="wms" target="_registry">WMS</a>
                 </li>
-                <li>
+                <li ng-if="item.subtype=='vector'">
                   <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ location }}/geoserver/geonode/wfs"  class="label copy-button" data-format="wfs" target="_registry">WFS</a>
                 </li>
               </ul>
