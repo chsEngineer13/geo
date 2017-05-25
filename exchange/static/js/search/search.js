@@ -192,7 +192,7 @@
           $rootScope.regions_counts = data.meta.facets.regions;
           for (var id in $rootScope.regions) {
               var region = $rootScope.regions[id];
-              if (region.name in $rootScope.region_counts) {
+              if ($rootScope.region_counts && region.name in $rootScope.region_counts) {
                   region.count = $rootScope.region_counts[region.name]
               } else {
                   region.count = 0;
@@ -273,6 +273,7 @@
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
+    $scope.location = $location.protocol() + '://'+ $location.host();
 
     $scope.onCopySuccess = function(e) {
     	$(e.trigger).trigger('copied', ['Copied!']);
