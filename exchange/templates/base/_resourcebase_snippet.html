@@ -36,7 +36,7 @@
                 <li><a ng-if="item.detail_url.indexOf('/story/') > -1" href="/story/{{item.id}}"><i class="fa fa-map"></i>View Story</a></li>
                 <li>
                   <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="/geoserver/geonode/wms"  class="label copy-button" data-format="wms" target="_registry">OGC:WMS</a>
-                 </li>
+                </li>
                 <li>
                   <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="/geoserver/geonode/wms"  class="label copy-button" data-format="wfs" target="_registry">OGC:WFS</a>
                 </li>
@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-    <div class="col-xs-12 item-container" ng-if="!item.detail_url">
+    <div class="col-xs-12 item-container" ng-if="item.index=='registry'">
       <div class="col-xs-12 profile-avatar">
         <div class="col-xs-4 item-thumb">
           <a href="{{ item.thumbnail_url }}"><img class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ item.thumbnail_url }}" /></a>
@@ -55,14 +55,16 @@
           {% endverbatim %}
           <button style="margin-top:10px;" class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% verbatim %}
+          <p class="item-meta"><span class="item-category">{{ item.registry.category == '[]' ? '' : item.registry.category }}</span></p>
+          <h4>{{ item.title }}</h4>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-xs-12 item-items">
               <ul class="dataset-resources list-inline">
                 <li ng-if="item.layer_originator"><a href="#"><i class="fa fa-user"></i>{{ item.layer_originator }}</a></li>
                 <li ng-repeat="x in item.references">
-                  <a ng-if="x.scheme == 'WWW:LINK'"  href="{{ x.url }}"  class="label" target="_blank">{{ x.scheme }}</a>
-                  <a ng-if="x.scheme != 'WWW:LINK'" data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ x.url }}"  class="label copy-button" data-format="{{ x.scheme.split(':')[1] | lowercase }}" target="_registry">{{ x.scheme }}</a>
+                  <a ng-if="x.scheme == 'WWW:LINK'"  href="{{ x.url }}"  class="label" target="_blank">{{ x.scheme | friendlyScheme }}</a>
+                  <a ng-if="x.scheme != 'WWW:LINK'" data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ x.url }}"  class="label copy-button" data-format="{{ x.scheme | friendlyScheme | lowercase }}" target="_registry">{{ x.scheme | friendlyScheme }}</a>
                 </li>
               </ul>
             </div>

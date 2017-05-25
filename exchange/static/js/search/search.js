@@ -14,6 +14,28 @@
       }
     });
 
+
+    module.filter('friendlyScheme', function () {
+
+        return function (text) {
+
+            var mapping = {'AIMS--http-get-feature': 'FeatureServer', 'AIMS--http-get-image': 'MapServer'}
+
+            if (text === undefined) {
+                return text;
+
+            } else {
+                var friendlyParts = text.split(':');
+                if (friendlyParts.length == 2) {
+                    return mapping[friendlyParts[1]] || friendlyParts[1];
+                } else {
+                    return text;
+                }
+
+            }
+        }
+    });
+
     // Used to set the class of the filters based on the url parameters
     module.set_initial_filters_from_query = function (data, url_query, filter_param){
         for(var i=0;i<data.length;i++){
