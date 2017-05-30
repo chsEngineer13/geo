@@ -122,7 +122,7 @@
                     <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
                     {% if user.is_staff %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "insert_csw" %}">Registry</a></li>
+                    <li><a href="{% url "csw-record-add" %}">Registry</a></li>
                     <li><a href="{% url "admin:index" %}">Admin</a></li>
                     <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                     {% endif %}
