@@ -133,6 +133,8 @@
                         $('#id_title').val(data.mapName);
                         $('#id_abstract').val(data.serviceDescription);
 
+                        $('#id_record_type').val('ESRI:ArcGIS:MapServer');
+
                         if(data.documentInfo) {
                             $('#id_creator').val(data.documentInfo.Author);
                         }
@@ -162,6 +164,14 @@
                     });
                 }else{
                     handleProtocolBtns(htmlError);
+
+                    if(val.toLowerCase().indexOf('/wms') > 0){
+                        $('#id_record_format').val('OGC:WMS');
+                    }else if(val.toLowerCase().indexOf('/wfs') > 0){
+                        $('#id_record_format').val('OGC:WFS');
+                    }
+
+                    $('#id_record_type').val('dataset');
                 }
             }else{
                 handleProtocolBtns("");
