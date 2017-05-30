@@ -103,14 +103,14 @@
             var url = service;
             if(type == 'WMSServer'){
                 url = service.replace('rest/services', 'services');
-                url += '/WMSServer?request=GetCapabilities&service=WMS';
+                url += '/WMSServer?request=GetCapabilities&amp;service=WMS';
             }else if(type == 'KmlServer'){
                 url += '/generateKml';
             }else if(type == 'FeatureServer'){
                 url = url.replace('MapServer', 'FeatureServer');
             }else if(type == 'WFSServer'){
                 url = service.replace('rest/services', 'services');
-                url += '/WFSServer?request=GetCapabilities&service=WFS';
+                url += '/WFSServer?request=GetCapabilities&amp;service=WFS';
             }
             return url;
 
