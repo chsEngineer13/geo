@@ -3,21 +3,14 @@
 {% load bootstrap_tags %}
 {% load url from future %}
 
-{% block title %} Insert New CSW Record - {{ block.super }} {% endblock %}
+{% block title %} Registry - Add Record - {{ block.super }} {% endblock %}
 
 {% block body %}
 <div class="block">
     <div class="col-md-12">
         <div class="page-header">
-            <h2 class="page-title">{% trans "Submit A New CSW Record" %}</h2>
+            <h2 class="page-title">{% trans "Register New Record" %}</h2>
         </div>
-        {% if errors %}
-        <div id="errors">
-            {% for error in errors %}
-            <div>{{ error }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
 
         <div>
 
@@ -25,68 +18,169 @@
                 <div>{{ message }}</div>
             </div>
 
-            <form method="post" action="">
+            <form id="cswform" method="post" action="">
                 {% csrf_token %}
+                <div class="form_group">
+                    <p class="protocol-buttons"></p>
+                </div>
                 {{ form.as_p }}
+
+                <table id="tblReferences" class="table">
+                    {{ cswrecordreference.management_form }}
+
+                    {% for form in cswrecordreference.forms %}
+                    {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        {% for field in form.visible_fields %}
+                        <th>{{ field.label|capfirst }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    {% endif %}
+                    <tr class="{% cycle row1 row2 %} formset_row">
+                        {% for field in form.visible_fields %}
+                        <td>
+                            {# Include the hidden fields in the form #}
+                            {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                            {% endfor %}
+                            {% endif %}
+                            {{ field.errors.as_ul }}
+                            {{ field }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+
                 <div class="form_group">
                     <input type="submit" class="btn btn-primary" value="{% trans 'Submit Record' %}"/>
+                    <a href="{% url 'csw-record-list' %}">back to the list</a>
                 </div>
 
             </form>
         </div>
     </div>
 </div>
-
 {% endblock body %}
 
 {% block extra_script %}
+<script src="/static/js/formset/jquery.formset.js"></script>
+<script type="text/javascript">
+    $('.formset_row').formset({
+        addText: 'add Service Reference',
+        deleteText: 'remove',
+        prefix: 'references'
+    });
+</script>
+
 
 <script type="text/javascript">
 
     $(document).ready( function() {
-        $('input, textarea, select').addClass('form-control');
-        {% comment %}
-        {% if request.user.is_superuser %}
-        $('#id_source').change(function () {
 
-            var val = $('#id_source').val();
+        var handleProtocolBtns = function(html) {
+            $('.protocol-buttons').empty();
+            $('.protocol-buttons').append(html);
+            $('.protocol-buttons').show();
+        };
 
-            if(isURL(val) && val.indexOf('arcgis/rest/services') > 0) {
-                var url =  getLocation(val).protocol + '//' + getLocation(val).host;
-                var message = 'Would you like {{ SITE_NAME }} to search '+ getLocation(val).host +' for all supported layers?';
+        var clear = function(){
+             $('.protocol-buttons').empty();
+             $('#id_alternative').parent().show();
+        };
 
-                $('<div></div>').appendTo('body')
-                        .html('<div><h6>'+message+"</h6><span id='service-error' style='color:red; font-size:small;'></span></div>")
-                        .dialog({
-                            modal: true, title: 'ArcGIS Rest Service', zIndex: 10000, autoOpen: true,
-                            width: '400', resizable: false,
-                            buttons: {
-                                "Yes": function () {
+        var stripTrailingSlash = function (str) {
+            if (str.endsWith('/')) {
+                return str.slice(0, -1);
+            }
+            return str;
+        };
 
-                                    var _this =  $(this);
+        var buildServiceUrl = function(service, type){
+            var url = service;
+            if(type == 'WMSServer'){
+                url = service.replace('rest/services', 'services');
+                url += '/WMSServer?request=GetCapabilities&service=WMS';
+            }else if(type == 'KmlServer'){
+                url += '/generateKml';
+            }else if(type == 'FeatureServer'){
+                url = url.replace('MapServer', 'FeatureServer');
+            }else if(type == 'WFSServer'){
+                url = service.replace('rest/services', 'services');
+                url += '/WFSServer?request=GetCapabilities&service=WFS';
+            }
+            return url;
 
-                                    $.post( "{% url 'csw_arcgis_search' %}", { url: url }, function( data ) {
-                                        _this.dialog("close");
-                                        window.location.replace("{% url 'csw_status' %}");
-                                    }).fail(function() {
-                                        $('#service-error').html("Something went wrong, Please try again later.");
-                                    });
+        };
+        var autoComplete = (function () {
+            var html = '<p>Below are the additional service types disovered from service url.</p>';
+            var htmlError = '<p class="alert alert-warning">Unfortunatly we were unable to discover ' +
+                    'any service metadata from the provided source. Please continue and manually ' +
+                    'complete the metadata form.</p>';
+            var val = stripTrailingSlash($('#id_source').val());
 
-                                },
-                                "No": function () {
+            if(isURL(val)){
+                clear();
+                if(val.indexOf('/MapServer') > 0 || val.indexOf('/ImageServer') > 0 || val.indexOf('/FeatureServer') > 0) {
+                    var service_map = { 'featureserver': 'FeatureServer',
+                        'kmlserver': 'KML', 'wmsserver': 'WMS', 'wfsserver': 'WFS'};
 
-                                    $(this).dialog("close");
-                                }
-                            },
-                            close: function (event, ui) {
-                                $(this).remove();
+                    $.post( "{% url 'csw_arcgis_search' %}", { url: val }, function( data ) {
+
+                        $('#id_title').val(data.mapName);
+                        $('#id_abstract').val(data.serviceDescription);
+
+                        $('#id_record_type').val('ESRI:ArcGIS:MapServer');
+
+                        if(data.documentInfo) {
+                            $('#id_creator').val(data.documentInfo.Author);
+                        }
+
+                        if (data.layers && data.layers.length){
+                            $('#id_alternative').val(data.layers[0].id);
+                            $('#id_alternative').parent().hide();
+                        }
+
+                        if (data.supportedExtensions) {
+                            var services = data.supportedExtensions.split(',');
+                            $('.delete-row').click();
+                            for (var i = 0; i < services.length; i++) {
+                                var service = services[i].trim();
+                                html +=  '<a href="#tblReferences" class="btn btn-success" >'+ service +'</a> ';
+                                $('.add-row').click();
+                                $('#id_references-' + (i+1) + '-url').val(buildServiceUrl(val, service));
+                                $('#id_references-' + (i+1) + '-scheme option:contains(' + service_map[service.toLowerCase()] + ')').attr('selected', 'selected');
                             }
-                        });
 
+                            handleProtocolBtns(html);
 
+                        }
+
+                    }).fail(function() {
+                        handleProtocolBtns(htmlError);
+                    });
+                }else{
+                    handleProtocolBtns(htmlError);
+
+                    if(val.toLowerCase().indexOf('/wms') > 0){
+                        $('#id_record_format').val('OGC:WMS');
+                    }else if(val.toLowerCase().indexOf('/wfs') > 0){
+                        $('#id_record_format').val('OGC:WFS');
+                    }
+
+                    $('#id_record_type').val('dataset');
+                }
+            }else{
+                handleProtocolBtns("");
             }
 
         });
+
+        $('#id_source').keyup(autoComplete);
+        $('#id_source').bind('paste', autoComplete);
 
 
         function isURL(str) {
@@ -95,35 +189,13 @@
             return str.length < 2083 && url.test(str);
         }
 
-        function getLocation(href) {
-            var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
-            return match && {
-                        protocol: match[1],
-                        host: match[2],
-                        hostname: match[3],
-                        port: match[4],
-                        pathname: match[5],
-                        search: match[6],
-                        hash: match[7]
-                    }
-        }
-            {% endif %}
-            {% endcomment %}
-       
     });
-
-
 </script>
 <style>
 
     .helptext {
         font-size: small;
     }
-
-    .errorlist {
-        color: red;
-    }
-
 </style>
 
 {% endblock extra_script %}

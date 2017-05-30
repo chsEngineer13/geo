@@ -21,7 +21,6 @@
 from django.db import models
 from solo.models import SingletonModel
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -125,42 +124,20 @@ class CSWRecord(models.Model):
         verbose_name_plural = 'CSW Records'
 
 
-class CSWRecordForm(forms.ModelForm):
-    class Meta:
-        model = CSWRecord
-        fields = ('source', 'title', 'modified', 'creator', 'record_type', 
-                  'alternative', 'abstract', 'record_format', 'bbox_upper_corner',
-                  'bbox_lower_corner', 'contact_email', 'contact_phone', 'gold', 'category')
-
-        labels = {
-            'source': _('Service Endpoint Url'),
-            'title': _('Title'),
-            'modified': _('Date Last Modified'),
-            'creator': _('Agency'),
-            'record_type': _('Type'),
-            'alternative': _('Alternative'),
-            'abstract': _('Abstract'),
-            'record_format': _('Format'),
-            'bbox_upper_corner': _('Bounding Box: Upper Corner'),
-            'bbox_lower_corner': _('Bounding Box: Lower Corner'),
-            'contact_email': _('Contact Email'),
-            'contact_phone': _('Contact Phone'),
-            'gold': _('Gold'),
-            'category': _('Category')
-        }
-
-        help_texts = {
-            'source': _('e.g. http://example.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'),
-            # 'title': _('Title'),
-            # 'creator': _('Agency'),
-            # 'record_type': _('Type'),
-            # 'alternative': _('Alternative'),
-            # 'abstract': _('Abstract'),
-            # 'record_format': _('Format'),
-            'bbox_upper_corner': _('Coordinates for upper left corner'),
-            'bbox_lower_corner': _('Coordinates for lower right corner'),
-            # 'contact_email': _('Contact Email'),
-            # 'contact_phone': _('Contact Phone'),
-            # 'gold': _('Gold'),
-            # 'category': _('Category'),
-        }
+class CSWRecordReference(models.Model):
+    scheme_choices = (('ESRI:AIMS--http-get-feature', 'MapServer'),
+                      ('ESRI:AIMS--http-get-feature', 'FeatureServer'),
+                      ('ESRI:AIMS--http-get-image', 'ImageServer'),
+                      ('WWW:LINK-1.0-http--json', 'JSON'),
+                      ('OGC:KML', 'KML'),
+                      ('WWW:LINK-1.0-http--rss', 'RSS'),
+                      ('WWW:DOWNLOAD', 'SHAPE'),
+                      ('WWW:LINK-1.0-http--soap', 'SOAP'),
+                      ('OGC:WCS', 'WCS'),
+                      ('OGC:WFS', 'WFS'),
+                      ('OGC:CS-W', 'CSW'),
+                      ('OGC:WMS', 'WMS'),
+                      ('OGC:WPS', 'WPS'))
+    record = models.ForeignKey(CSWRecord, related_name="references")
+    scheme = models.CharField(verbose_name='Service Type', choices=scheme_choices, max_length=100)
+    url = models.URLField(max_length=512, blank=False)

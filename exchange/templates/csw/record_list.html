@@ -1,0 +1,50 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %} Registry -- {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url 'csw-record-add'%}" class="btn btn-primary pull-right">{% trans "Register a new Record" %}</a>
+  <h2>{% trans "Registered Items" %}</h2>
+</div>
+<div class="twocol">
+{% if records %}
+<table class="table table-striped">
+  <thead>
+  	<th>Title</th>
+  	<th>URL</th>
+    <th>STATUS</th>
+  <th>USER</th>
+  </thead>
+  {% for record in records %}
+  <tr>
+	<td>{% comment %}<a href='{% url "csw-record-update" record.id %}'>{% endcomment %}{{ record.title }}{% comment %}</a>{% endcomment %}</td>
+	<td>{{ record.source }}</td>
+      <td>{{ record.status }}</td>
+      <td>{{ record.user.username}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+        <ul class="pagination">
+{% if page_obj.has_previous %}
+    <li>
+        <span><a href="?page={{ page_obj.previous_page_number }}">Previous</a></span>
+    </li>
+{% endif %}
+    <li class="">
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+    </li>
+{% if page_obj.has_next %}
+    <li>
+        <span><a href="?page={{ page_obj.next_page_number }}">Next</a></span>
+    </li>
+{% endif %}
+</ul>
+</div>
+{% else %}
+<h4>No items registered</h4>
+{% endif %}
+
+{% endblock %}

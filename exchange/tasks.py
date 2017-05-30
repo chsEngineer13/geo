@@ -95,6 +95,7 @@ def create_new_csw(self, record_id):
             <dc:source>{source}</dc:source>
             <dc:relation>{relation}</dc:relation>
             <dc:gold>{gold}</dc:gold>
+            {references}
             <registry:property name="category" value="{category}"/>
             <registry:property
             name="ContactInformation/Primary/organization"
@@ -109,6 +110,8 @@ def create_new_csw(self, record_id):
 
         </csw:Insert>
         </csw:Transaction>"""
+
+    csw_record_reference_template = """<dct:references scheme="{scheme}">{url}</dct:references>"""
 
     namespaces = {
         "csw": "http://www.opengis.net/cat/csw/2.0.2",
@@ -130,6 +133,11 @@ def create_new_csw(self, record_id):
     registry_url = settings.REGISTRY_LOCAL_URL
     catalog = settings.REGISTRY_CAT
     csw_url = urljoin(registry_url, "catalog/{}/csw".format(catalog))
+    reference_element = []
+
+    for reference in record.references.all():
+        reference_element.append(csw_record_reference_template.format(scheme=reference.scheme, url=reference.url))
+
     post_data = csw_record_template.format(
         uuid=record_id,
         title=record.title,
@@ -140,6 +148,7 @@ def create_new_csw(self, record_id):
         abstract=record.abstract,
         record_format=record.record_format,
         source=record.source,
+        reference=''.join(reference_element),
         relation=record.relation,
         gold=record.gold,
         category=record.category,

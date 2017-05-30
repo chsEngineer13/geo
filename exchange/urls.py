@@ -29,6 +29,7 @@ from geonode.urls import urlpatterns as geonode_urls
 from . import views
 from django.views.defaults import page_not_found
 from storyscapes.urls import urlpatterns as story_urls
+from django.contrib.auth.decorators import permission_required
 
 js_info_dict = {
     'packages': ('geonode.layers',),
@@ -46,7 +47,8 @@ urlpatterns = patterns(
     # Redirect help and developer links to the documentation page
     url(r'^help/$', views.documentation_page, name='help'),
     url(r'^developer/$', views.documentation_page, name='developer'),
-    url(r'^csw/new/$', views.insert_csw, name='insert_csw'),
+    url(r'^csw$', permission_required('is_superuser')(views.CSWRecordList.as_view()), name='csw-record-list'),
+    url(r'^csw/new/$', permission_required('is_superuser')(views.CSWRecordCreate.as_view()), name='csw-record-add'),
     url(r'^csw/search/$', views.csw_arcgis_search, name='csw_arcgis_search'),
     url(r'^csw/status/$', views.csw_status, name='csw_status'),
     url(r'^csw/status_table/$', views.csw_status_table, name='csw_status_table'),
