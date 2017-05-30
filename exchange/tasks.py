@@ -148,7 +148,7 @@ def create_new_csw(self, record_id):
         abstract=record.abstract,
         record_format=record.record_format,
         source=record.source,
-        reference=''.join(reference_element),
+        references=''.join(reference_element),
         relation=record.relation,
         gold=record.gold,
         category=record.category,
