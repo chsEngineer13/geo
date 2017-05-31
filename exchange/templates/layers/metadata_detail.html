@@ -319,7 +319,7 @@
 
         {% for link in layer.link_set.ows %}
         <dt>{{link.name}}</dt>
-        <dd><a href="{{link.url}}">Geoservice {{link.link_type}}</a></dd>
+        <dd><a href="{{link.url}}?REQUEST=GetCapabilities">Geoservice {{link.link_type}}</a></dd>
         {% endfor %}
 
     </dl>
