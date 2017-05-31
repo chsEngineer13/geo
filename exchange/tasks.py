@@ -141,12 +141,12 @@ def create_new_csw(self, record_id):
 
     post_data = csw_record_template.format(
         uuid=record_id,
-        title=record.title,
+        title=record.title.encode('ascii', 'xmlcharrefreplace'),
         creator=record.creator,
         record_type=record.record_type,
         alternative=record.alternative,
         modified=record.modified,
-        abstract=record.abstract,
+        abstract=record.abstract.encode('ascii', 'xmlcharrefreplace'),
         record_format=record.record_format,
         source=record.source,
         references=''.join(reference_element),
