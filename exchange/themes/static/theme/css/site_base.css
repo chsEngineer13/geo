@@ -270,14 +270,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .dataset-resources li a:hover
 {
-color:white;
+    color:#af0900;
 }
 
 .dataset-resources li {
     display: inline-flex;
 }
 
-.dataset-resources li a {
-    background-color: #aaaaaa
-}
 
