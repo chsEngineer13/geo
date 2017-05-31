@@ -123,20 +123,21 @@ def get_unified_search_result_objects(hits):
             pass
         result = {}
         result['index'] = hit.get('_index', None)
+        registry_url = settings.REGISTRYURL.rstrip('/')
         for key, value in source.iteritems():
             if key == 'bbox':
                 result['bbox_left'] = value[0]
                 result['bbox_bottom'] = value[1]
                 result['bbox_right'] = value[2]
                 result['bbox_top'] = value[3]
-                bbox_str = ','.join(map(str,value))
+                bbox_str = ','.join(map(str, value))
             elif key == 'links':
                 # Get source link from Registry
                 xml = value['xml']
-                js = '%s/%s' % (settings.REGISTRYURL,
+                js = '%s/%s' % (registry_url,
                                 re.sub(r"xml$", "js", xml))
-                png = '%s/%s' % (settings.REGISTRYURL,
-                                value['png'])
+                png = '%s/%s' % (registry_url,
+                                 value['png'])
                 result['registry_url'] = js
                 result['thumbnail_url'] = png
 

@@ -92,6 +92,10 @@
              $('#id_alternative').parent().show();
         };
 
+        var cleanUrl = function(url) {
+            return stripTrailingSlash(url.split('?')[0]);
+        }
+
         var stripTrailingSlash = function (str) {
             if (str.endsWith('/')) {
                 return str.slice(0, -1);
@@ -118,22 +122,32 @@
         var autoComplete = (function () {
             var html = '<p>Below are the additional service types disovered from service url.</p>';
             var htmlError = '<p class="alert alert-warning">Unfortunatly we were unable to discover ' +
-                    'any service metadata from the provided source. Please continue and manually ' +
+                    'any layer or service metadata from the provided source. Please continue and manually ' +
                     'complete the metadata form.</p>';
-            var val = stripTrailingSlash($('#id_source').val());
+            var source_url = cleanUrl($('#id_source').val());
 
-            if(isURL(val)){
+            if(isURL(source_url)){
                 clear();
-                if(val.indexOf('/MapServer') > 0 || val.indexOf('/ImageServer') > 0 || val.indexOf('/FeatureServer') > 0) {
-                    var service_map = { 'featureserver': 'FeatureServer',
-                        'kmlserver': 'KML', 'wmsserver': 'WMS', 'wfsserver': 'WFS'};
+                var service_type = '';
 
-                    $.post( "{% url 'csw_arcgis_search' %}", { url: val }, function( data ) {
+                if (source_url.indexOf('/MapServer') > 0) {
+                    service_type = 'MapServer';
+                } else if (source_url.indexOf('/ImageServer') > 0) {
+                    service_type = 'ImageServer';
+                } else if (source_url.indexOf('/FeatureServer') > 0) {
+                    service_type = 'FeatureServer';
+                }
+
+                if(service_type.length) {
+                    var service_map = { 'featureserver': 'FeatureServer', 'mapserver': 'MapServer',
+                        'kmlserver': 'KML', 'wmsserver': 'WMS', 'wfsserver': 'WFS', 'imageserver': 'ImageServer',};
+
+                    $.post( "{% url 'csw_arcgis_search' %}", { url: source_url }, function( data ) {
 
                         $('#id_title').val(data.mapName);
                         $('#id_abstract').val(data.serviceDescription);
 
-                        $('#id_record_type').val('ESRI:ArcGIS:MapServer');
+                        $('#id_record_type').val('ESRI:ArcGIS:'.concat(service_type));
 
                         if(data.documentInfo) {
                             $('#id_creator').val(data.documentInfo.Author);
@@ -146,17 +160,20 @@
 
                         if (data.supportedExtensions) {
                             var services = data.supportedExtensions.split(',');
+                            services.push(service_type);
                             $('.delete-row').click();
                             for (var i = 0; i < services.length; i++) {
                                 var service = services[i].trim();
                                 html +=  '<a href="#tblReferences" class="btn btn-success" >'+ service +'</a> ';
                                 $('.add-row').click();
-                                $('#id_references-' + (i+1) + '-url').val(buildServiceUrl(val, service));
+                                $('#id_references-' + (i+1) + '-url').val(buildServiceUrl(source_url, service));
                                 $('#id_references-' + (i+1) + '-scheme option:contains(' + service_map[service.toLowerCase()] + ')').attr('selected', 'selected');
                             }
 
                             handleProtocolBtns(html);
-
+                        }else{
+                            $('#id_references-0-url').val(buildServiceUrl(source_url, service_type));
+                            $('#id_references-0-scheme option:contains(' + service_map[service_type.toLowerCase()] + ')').attr('selected', 'selected');
                         }
 
                     }).fail(function() {
@@ -164,11 +181,14 @@
                     });
                 }else{
                     handleProtocolBtns(htmlError);
-
-                    if(val.toLowerCase().indexOf('/wms') > 0){
+                    if(source_url.toLowerCase().indexOf('/wms') > 0){
                         $('#id_record_format').val('OGC:WMS');
-                    }else if(val.toLowerCase().indexOf('/wfs') > 0){
+                        $('#id_references-0-url').val(buildServiceUrl(source_url, 'wms'));
+                        $("#id_references-0-scheme option:contains('WMS')").attr('selected', 'selected');
+                    }else if(source_url.toLowerCase().indexOf('/wfs') > 0){
                         $('#id_record_format').val('OGC:WFS');
+                        $('#id_references-0-url').val(buildServiceUrl(source_url, 'wfs'));
+                        $("#id_references-0-scheme option:contains('WFS')").attr('selected', 'selected');
                     }
 
                     $('#id_record_type').val('dataset');
@@ -180,6 +200,7 @@
         });
 
         $('#id_source').keyup(autoComplete);
+        $('#id_source').change(autoComplete);
         $('#id_source').bind('paste', autoComplete);
 
 
