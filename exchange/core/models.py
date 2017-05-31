@@ -113,6 +113,7 @@ class CSWRecord(models.Model):
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
+    status_message = models.TextField(blank=True)
 
     @property
     def contact_information(self):
@@ -122,6 +123,7 @@ class CSWRecord(models.Model):
     class Meta(object):
         verbose_name = 'CSW Record'
         verbose_name_plural = 'CSW Records'
+        ordering = ['-modified', 'status', 'title']
 
 
 class CSWRecordReference(models.Model):

@@ -125,6 +125,7 @@ def create_new_csw(self, record_id):
 
     def fail(message):
         record.status = "Error"
+        record.status_message = message
         record.save()
         logger.error(message)
         error = UpstreamServiceImpairment(message)
@@ -187,6 +188,7 @@ def create_new_csw(self, record_id):
 
     elif int(totalinserted[0].text) > 0:
         record.status = "Complete"
+        record.status_message = totalinserted
         record.save()
         logger.info("Record successfully created: {}".format(response.content))
         return
