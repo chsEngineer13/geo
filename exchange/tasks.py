@@ -62,14 +62,77 @@ def load_service_layers(url, user_id):
                     logger.error(e)
 
 
-@task(
-    bind=True,
-    max_retries=1,
-)
-def create_new_csw(self, record_id):
+# Raise when there is a failure in the CSW
+#  operation, flag the record as having an error,
+#  with the error message and then retry.
+def csw_fail(self, record, message):
+    record.status = "Error"
+    record.status_message = message
+    record.save()
+    logger.error(message)
+    error = UpstreamServiceImpairment(message)
+    raise self.retry(exc=error)
+
+# Execute a CSW operation
+#
+def csw_post(self, record, post_data):
+    namespaces = {
+        "csw": "http://www.opengis.net/cat/csw/2.0.2",
+        "dc": "http://purl.org/dc/elements/1.1/",
+        "ows": "http://www.opengis.net/ows",
+    }
+
+    registry_url = settings.REGISTRY_LOCAL_URL
+    catalog = settings.REGISTRY_CAT
+    csw_url = urljoin(registry_url, "catalog/{}/csw".format(catalog))
+    response = requests.post(csw_url, data=post_data)
+
+    if response.status_code != 200:
+        message = "{} during CSW record creation: {}".format(
+            response.status_code,
+            response.content,
+        )
+        return csw_fail(self, record, message)
+
+    try:
+        parsed = etree.fromstring(response.content)
+    except (ValueError, etree.XMLSyntaxError):
+        return csw_fail(self, record, "Error while parsing response from registry")
+
+    exceptiontext = parsed.xpath("//ows:ExceptionText", namespaces=namespaces)
+
+    if exceptiontext:
+        # we're going to consider this an "error" even if registry returns a
+        # positive TransactionSummary/totalInserted value along with the error
+        return csw_fail(self, record, "Error(s) during record creation" + ", ".join(
+            x.text for x in exceptiontext
+        ))
+
+    keys = ['Inserted', 'Updated', 'Deleted']
+
+    results = {}
+    for key in keys:
+        total_key = '//csw:total'+key
+        total = parsed.xpath(total_key, namespaces=namespaces)
+
+        # default the count to 0
+        results[key] = 0
+        if total and len(total) > 0:
+            results[key] = int(total[0].text)
+
+    return results
+
+
+# Insert/Update CSW Record to registry.
+#
+def csw_write(self, record_id, operation):
     """
     Attempt to create a new CSW record in Registry
     """
+
+    record = CSWRecord.objects.get(id=record_id)
+    record.status = "Pending"
+    record.save()
 
     csw_record_template = """
         <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
@@ -81,7 +144,7 @@ def create_new_csw(self, record_id):
         xmlns:dc="http://purl.org/dc/elements/1.1/"
         xmlns:dct="http://purl.org/dc/terms/"
         xmlns:registry="http://gis.harvard.edu/HHypermap/registry/0.1" >
-        <csw:Insert>
+        <csw:{operation}>
 
             <csw:Record xmlns:registry="http://gis.harvard.edu/HHypermap/registry/0.1">
             <dc:identifier>{uuid}</dc:identifier>
@@ -108,38 +171,17 @@ def create_new_csw(self, record_id):
             </ows:BoundingBox>
             </csw:Record>
 
-        </csw:Insert>
+        </csw:{operation}>
         </csw:Transaction>"""
 
     csw_record_reference_template = """<dct:references scheme="{scheme}">{url}</dct:references>"""
 
-    namespaces = {
-        "csw": "http://www.opengis.net/cat/csw/2.0.2",
-        "dc": "http://purl.org/dc/elements/1.1/",
-        "ows": "http://www.opengis.net/ows",
-    }
-
-    record = CSWRecord.objects.get(id=record_id)
-    record.status = "Pending"
-    record.save()
-
-    def fail(message):
-        record.status = "Error"
-        record.status_message = message
-        record.save()
-        logger.error(message)
-        error = UpstreamServiceImpairment(message)
-        raise self.retry(exc=error)
-
-    registry_url = settings.REGISTRY_LOCAL_URL
-    catalog = settings.REGISTRY_CAT
-    csw_url = urljoin(registry_url, "catalog/{}/csw".format(catalog))
     reference_element = []
-
     for reference in record.references.all():
         reference_element.append(csw_record_reference_template.format(scheme=reference.scheme, url=reference.url))
 
     post_data = csw_record_template.format(
+        operation=operation,
         uuid=record_id,
         title=record.title,
         creator=record.creator,
@@ -158,40 +200,90 @@ def create_new_csw(self, record_id):
         bbox_u=record.bbox_upper_corner,
     )
 
-    logger.info("Creating new CSW with: \n{}".format(post_data))
-    response = requests.post(csw_url, data=post_data)
 
-    if response.status_code != 200:
-        message = "{} during CSW record creation: {}".format(
-            response.status_code,
-            response.content,
-        )
-        return fail(message)
+    results = csw_post(self, record, post_data)
 
-    try:
-        parsed = etree.fromstring(response.content)
-    except (ValueError, etree.XMLSyntaxError):
-        return fail("Error while parsing response from registry")
+    past_tense = {
+        'Insert' : 'Inserted',
+        'Update' : 'Updated'
+    }
 
-    exceptiontext = parsed.xpath("//ows:ExceptionText", namespaces=namespaces)
-    totalinserted = parsed.xpath("//csw:totalInserted", namespaces=namespaces)
-
-    if exceptiontext:
-        # we're going to consider this an "error" even if registry returns a
-        # positive TransactionSummary/totalInserted value along with the error
-        return fail("Error(s) during record creation" + ", ".join(
-            x.text for x in exceptiontext
-        ))
-
-    elif not totalinserted or len(totalinserted) != 1:
-        return fail("response XML did not contain one //csw:totalInserted")
-
-    elif int(totalinserted[0].text) > 0:
+    if(results[past_tense[operation]] > 0):
         record.status = "Complete"
-        record.status_message = totalinserted
+        record.status_message = results[past_tense[operation]]
         record.save()
-        logger.info("Record successfully created: {}".format(response.content))
+        #logger.info("Record successfully created/changed: {}".format(response.content))
         return
+    else:
+        # Fell through, no totalinserted or it was 0
+        csw_fail(self, record, "No record created or updated, but no error reported ")
 
-    # Fell through, no totalinserted or it was 0
-    fail("No record created but no error reported")
+@task(
+    bind=True,
+    max_retries=1,
+)
+def create_new_csw(self, record_id):
+    csw_write(self, record_id, 'Insert')
+
+@task(
+    bind=True,
+    max_retries=1,
+)
+def update_csw(self, record_id):
+    csw_write(self, record_id, 'Update')
+
+@task(
+    bind=True,
+    max_retries=1,
+)
+def delete_csw(self, record_id):
+    """
+    Remove a CSW record from CSW then the database.
+    """
+
+    record = CSWRecord.objects.get(id=record_id)
+    record.status = "Pending"
+    record.save()
+
+    # Why write XML when there are strings?
+    # This is a CSW delete request, it uses any filter
+    # but this one specifys using the identifier.
+    csw_delete = """
+        <csw:Transaction xmlns:ogc="http://www.opengis.net/ogc"
+                         xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+                         xmlns:ows="http://www.opengis.net/ows"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd"
+
+                         xmlns:dc="http://purl.org/dc/elements/1.1/"
+                         xmlns:dct="http://purl.org/dc/terms/"
+                         service="CSW"
+                         version="2.0.2">
+          <csw:Delete>
+            <csw:Constraint version="1.1.0">
+              <ogc:Filter>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:PropertyName>dc:identifier</ogc:PropertyName>
+                  <ogc:Literal>{record_id}</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
+              </ogc:Filter>
+            </csw:Constraint>
+          </csw:Delete>
+        </csw:Transaction>
+    """
+
+
+    post_data = csw_delete.format(
+        record_id=record_id
+    )
+    print post_data 
+
+    results = csw_post(self, record, post_data)
+    #results = { 'Deleted' : 0 }
+
+    # ensure the record is removed from CSW,
+    #  if it is, then delete it.
+    if(results['Deleted'] != 1):
+        csw_fail(self, record, "Failed to remove CSW record")
+    else:
+        record.delete()

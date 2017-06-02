@@ -10,10 +10,11 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.core.serializers import serialize
 from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import redirect
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecord, CSWRecordReference
 from exchange.core.forms import CSWRecordReferenceFormSet, CSWRecordReferenceForm, CSWRecordForm
 from geonode.base.models import TopicCategory
-from exchange.tasks import create_new_csw, load_service_layers
+from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers
 from geonode.maps.views import _resolve_map
 import requests
 import logging
@@ -480,5 +481,15 @@ class CSWRecordUpdate(UpdateView):
             if cswrecordreference.is_valid():
                 cswrecordreference.instance = self.object
                 cswrecordreference.save()
+
+            update_csw.delay(self.object.id)
         return super(CSWRecordUpdate, self).form_valid(form)
 
+# Attempt to delete the record.
+#
+def delete_csw_view(request, pk):
+    # trigger the CSW delete task
+    delete_csw.delay(pk)
+
+    # bounce the user back to the index.
+    return redirect('csw-record-list')
