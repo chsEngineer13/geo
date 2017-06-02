@@ -420,9 +420,19 @@ def empty_page(request):
 class CSWRecordList(ListView):
     model = CSWRecord
     paginate_by = '20'
-    queryset=CSWRecord.objects.all()
     context_object_name = "records"
     template_name = 'csw/record_list.html'
+
+    def get_queryset(self):
+        order = self.request.GET.get('sort_by', 'title')
+        context = CSWRecord.objects.filter().order_by(order)
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super(CSWRecordList, self).get_context_data(**kwargs)
+        context['sort_by'] = self.request.GET.get('sort_by', 'title')
+        return context
+
 
 
 class CSWRecordCreate(CreateView):
