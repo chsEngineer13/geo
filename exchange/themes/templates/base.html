@@ -101,6 +101,8 @@
                     <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
                     <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                   {% endif %}
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url "about" %}" target="_new">{% trans "Exchange" %}</a></li>
                 </ul>
               </li>
               {% block extra_tab %}
@@ -190,6 +192,18 @@
         <div class="container">
           <div class="row">
             <div class="text-center stacked">
+              {% if theme.about_link %}
+                <a href="{{ theme.about_link }}" target="_new">
+              {% else %}
+                <a href="{% url "about" %}" target="_new">
+              {% endif %}
+              {% if theme.about_text %}
+                {{ theme.about_text }}
+              {% else %}
+                {% trans "About" %}
+              {% endif %}
+              </a>
+              &nbsp;&nbsp;|&nbsp;&nbsp;
               <span>{% trans "Powered by" %}&nbsp;&nbsp;
                 {% if theme.pb_link %}
                   <a href="{{ theme.pb_link }}" target="_new">
