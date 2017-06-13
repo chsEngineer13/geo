@@ -19,7 +19,7 @@
         </thead>
         {% for record in records %}
         <tr>
-            <td>{% comment %}<a href='{% url "csw-record-update" record.id %}'>{% endcomment %}{{ record.title }}{% comment %}</a>{% endcomment %}</td>
+            <td><a href='{% url "csw-record-update" record.id %}'>{{ record.title }}</a></td>
             <td>{{ record.source }}</td>
             <td>{{ record.status }}</td>
             <td>{{ record.user.username}}</td>
