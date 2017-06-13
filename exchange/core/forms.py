@@ -44,10 +44,10 @@ class CSWRecordForm(forms.ModelForm):
         }
 
         labels = {
-            'source': _('Service Url'),
+            'source': _('Service Endpoint Url'),
             'title': _('Title'),
             'modified': _('Date Last Modified'),
-            'creator': _('Agency'),
+            'creator': _('Agency/Office'),
             'record_type': _('Type'),
             'alternative': _('Layer Identifier'),
             'abstract': _('Abstract'),
