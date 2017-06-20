@@ -8,6 +8,7 @@ import arcrest
 from exchange.core.utils import process_service
 from exchange.core.models import CSWRecord
 from django.contrib.auth import get_user_model
+from xml.sax.saxutils import escape
 
 import time
 
@@ -178,7 +179,7 @@ def csw_write(self, record_id, operation):
 
     reference_element = []
     for reference in record.references.all():
-        reference_element.append(csw_record_reference_template.format(scheme=reference.scheme, url=reference.url))
+        reference_element.append(csw_record_reference_template.format(scheme=reference.scheme, url=escape(reference.url)))
 
     post_data = csw_record_template.format(
         operation=operation,
