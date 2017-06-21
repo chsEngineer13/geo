@@ -346,9 +346,9 @@ if AUDIT_ENABLED:
 
 # Logging settings
 # 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'
-DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'ERROR')
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
 # Commenting out logging until it can be modified to log errors correctly
-'''
+
 installed_apps_conf = {
     'handlers': ['console'],
     'level': DJANGO_LOG_LEVEL,
@@ -385,7 +385,7 @@ LOGGING['loggers']['django.db.backends'] = {
     'propagate': False,
     'level': 'WARNING',  # Django SQL logging is too noisy at DEBUG
 }
-'''
+
 # Authentication Settings
 
 # ldap

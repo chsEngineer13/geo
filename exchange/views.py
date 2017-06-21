@@ -176,7 +176,7 @@ def unified_elastic_search(request, resourcetype='base'):
     # Set base fields to search
     fields = ['title', 'text', 'abstract', 'title_alternate']
     facets = ['_index', 'type', 'subtype',
-              'owner__username', 'keywords', 'regions', 'category', 'has_time']
+              'owner__username', 'keywords', 'regions', 'category', 'has_time', 'source_type']
 
     # Text search
     query = parameters.get('q', None)
@@ -294,13 +294,11 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # filter by date
     if date_start:
-        q = Q({'range': {'date': {'gte': date_start}}}) | Q(
-            {'range': {'layer_date': {'gte': date_start}}})
+        q = Q({'range': {'date': {'gte': date_start}}})
         search = search.query(q)
 
     if date_end:
-        q = Q({'range': {'date': {'lte': date_end}}}) | Q(
-            {'range': {'layer_date': {'lte': date_end}}})
+        q = Q({'range': {'date': {'lte': date_end}}})
         search = search.query(q)
 
     if extent_start:
@@ -316,7 +314,9 @@ def unified_elastic_search(request, resourcetype='base'):
         search = search.query(q)
 
     if categories:
-        q = Q({'terms': {'category_exact': categories}})
+        q = Q(
+                {'terms': {'category_exact': categories}}
+            )
         search = search.query(q)
 
     if keywords:
@@ -326,7 +326,7 @@ def unified_elastic_search(request, resourcetype='base'):
     def facet_search(search, parameters, paramfield, esfield=None):
         if esfield is None:
             esfield = paramfield.replace('__in', '')
-        if esfield != '_index':
+        if esfield not in ['_index', 'source_type']:
             esfield = esfield + '_exact'
         getparams = parameters.getlist(paramfield)
         if not getparams:
@@ -342,9 +342,13 @@ def unified_elastic_search(request, resourcetype='base'):
     # Setup aggregations and filters for faceting
     for f in facets:
         param = '%s__in' % f
-        if f not in ['category', 'keywords']:
+        if f not in ['category', 'keywords', 'regions']:
             search = facet_search(search, parameters, param)
-        search.aggs.bucket(f, 'terms', field=f + '_exact')
+        if f not in ['_index', 'source_type']:
+            search.aggs.bucket(f, 'terms', field=f + '_exact')
+        else:
+            search.aggs.bucket(f, 'terms', field=f)
+
 
     # Apply sort
     if sort.lower() == "-date":
@@ -352,21 +356,13 @@ def unified_elastic_search(request, resourcetype='base'):
                               {"order": "desc",
                                "missing": "_last",
                                "unmapped_type": "date"
-                               }},
-                             {"layer_date":
-                              {"order": "desc",
-                               "missing": "_last",
-                               "unmapped_type": "date"}})
+                               }})
     elif sort.lower() == "date":
         search = search.sort({"date":
                               {"order": "asc",
                                "missing": "_last",
                                "unmapped_type": "date"
-                               }},
-                             {"layer_date":
-                              {"order": "asc",
-                               "missing": "_last",
-                               "unmapped_type": "date"}})
+                               }})
     elif sort.lower() == "title":
         search = search.sort('title')
     elif sort.lower() == "-title":
@@ -378,22 +374,26 @@ def unified_elastic_search(request, resourcetype='base'):
                               {"order": "desc",
                                "missing": "_last",
                                "unmapped_type": "date"
-                               }},
-                             {"layer_date":
-                              {"order": "desc",
-                               "missing": "_last",
-                               "unmapped_type": "date"}})
+                               }})
 
     # print search.to_dict()
     search = search[offset:offset + limit]
     results = search.execute()
 
+    logger.debug('search: %s, results: %s', search, results)
+
     # Get facet counts
     facet_results = {}
+    facet_results['alltypes'] = {}
     for f in facets:
         facet_results[f] = {}
         for bucket in results.aggregations[f].buckets:
+            if f in ['_index', 'subtype', 'source_type', 'type']:
+                facet_results['alltypes'][bucket.key] = bucket.doc_count
             facet_results[f][bucket.key] = bucket.doc_count
+    facet_results['subtype'] = facet_results['alltypes']
+
+
     # create alias for owners
     facet_results['owners']=facet_results['owner__username']
     # Get results
