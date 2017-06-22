@@ -23,6 +23,9 @@ from django.views.generic import CreateView, UpdateView, ListView
 
 from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
+from pip._vendor import pkg_resources
+from exchange.version import get_version
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +37,97 @@ def home_screen(request):
 
 def documentation_page(request):
     return HttpResponseRedirect('/static/docs/index.html')
+
+
+def get_pip_version(project):
+    version = [
+        p.version for p in pkg_resources.working_set
+        if p.project_name == project
+    ]
+    if version != []:
+        return version[0]
+    else:
+        return []
+
+
+def about_page(request, template='about.html'):
+    exchange_version = get_pip_version('geonode-exchange')
+    if exchange_version == []:
+        exchange_version = get_version()
+    try:
+        exchange_releases = requests.get(
+            'https://api.github.com/repos/boundlessgeo/exchange/releases'
+        ).json()
+    except:
+        exchange_releases = []
+    release_notes = 'No release notes available.'
+    for release in exchange_releases:
+        if release['tag_name'] == 'v{}'.format(exchange_version[:-8]):
+            release_notes = release['body'].replace(' - ', '\n-')
+
+    try:
+        geoserver_version = requests.get(
+            '{}rest/about/version.json'.format(
+                settings.OGC_SERVER['default']['LOCATION']
+            )
+        ).json()['about']['resource'][0]
+        geoserver_version = '{}.{}'.format(
+            geoserver_version['Version'], geoserver_version['Git-Revision'][:7]
+        )
+    except:
+        geoserver_version = ''
+
+    geonode_version = get_pip_version('GeoNode')
+    maploom_version = get_pip_version('django-exchange-maploom')
+    importer_version = get_pip_version('django-osgeo-importer')
+    react_version = get_pip_version('django-geonode-client')
+
+    projects = [{
+        'name': 'Boundless Exchange',
+        'website': 'https://boundlessgeo.com/boundless-exchange/',
+        'repo': 'https://github.com/boundlessgeo/exchange',
+        'version': exchange_version[:-8],
+        'commit': exchange_version[-7:]
+    }, {
+        'name': 'GeoNode',
+        'website': 'http://geonode.org/',
+        'repo': 'https://github.com/GeoNode/geonode',
+        'boundless_repo': 'https://github.com/boundlessgeo/geonode',
+        'version': geonode_version[:-8],
+        'commit': geonode_version[-7:]
+    }, {
+        'name': 'GeoServer',
+        'website': 'http://geoserver.org/',
+        'repo': 'https://github.com/geoserver/geoserver',
+        'boundless_repo': 'https://github.com/boundlessgeo/geoserver',
+        'version': geoserver_version[:-8],
+        'commit': geoserver_version[-7:]
+    }, {
+        'name': 'MapLoom',
+        'website': 'http://prominentedge.com/projects/maploom.html',
+        'repo': 'https://github.com/ROGUE-JCTD/MapLoom',
+        'boundless_repo': 'https://github.com/boundlessgeo/'
+                          + 'django-exchange-maploom',
+        'version': maploom_version[:-8],
+        'commit': maploom_version[-7:]
+    }, {
+        'name': 'OSGeo Importer',
+        'repo': 'https://github.com/GeoNode/django-osgeo-importer',
+        'version': importer_version[:-8],
+        'commit': importer_version[-7:]
+    }, {
+        'name': 'React Viewer',
+        'website': 'http://client.geonode.org',
+        'repo': 'https://github.com/GeoNode/geonode-client',
+        'version': react_version[:-8],
+        'commit': react_version[-7:]
+    }]
+
+    return render_to_response(template, RequestContext(request, {
+        'projects': projects,
+        'exchange_version': exchange_version[:-8],
+        'exchange_release': release_notes
+    }))
 
 
 def layer_metadata_detail(request, layername,
