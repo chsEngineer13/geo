@@ -1,28 +1,27 @@
 import os
 import re
-
-import urllib, json
-from django.shortcuts import render, render_to_response
-from django.template import RequestContext
-from django.conf import settings
-from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.core.urlresolvers import reverse
-from django.core.serializers import serialize
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import redirect
-from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecord, CSWRecordReference
-from exchange.core.forms import CSWRecordReferenceFormSet, CSWRecordReferenceForm, CSWRecordForm
-from geonode.base.models import TopicCategory
-from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers
-from geonode.maps.views import _resolve_map
+import urllib
+import json
 import requests
 import logging
 import datetime
-from django.views.generic import CreateView, UpdateView, ListView
-
-from django.core.urlresolvers import reverse_lazy
+from geonode.base.models import TopicCategory
+from django.conf import settings
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.serializers import serialize
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
+from django.shortcuts import render, render_to_response, redirect
+from django.template import RequestContext
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.views.generic import CreateView, UpdateView, ListView
+from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecord, CSWRecordReference
+from exchange.core.forms import CSWRecordReferenceFormSet, CSWRecordReferenceForm, CSWRecordForm
+from exchange.version import get_version
+from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers
+from geonode.maps.views import _resolve_map
+from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
+from pip._vendor import pkg_resources
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +33,99 @@ def home_screen(request):
 
 def documentation_page(request):
     return HttpResponseRedirect('/static/docs/index.html')
+
+
+def get_pip_version(project):
+    version = [
+        p.version for p in pkg_resources.working_set
+        if p.project_name == project
+    ]
+    if version != []:
+        pkg_version = version[0][:-8] if version[0][:-8] else version[0][-7:]
+        commit_hash = version[0][-7:] if version[0][:-8] else version[0][:-8]
+        return {'version': pkg_version, 'commit': commit_hash}
+    else:
+        return {'version': '', 'commit': ''}
+
+
+def about_page(request, template='about.html'):
+    exchange_version = get_pip_version('geonode-exchange')
+    if not exchange_version['version'].strip():
+        version = get_version()
+        pkg_version = version[:-8] if version[:-8] else version[-7:]
+        commit_hash = version[-7:] if version[:-8] else version[:-8]
+        exchange_version = {'version': pkg_version, 'commit': commit_hash}
+    try:
+        exchange_releases = requests.get(
+            'https://api.github.com/repos/boundlessgeo/exchange/releases'
+        ).json()
+    except:
+        exchange_releases = []
+    release_notes = 'No release notes available.'
+    for release in exchange_releases:
+        if release['tag_name'] == 'v{}'.format(exchange_version['version']):
+            release_notes = release['body'].replace(' - ', '\n-')
+
+    try:
+        ogc_server = settings.OGC_SERVER['default']
+        geoserver_url = '{}/rest/about/version.json'.format(ogc_server['LOCATION'].strip('/'))
+        resp = requests.get(geoserver_url, auth=(ogc_server['USER'], ogc_server['PASSWORD']))
+        version = resp.json()['about']['resource'][0]
+        geoserver_version = {'version': version['Version'], 'commit': version['Git-Revision'][:7]}
+    except:
+        geoserver_version = {'version': '', 'commit': ''}
+
+    geonode_version = get_pip_version('GeoNode')
+    maploom_version = get_pip_version('django-exchange-maploom')
+    importer_version = get_pip_version('django-osgeo-importer')
+    react_version = get_pip_version('django-geonode-client')
+
+    projects = [{
+        'name': 'Boundless Exchange',
+        'website': 'https://boundlessgeo.com/boundless-exchange/',
+        'repo': 'https://github.com/boundlessgeo/exchange',
+        'version': exchange_version['version'],
+        'commit': exchange_version['commit']
+    }, {
+        'name': 'GeoNode',
+        'website': 'http://geonode.org/',
+        'repo': 'https://github.com/GeoNode/geonode',
+        'boundless_repo': 'https://github.com/boundlessgeo/geonode',
+        'version': geonode_version['version'],
+        'commit': geonode_version['commit']
+    }, {
+        'name': 'GeoServer',
+        'website': 'http://geoserver.org/',
+        'repo': 'https://github.com/geoserver/geoserver',
+        'boundless_repo': 'https://github.com/boundlessgeo/geoserver',
+        'version': geoserver_version['version'],
+        'commit': geoserver_version['commit']
+    }, {
+        'name': 'MapLoom',
+        'website': 'http://prominentedge.com/projects/maploom.html',
+        'repo': 'https://github.com/ROGUE-JCTD/MapLoom',
+        'boundless_repo': 'https://github.com/boundlessgeo/'
+                          + 'django-exchange-maploom',
+        'version': maploom_version['version'],
+        'commit': maploom_version['commit']
+    }, {
+        'name': 'OSGeo Importer',
+        'repo': 'https://github.com/GeoNode/django-osgeo-importer',
+        'version': importer_version['version'],
+        'commit': importer_version['commit']
+    }, {
+        'name': 'React Viewer',
+        'website': 'http://client.geonode.org',
+        'repo': 'https://github.com/GeoNode/geonode-client',
+        'version': react_version['version'],
+        'commit': react_version['commit']
+    }]
+
+    return render_to_response(template, RequestContext(request, {
+        'projects': projects,
+        'exchange_version': exchange_version['version'],
+        'exchange_release': release_notes
+    }))
 
 
 def layer_metadata_detail(request, layername,
