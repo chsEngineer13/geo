@@ -24,6 +24,9 @@ class GeoNodeTimeExtentHandler(ImportHandlerMixin):
         Check that geonode layer already exists
         Check that start or end time column exists
         """
+        if layer_config['raster']:
+            return False
+
         self.has_start = 'start_date' in layer_config and layer_config['start_date'] != None
         self.has_end = 'end_date' in layer_config and layer_config['end_date'] != None
         logger.debug('Can run for Configuring time extent for %s. has_start=%s, has_end=%s',
