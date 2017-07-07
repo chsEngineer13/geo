@@ -14,5 +14,30 @@
         </li>
         {% endif %}
         {% endfor %}
+        <li>
+            <a id="ESRI:ArcGIS:MapServer" data-value="ESRI:ArcGIS:MapServer" data-filter="{{ filter }}" ng-click="multiple_choice_listener($event)">ArcGIS MapServer
+            <span class="badge pull-right">0</span>
+            </a>
+        </li>
+        <li>
+            <a id="ESRI:ArcGIS:ImageServer" data-value="ESRI:ArcGIS:ImageServer" data-filter="{{ filter }}" ng-click="multiple_choice_listener($event)">ArcGIS ImageServer
+            <span class="badge pull-right">0</span>
+            </a>
+        </li>
+        <li>
+            <a id="OGC:WMS" data-value="OGC:WMS" data-filter="{{ filter }}" ng-click="multiple_choice_listener($event)">WMS
+            <span class="badge pull-right">0</span>
+            </a>
+        </li>
+        <li>
+            <a id="OGC:WFS" data-value="OGC:WFS" data-filter="{{ filter }}" ng-click="multiple_choice_listener($event)">WFS
+            <span class="badge pull-right">0</span>
+            </a>
+        </li>
+        <li>
+            <a id="OGC:WCS" data-value="OGC:WCS" data-filter="{{ filter }}" ng-click="multiple_choice_listener($event)">WCS
+            <span class="badge pull-right">0</span>
+            </a>
+        </li>
   </ul>
 </nav>

@@ -304,12 +304,14 @@
         if (HAYSTACK_FACET_COUNTS){
             module.haystack_facets($http, $scope.$root, $location);
             $("#types").find("a").each(function(){
+                $(this).show();
                 if ($(this)[0].id in data.meta.facets.subtype) {
                     $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
                 }
                 else if ($(this)[0].id in data.meta.facets.type) {
                     $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
                 } else {
+                    $(this).hide();
                     $(this).find("span").text("0");
                 }
             });
