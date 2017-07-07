@@ -199,13 +199,13 @@
             }
 
             // TODO: This would look better as a uibModal.
-            if(!looks_okay) {
-                var error_msg = 'This layer looks to have already been uploaded as ' + similar_layer;
-                error_msg += ', continue?';
-                if(!confirm(error_msg)) {
-                    return $q.reject();
-                }
-            }
+            // if(!looks_okay) {
+                // var error_msg = 'This layer looks to have already been uploaded as ' + similar_layer;
+                // error_msg += ', continue?';
+                // if(!confirm(error_msg)) {
+                    // return $q.reject();
+                // }
+            // }
 
             return true;
         });
