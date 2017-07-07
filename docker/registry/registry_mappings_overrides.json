@@ -1,0 +1,39 @@
+{
+        "mappings": {
+            "layer": {
+                "properties": {
+                    "registry": {
+                        "type": "nested",
+                        "properties": {
+                            "category": {
+                                "type": "string", 
+                                "index": "not_analyzed",
+                                "copy_to": "category_exact"
+                            }
+                        }
+                    },
+                    "category_exact": {
+                        "type": "string",
+                        "index": "analyzed"
+                    },
+                    "type_exact": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "layer_date": {
+                        "type": "date",
+                        "format": "dateOptionalTime",
+                        "copy_to": "date"
+                    },
+                    "date": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                    },
+                    "source_type": {
+                        "type": "string",
+                        "copy_to": "type_exact"
+                    }
+            }
+        }
+    }
+}

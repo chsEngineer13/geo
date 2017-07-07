@@ -23,6 +23,7 @@ ADD registry-settings.sh /etc/profile.d/
 
 ADD setupdb.sh /root/
 ADD run.sh /root/
+ADD registry_mappings_overrides.json /root/
 
 # globally install what registry needs.
 WORKDIR /opt/registry/
