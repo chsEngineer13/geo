@@ -142,7 +142,7 @@ MIDDLEWARE_CLASSES = (
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ) + MIDDLEWARE_CLASSES
 
-ADDITIONAL_APPS = os.environ.get(
+ADDITIONAL_APPS = os.getenv(
     'ADDITIONAL_APPS',
     ()
 )
@@ -193,7 +193,7 @@ if GEONODE_CLIENT_ENABLED:
          
 
 # authorized exempt urls
-ADDITIONAL_AUTH_EXEMPT_URLS = os.environ.get(
+ADDITIONAL_AUTH_EXEMPT_URLS = os.getenv(
     'ADDITIONAL_AUTH_EXEMPT_URLS',
     ()
 )
@@ -204,31 +204,31 @@ if isinstance(ADDITIONAL_AUTH_EXEMPT_URLS, str):
 AUTH_EXEMPT_URLS = ('/complete/*', '/login/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
 
 # geoserver settings
-GEOSERVER_URL = os.environ.get(
+GEOSERVER_URL = os.getenv(
     'GEOSERVER_URL',
     'http://127.0.0.1:8080/geoserver/'
 )
-GEOSERVER_LOCAL_URL = os.environ.get(
+GEOSERVER_LOCAL_URL = os.getenv(
     'GEOSERVER_LOCAL_URL',
     GEOSERVER_URL
 )
-GEOSERVER_USER = os.environ.get(
+GEOSERVER_USER = os.getenv(
     'GEOSERVER_USER',
     'admin'
 )
-GEOSERVER_PASSWORD = os.environ.get(
+GEOSERVER_PASSWORD = os.getenv(
     'GEOSERVER_PASSWORD',
     'geoserver'
 )
-GEOSERVER_LOG = os.environ.get(
+GEOSERVER_LOG = os.getenv(
     'GEOSERVER_LOG',
     '/opt/geonode/geoserver_data/logs/geoserver.log'
 )
-GEOSERVER_DATA_DIR = os.environ.get(
+GEOSERVER_DATA_DIR = os.getenv(
     'GEOSERVER_DATA_DIR',
     '/opt/geonode/geoserver_data'
 )
-GEOGIG_DATASTORE_DIR = os.environ.get(
+GEOGIG_DATASTORE_DIR = os.getenv(
     'GEOSERVER_DATA_DIR',
     '/opt/geonode/geoserver_data/geogig'
 )
@@ -263,10 +263,16 @@ OGC_SERVER = {
 GEOSERVER_BASE_URL = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'wms'
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
+GEOFENCE = {
+    'url': os.getenv('GEOFENCE_URL', "{}/geofence".format(GEOSERVER_LOCAL_URL.strip('/'))),
+    'username': os.getenv('GEOFENCE_USERNAME', GEOSERVER_USER),
+    'password':os.getenv('GEOFENCE_PASSWORD', GEOSERVER_PASSWORD)
+}
+
 MAP_BASELAYERS[0]['source']['url'] = (OGC_SERVER['default']
                                       ['PUBLIC_LOCATION'] + 'wms')
 
-POSTGIS_URL = os.environ.get(
+POSTGIS_URL = os.getenv(
     'POSTGIS_URL',
     'postgis://exchange:boundless@localhost:5432/exchange_data'
 )
@@ -276,7 +282,7 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
 )
 DATABASES['exchange_imports']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
-WGS84_MAP_CRS = str2bool(os.environ.get('WGS84_MAP_CRS', 'False'))
+WGS84_MAP_CRS = str2bool(os.getenv('WGS84_MAP_CRS', 'False'))
 if WGS84_MAP_CRS:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
@@ -290,11 +296,11 @@ Elastic Search for both Registry and GeoNode must running
 on same elasticsearch instance at ES_URL
 REGISTRY_URL must be set in order to provide links to Registry
 '''
-ES_UNIFIED_SEARCH = str2bool(os.environ.get('ES_UNIFIED_SEARCH', 'False'))
+ES_UNIFIED_SEARCH = str2bool(os.getenv('ES_UNIFIED_SEARCH', 'False'))
 
 # haystack settings
-ES_URL = os.environ.get('ES_URL', 'http://127.0.0.1:9200/')
-ES_ENGINE = os.environ.get(
+ES_URL = os.getenv('ES_URL', 'http://127.0.0.1:9200/')
+ES_ENGINE = os.getenv(
     'ES_ENGINE',
     'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
 )
@@ -317,7 +323,7 @@ if HAYSTACK_SEARCH:
 
 
 # amqp settings
-BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672/')
+BROKER_URL = os.getenv('BROKER_URL', 'amqp://guest:guest@localhost:5672/')
 CELERY_ALWAYS_EAGER = False
 NOTIFICATION_QUEUE_ALL = not CELERY_ALWAYS_EAGER
 NOTIFICATION_LOCK_LOCATION = LOCAL_ROOT
@@ -389,8 +395,8 @@ LOGGING['loggers']['django.db.backends'] = {
 # Authentication Settings
 
 # ldap
-AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', None)
-LDAP_SEARCH_DN = os.environ.get('LDAP_SEARCH_DN', None)
+AUTH_LDAP_SERVER_URI = os.getenv('AUTH_LDAP_SERVER_URI', None)
+LDAP_SEARCH_DN = os.getenv('LDAP_SEARCH_DN', None)
 if all([AUTH_LDAP_SERVER_URI, LDAP_SEARCH_DN]):
     from ._ldap import *   # noqa
 
@@ -409,13 +415,13 @@ if GEOAXIS_ENABLED:
 
 
 # NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
-REGISTRY = str2bool(os.environ.get('ENABLE_REGISTRY', 'False'))
-REGISTRYURL = os.environ.get('REGISTRYURL', None)
-REGISTRY_CAT = os.environ.get('REGISTRY_CAT', 'registry')
-REGISTRY_LOCAL_URL = os.environ.get('REGISTRY_LOCAL_URL', 'http://localhost:8001')
+REGISTRY = str2bool(os.getenv('ENABLE_REGISTRY', 'False'))
+REGISTRYURL = os.getenv('REGISTRYURL', None)
+REGISTRY_CAT = os.getenv('REGISTRY_CAT', 'registry')
+REGISTRY_LOCAL_URL = os.getenv('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
 # NearSight Options, adding NEARSIGHT_ENABLED to env will enable nearsight.
-NEARSIGHT_ENABLED = str2bool(os.environ.get('NEARSIGHT_ENABLED', 'False'))
+NEARSIGHT_ENABLED = str2bool(os.getenv('NEARSIGHT_ENABLED', 'False'))
 if NEARSIGHT_ENABLED:
     NEARSIGHT_UPLOAD_PATH = os.getenv('NEARSIGHT_UPLOAD_PATH', '/opt/nearsight/store')
     NEARSIGHT_LAYER_PREFIX = os.getenv('NEARSIGHT_LAYER_PREFIX', 'nearsight')
@@ -522,16 +528,16 @@ if ENABLE_SOCIAL_LOGIN:
         'social_core.pipeline.user.user_details'
     )
 
-    SOCIAL_AUTH_AUTH0_KEY = os.environ.get('OAUTH_AUTH0_KEY', None)
-    SOCIAL_AUTH_AUTH0_SECRET = os.environ.get('OAUTH_AUTH0_SECRET', None)
-    SOCIAL_AUTH_AUTH0_HOST = os.environ.get('OAUTH_AUTH0_HOST', None)
+    SOCIAL_AUTH_AUTH0_KEY = os.getenv('OAUTH_AUTH0_KEY', None)
+    SOCIAL_AUTH_AUTH0_SECRET = os.getenv('OAUTH_AUTH0_SECRET', None)
+    SOCIAL_AUTH_AUTH0_HOST = os.getenv('OAUTH_AUTH0_HOST', None)
     ENABLE_AUTH0_LOGIN = isValid(SOCIAL_AUTH_AUTH0_KEY)
-    AUTH0_APP_NAME = os.environ.get('AUTH0_APP_NAME', 'Connect')
-    OAUTH_AUTH0_ADMIN_ROLES = os.environ.get(
+    AUTH0_APP_NAME = os.getenv('AUTH0_APP_NAME', 'Connect')
+    OAUTH_AUTH0_ADMIN_ROLES = os.getenv(
         'OAUTH_AUTH0_ADMIN_ROLES', 
         ""
     )
-    OAUTH_AUTH0_ALLOWED_ROLES = os.environ.get(
+    OAUTH_AUTH0_ALLOWED_ROLES = os.getenv(
         'OAUTH_AUTH0_ALLOWED_ROLES', 
         ""
     )
@@ -541,25 +547,25 @@ if ENABLE_SOCIAL_LOGIN:
     if OAUTH_AUTH0_ALLOWED_ROLES.strip():
         AUTH0_ALLOWED_ROLES = map(str.strip, OAUTH_AUTH0_ALLOWED_ROLES.split(','))
 
-    SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('OAUTH_FACEBOOK_KEY', None)
-    SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('OAUTH_FACEBOOK_SECRET', None)
-    OAUTH_FACEBOOK_SCOPES = os.environ.get('OAUTH_FACEBOOK_SCOPES', 'email')
+    SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('OAUTH_FACEBOOK_KEY', None)
+    SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('OAUTH_FACEBOOK_SECRET', None)
+    OAUTH_FACEBOOK_SCOPES = os.getenv('OAUTH_FACEBOOK_SCOPES', 'email')
     SOCIAL_AUTH_FACEBOOK_SCOPE = map(str.strip, OAUTH_FACEBOOK_SCOPES.split(','))
     SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-        'fields': os.environ.get('OAUTH_FACEBOOK_PROFILE_EXTRA_PARAMS', 'id,name,email'),
+        'fields': os.getenv('OAUTH_FACEBOOK_PROFILE_EXTRA_PARAMS', 'id,name,email'),
     }
     ENABLE_FACEBOOK_LOGIN = isValid(SOCIAL_AUTH_FACEBOOK_KEY)
 
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('OAUTH_GOOGLE_KEY', None)
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('OAUTH_GOOGLE_SECRET', None)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('OAUTH_GOOGLE_KEY', None)
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('OAUTH_GOOGLE_SECRET', None)
     ENABLE_GOOGLE_LOGIN = isValid(SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
 
-    SOCIAL_AUTH_GEOAXIS_KEY = os.environ.get('OAUTH_GEOAXIS_KEY', None)
-    SOCIAL_AUTH_GEOAXIS_SECRET = os.environ.get('OAUTH_GEOAXIS_SECRET', None)
-    SOCIAL_AUTH_GEOAXIS_HOST = os.environ.get('OAUTH_GEOAXIS_HOST', None)
-    OAUTH_GEOAXIS_USER_FIELDS = os.environ.get('OAUTH_GEOAXIS_USER_FIELDS', 'username, email, last_name, first_name')
+    SOCIAL_AUTH_GEOAXIS_KEY = os.getenv('OAUTH_GEOAXIS_KEY', None)
+    SOCIAL_AUTH_GEOAXIS_SECRET = os.getenv('OAUTH_GEOAXIS_SECRET', None)
+    SOCIAL_AUTH_GEOAXIS_HOST = os.getenv('OAUTH_GEOAXIS_HOST', None)
+    OAUTH_GEOAXIS_USER_FIELDS = os.getenv('OAUTH_GEOAXIS_USER_FIELDS', 'username, email, last_name, first_name')
     SOCIAL_AUTH_GEOAXIS_USER_FIELDS = map(str.strip, OAUTH_GEOAXIS_USER_FIELDS.split(','))
-    OAUTH_GEOAXIS_SCOPES = os.environ.get('OAUTH_GEOAXIS_SCOPES', 'UserProfile.me')
+    OAUTH_GEOAXIS_SCOPES = os.getenv('OAUTH_GEOAXIS_SCOPES', 'UserProfile.me')
     SOCIAL_AUTH_GEOAXIS_SCOPE = map(str.strip, OAUTH_GEOAXIS_SCOPES.split(','))
     ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
     if SITEURL.startswith('https'):
@@ -571,9 +577,9 @@ if ENABLE_SOCIAL_LOGIN:
         )
 
 # MapLoom search options
-NOMINATIM_URL = os.environ.get('NOMINATIM_URL', '//nominatim.openstreetmap.org')
-GEOQUERY_ENABLED = str2bool(os.environ.get('GEOQUERY_ENABLED', 'False'))
-GEOQUERY_URL = os.environ.get('GEOQUERY_URL', None)
+NOMINATIM_URL = os.getenv('NOMINATIM_URL', '//nominatim.openstreetmap.org')
+GEOQUERY_ENABLED = str2bool(os.getenv('GEOQUERY_ENABLED', 'False'))
+GEOQUERY_URL = os.getenv('GEOQUERY_URL', None)
 if GEOQUERY_ENABLED:
     NOMINATIM_ENABLED = False
 else:
