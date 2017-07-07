@@ -248,6 +248,7 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 200px;
     max-height: 150px;
     margin-top: 20px;
+    border: 0px solid #ddd;
 }
 
 .btn-ws {
@@ -275,6 +276,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .dataset-resources li {
     display: inline-flex;
+}
+
+.profile-avatar {
+    padding: 15px;
 }
 
 
