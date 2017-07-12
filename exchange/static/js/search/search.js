@@ -19,7 +19,8 @@
 
         return function (text) {
 
-            var mapping = {'AIMS--http-get-feature': 'FeatureServer', 'AIMS--http-get-image': 'MapServer'}
+            var mapping = {'AIMS--http-get-feature': 'FeatureServer', 'AIMS--http-get-map': 'MapServer',
+                'AIMS--http-get-image': 'ImageServer'}
 
             if (text === undefined) {
                 return text;

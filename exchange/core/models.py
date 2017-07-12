@@ -127,7 +127,7 @@ class CSWRecord(models.Model):
 
 
 class CSWRecordReference(models.Model):
-    scheme_choices = (('ESRI:AIMS--http-get-feature', 'MapServer'),
+    scheme_choices = (('ESRI:AIMS--http-get-map', 'MapServer'),
                       ('ESRI:AIMS--http-get-feature', 'FeatureServer'),
                       ('ESRI:AIMS--http-get-image', 'ImageServer'),
                       ('WWW:LINK-1.0-http--json', 'JSON'),
