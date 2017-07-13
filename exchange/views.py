@@ -559,9 +559,9 @@ class CSWRecordCreate(CreateView):
 
 class CSWRecordUpdate(UpdateView):
     model = CSWRecord
+    form_class = CSWRecordForm
     template_name = 'csw/new.html'
-    fields = ['source', 'title', 'category', 'abstract',
-                  'alternative', 'creator', 'contact_email', 'contact_phone', 'gold']
+    
     success_url = reverse_lazy('csw-record-list')
 
     def get_context_data(self, **kwargs):
