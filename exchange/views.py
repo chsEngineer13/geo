@@ -307,9 +307,10 @@ def unified_elastic_search(request, resourcetype='base'):
     # Geospatial Elements
     bbox = parameters.get("extent", None)
 
-    # only show registry, documents, layers, and maps
+    # only show registry, documents, layers, stories, and maps
     q = Q({"match": {"_type": "layer"}}) | Q(
           {"match": {"type_exact": "layer"}}) | Q(
+          {"match": {"type_exact": "story"}}) | Q(
           {"match": {"type_exact": "document"}}) | Q(
           {"match": {"type_exact": "map"}})
     search = search.query(q)
