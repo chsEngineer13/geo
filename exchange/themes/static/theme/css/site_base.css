@@ -312,7 +312,3 @@ h1, h2, h3, h4, h5, h6 {
 .import-options-form {
     margin-top: 0px !important;
 }
-
-a, a:hover, .home .big-search .btn-default, footer a, footer a:hover, .home #datasets a .category:hover, .fa:hover, .home #datasets h4:hover, .home #showcase a{
-    color: #131a22 !important;
-}
