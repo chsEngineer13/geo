@@ -262,7 +262,7 @@
 
   })
 
-  .controller('WizardController', function ($scope, $modalInstance, layer, layerService, $interval, modalImage, staticUrl, default_config, appendTo, shapefile_link, csv_link) {
+  .controller('WizardController', function ($scope, $http, $modalInstance, layer, layerService, $interval, modalImage, staticUrl, default_config, appendTo, shapefile_link, csv_link) {
       $scope.appendTo = appendTo;
       $scope.layer = layer;
       $scope.errors = false;
@@ -277,23 +277,30 @@
       var stop;
 
       $scope.setDefaults = function() {
-        if ($scope.layer == null) {
-            return
-        }
+          if ($scope.layer == null) {
+              return
+          }
 
-        if ($scope.default_config !== null && $scope.default_config !== undefined) {
-          $scope.layer.configuration_options = $scope.default_config;
-        } else {
-          $scope.layer.configuration_options = {'always_geogig': true, 'configureTime': true, 'editable': true, 'convert_to_date': [], 'index': 0 };
-        }
+          if ($scope.default_config !== null && $scope.default_config !== undefined) {
+              $scope.layer.configuration_options = $scope.default_config;
+          } else {
+              $scope.layer.configuration_options = {'always_geogig': true, 'configureTime': true, 'editable': true, 'convert_to_date': [], 'index': 0 };
+          }
 
-        if ($scope.layer.hasOwnProperty('name') && !($scope.layer.configuration_options.hasOwnProperty('name'))) {
-            $scope.layer.configuration_options.name = $scope.layer.name;
-        }
+          if ($scope.layer.hasOwnProperty('name') && !($scope.layer.configuration_options.hasOwnProperty('name'))) {
+              $scope.layer.configuration_options.name = $scope.layer.name;
+          }
 
-        if ($scope.layer.configuration_options.permissions == null) {
-            $scope.layer.configuration_options.permissions = $scope.defaultPermissions;
-        }
+          if ($scope.layer.configuration_options.permissions == null) {
+              $scope.layer.configuration_options.permissions = $scope.defaultPermissions;
+          }
+          
+          $http.get('/api/categories/').success(function(data) {
+              function isActive(category) {
+                  return category.is_choice;
+              }
+              $scope.categories = data.objects.filter(isActive);
+          });
       };
 
       $scope.appending = function(asString) {
