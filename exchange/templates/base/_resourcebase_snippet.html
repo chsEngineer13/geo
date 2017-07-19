@@ -58,7 +58,7 @@
           <button style="margin-top:10px;" class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% verbatim %}
           <p class="item-meta"><span class="item-category">{{ item.registry.category == '[]' ? '' : item.registry.category }}</span></p>
-          <h4>{{ item.title }}</h4>
+          <h4>{{ item.title }}</h4><h5>{{ item.source_host }}</h5>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-xs-12 item-items">

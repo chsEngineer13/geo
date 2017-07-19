@@ -268,7 +268,8 @@ def unified_elastic_search(request, resourcetype='base'):
     # Set base fields to search
     fields = ['title', 'text', 'abstract', 'title_alternate']
     facets = ['_index', 'type', 'subtype',
-              'owner__username', 'keywords', 'regions', 'category', 'has_time', 'source_type']
+              'owner__username', 'keywords', 'regions', 
+              'category', 'has_time', 'source_type', 'source_host']
 
     # Text search
     query = parameters.get('q', None)
@@ -418,7 +419,7 @@ def unified_elastic_search(request, resourcetype='base'):
     def facet_search(search, parameters, paramfield, esfield=None):
         if esfield is None:
             esfield = paramfield.replace('__in', '')
-        if esfield not in ['_index', 'source_type']:
+        if esfield not in ['_index', 'source_type', 'source_host']:
             esfield = esfield + '_exact'
         getparams = parameters.getlist(paramfield)
         if not getparams:
@@ -436,7 +437,7 @@ def unified_elastic_search(request, resourcetype='base'):
         param = '%s__in' % f
         if f not in ['category', 'keywords', 'regions']:
             search = facet_search(search, parameters, param)
-        if f not in ['_index', 'source_type']:
+        if f not in ['_index', 'source_type', 'source_host']:
             search.aggs.bucket(f, 'terms', field=f + '_exact')
         else:
             search.aggs.bucket(f, 'terms', field=f)
