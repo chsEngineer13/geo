@@ -7,6 +7,10 @@
 {% block extra_head %}
   {% get_theme as theme %}
   <link href="{% static "theme/css/site_base.css"%}" rel="stylesheet"/>
+
+  <link rel="shortcut icon" href="{% static "theme/favicon.ico"%}">
+  <link rel="apple-touch-icon" href="{% static "theme/img/icons/pngs/256x256.png"%}" />
+
   <style>
     {% if theme.banner_logo %}
         a.navbar-brand {
