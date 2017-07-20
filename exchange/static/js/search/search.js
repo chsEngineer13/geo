@@ -66,6 +66,33 @@
             }
         });
     }
+  module.load_source_hosts = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('title__icontains')){
+          params['title__icontains'] = $location.search()['title__icontains'];
+        }
+        var base_search_url = '/api/base/search/?q=&limit=0';
+        $http.get(base_search_url).success(function(data){
+          var facet = data.meta.facets.source_host;
+          var source_host_data = [];
+          for (var key in facet){
+            var source_host_obj = {
+              'identifier': key,
+              'count': facet[key]
+            }
+            source_host_data.push(source_host_obj);
+          }
+          if($location.search().hasOwnProperty('source_host__identifier__in')){
+                source_host_data = module.set_initial_filters_from_query(source_host_data,
+                    $location.search()['source_host__in'], 'identifier');
+          }
+          $rootScope.source_host = source_host_data;
+        });
+        if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+            module.haystack_facets($http, $rootScope, $location);
+        }
+    }
+
 
   module.load_keywords = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
@@ -212,6 +239,18 @@
               }
           }
       }
+      
+      if ("source_host" in $rootScope) {
+          $rootScope.source_host_counts = data.meta.facets.source_host;
+          for (var id in $rootScope.source_host) {
+              var source_host = $rootScope.source_host[id];
+              if (source_host.identifier in $rootScope.source_host_counts) {
+                  source_host.count = $rootScope.source_host_counts[source_host.identifier]
+              } else {
+                  source_host.count = 0;
+              }
+          }
+      }
 
       $rootScope.has_time_count = data.meta.facets.has_time.T;
   }
@@ -241,6 +280,7 @@
     if ($('#tkeywords').length > 0){
        module.load_t_keywords($http, $rootScope, $location);
     }
+    module.load_source_hosts($http, $rootScope, $location);
 
 
     // Activate the type filters if in the url
@@ -248,12 +288,13 @@
       var types = $location.search()['type__in'];
       if(types instanceof Array){
         for(var i=0;i<types.length;i++){
-          $('body').find("[data-filter='type__in'][data-value="+types[i]+"]").addClass('active');
+          $('body').find($.parseHTML("[data-filter='type__in'][data-value="+types[i]+"]")).addClass('active');
         }
       }else{
-        $('body').find("[data-filter='type__in'][data-value="+types+"]").addClass('active');
+        $('body').find($.parseHTML("[data-filter='type__in'][data-value="+types+"]")).addClass('active');
       }
     }
+
 
     // Activate the sort filter if in the url
     if($location.search().hasOwnProperty('order_by')){
