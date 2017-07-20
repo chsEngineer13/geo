@@ -118,7 +118,7 @@
         <dt>{% trans "Name" %}</dt>
         <dd>{{ poc.name_long|default:NO_VALUE }}</dd>
 
-        <dt>{% trans "email" %}</dt>
+        <dt>{% trans "Email" %}</dt>
         <dd>{{ poc.email|default:NO_VALUE }}</dd>
 
         <dt>{% trans "Position" %}</dt>
@@ -164,7 +164,7 @@
         <dt>{% trans "Spatial Resolution" %}</dt>
         <dd>{% if layer.scale %} {{ layer.scale }} {% else %} --- {% endif %}</dd>
 
-        <dt>{% trans "Projetion System" %}</dt>
+        <dt>{% trans "Projection System" %}</dt>
         <dd>{{ layer.srid }}</dd>
 
         <dt>{% trans "Extension x0" %}</dt>
@@ -335,7 +335,7 @@
         <dt>{% trans "Name" %}</dt>
         <dd>{{ poc.name_long }}</dd>
 
-        <dt>{% trans "email" %}</dt>
+        <dt>{% trans "Email" %}</dt>
         <dd>{{ poc.email }}</dd>
 
         <dt>{% trans "Position" %}</dt>
