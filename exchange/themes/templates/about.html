@@ -15,7 +15,8 @@
   <h2>What's New</h2>
   <!-- TODO: only display link if the Exchange instance can reach open Internet -->
   <h4>Boundless Exchange -- <a href="https://github.com/boundlessgeo/exchange/releases/tag/v{{ exchange_version }}">{{ exchange_version }}</h4></a>
-  <p>{{ exchange_release|linebreaks }}</p>
+  <button data-toggle="collapse" data-target="#about-info" class="btn btn-primary">Release Notes</button>
+  <div id="about-info" class="collapse">{{ exchange_release|linebreaks }}</div>
 </div>
 <div class="container">
   <h2>Version Details</h2>
