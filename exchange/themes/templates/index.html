@@ -101,7 +101,7 @@
   (function(){
     var module = angular.module('featured', []);
     module.run(function($http, $rootScope){
-      $http.get(FEATURED_URL).success(function(data){
+      $http.get(FEATURED_URL).then(function(data){
         $rootScope.featured = data.objects;
         document.getElementById('showcase').style.display = 'block';
       });

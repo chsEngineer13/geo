@@ -90,15 +90,15 @@
     this.configureUpload = function(layer) {
       var deferredResponse = q_.defer();
       this.validateConfigurationOptions(layer);
-      httpService_.post(layer.resource_uri + 'configure/', layer.configuration_options).success(function(data, status) {
+      httpService_.post(layer.resource_uri + 'configure/', layer.configuration_options).then(function(response) {
         // extend current object with get request to resource_uri
         deferredResponse.resolve(layerService_.update(layer));
-      }).error(function(data, status) {
+      }, function(response) {
           var error = 'Error configuring layer.';
           if (data.hasOwnProperty('error_message')) {
-              error = data.error_message;
+              error = response.data.error_message;
           }
-          deferredResponse.reject(error, data, status);
+          deferredResponse.reject(error, response.data, response.status);
         });
       return deferredResponse.promise;
     };
@@ -121,8 +121,8 @@
 
     this.update = function(layer) {
       var deferredResponse = q_.defer();
-      httpService_.get(layer.resource_uri).success(function(data, status) {
-            deferredResponse.resolve(angular.extend(layer, data));
+      httpService_.get(layer.resource_uri).then(function(response) {
+            deferredResponse.resolve(angular.extend(layer, response.data));
         });
       return deferredResponse.promise;
     };
@@ -295,11 +295,11 @@
               $scope.layer.configuration_options.permissions = $scope.defaultPermissions;
           }
           
-          $http.get('/api/categories/').success(function(data) {
+          $http.get('/api/categories/').then(function(response) {
               function isActive(category) {
                   return category.is_choice;
               }
-              $scope.categories = data.objects.filter(isActive);
+              $scope.categories = response.data.objects.filter(isActive);
           });
       };
 
@@ -464,12 +464,12 @@
                       return;
                   }
                   scope.showImportWaiting = true;
-                  $http.get('/uploads/fields/' + scope.upload.id, {}).success(function(data, status) {
-                      scope.layers = data;
+                  $http.get('/uploads/fields/' + scope.upload.id, {}).then(function(response) {
+                      scope.layers = response.data;
                       scope.showImportWaiting = false;
                       scope.canGetFields = false;
 
-                }).error(function(data, status) {
+                }, function(response) {
                    scope.showImportWaiting = false;
                    scope.configuring = false;
                    scope.hasError = true;
@@ -557,9 +557,9 @@
               };
 
               function update(){
-                  $http.get(scope.layer.resource_uri).success(function(data, status) {
-                        console.log(scope.layer, data);
-                        scope.layer = angular.extend(scope.layer, data);
+                  $http.get(scope.layer.resource_uri).then(function(response) {
+                        console.log(scope.layer, response.data);
+                        scope.layer = angular.extend(scope.layer, response.data);
 
                         if (scope.processing() !== false) {
                             setTimeout(function() {
@@ -575,11 +575,11 @@
                   alert('what');
                   scope.configuring = true;
                   validateImportOptions();
-                  $http.post(scope.layer.resource_uri + 'configure/', scope.layer.configuration_options).success(function(data, status) {
+                  $http.post(scope.layer.resource_uri + 'configure/', scope.layer.configuration_options).then(function(response) {
                     // extend current object with get request to resource_uri
                     console.log('configuration started');
                     update();
-                }).error(function(data, status) {
+                }, function(response) {
                    scope.configuring = false;
                    scope.hasError = true;
                   });
