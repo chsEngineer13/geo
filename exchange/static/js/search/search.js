@@ -55,12 +55,12 @@
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
+        $http.get(CATEGORIES_ENDPOINT, {params: params}).then(function(response){
             if($location.search().hasOwnProperty('category__identifier__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
+                response.data.objects = module.set_initial_filters_from_query(data.objects,
                     $location.search()['category__identifier__in'], 'identifier');
             }
-            $rootScope.categories = data.objects;
+            $rootScope.categories = response.data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -72,8 +72,8 @@
           params['title__icontains'] = $location.search()['title__icontains'];
         }
         var base_search_url = '/api/base/search/?q=&limit=0';
-        $http.get(base_search_url).success(function(data){
-          var facet = data.meta.facets.source_host;
+        $http.get(base_search_url).then(function(response){
+          var facet = response.data.meta.facets.source_host;
           var source_host_data = [];
           for (var key in facet){
             var source_host_obj = {
@@ -99,12 +99,12 @@
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+        $http.get(KEYWORDS_ENDPOINT, {params: params}).then(function(response){
             if($location.search().hasOwnProperty('keywords__slug__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
+                response.data.objects = module.set_initial_filters_from_query(response.data.objects,
                     $location.search()['keywords__slug__in'], 'slug');
             }
-            $rootScope.keywords = data.objects;
+            $rootScope.keywords = response.data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -113,9 +113,9 @@
 
   module.load_h_keywords = function($http, $rootScope, $location){
     var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-    $http.get(H_KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+    $http.get(H_KEYWORDS_ENDPOINT, {params: params}).then(function(response){
       $('#treeview').treeview({
-        data: data,
+        data: response.data,
         multiSelect: true,
         onNodeSelected: function($event, node) {
           $rootScope.$broadcast('select_h_keyword', node);
@@ -143,12 +143,12 @@
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(T_KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+        $http.get(T_KEYWORDS_ENDPOINT, {params: params}).then(function(response){
             if($location.search().hasOwnProperty('tkeywords__id__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
+                response.data.objects = module.set_initial_filters_from_query(data.objects,
                     $location.search()['tkeywords__id__in'], 'id');
             }
-            $rootScope.tkeywords = data.objects;
+            $rootScope.tkeywords = response.data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -160,12 +160,12 @@
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(REGIONS_ENDPOINT, {params: params}).success(function(data){
+        $http.get(REGIONS_ENDPOINT, {params: params}).then(function(response){
             if($location.search().hasOwnProperty('regions__name__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
+                response.data.objects = module.set_initial_filters_from_query(response.data.objects,
                     $location.search()['regions__name__in'], 'name');
             }
-            $rootScope.regions = data.objects;
+            $rootScope.regions = response.data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -177,12 +177,12 @@
         if ($location.search().hasOwnProperty('title__icontains')){
             params['title__icontains'] = $location.search()['title__icontains'];
         }
-        $http.get(OWNERS_ENDPOINT, {params: params}).success(function(data){
+        $http.get(OWNERS_ENDPOINT, {params: params}).then(function(response){
             if($location.search().hasOwnProperty('owner__username__in')){
-                data.objects = module.set_initial_filters_from_query(data.objects,
+                response.data.objects = module.set_initial_filters_from_query(response.data.objects,
                     $location.search()['owner__username__in'], 'identifier');
             }
-            $rootScope.owners = data.objects;
+            $rootScope.owners = response.data.objects;
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
             }
@@ -328,10 +328,10 @@
 
     //Get data from apis and make them available to the page
     function query_api(data){
-      $http.get(Configs.url, {params: data || {}}).success(function(data){
-        $scope.results = data.objects;
-        $scope.total_counts = data.meta.total_count;
-        $scope.$root.query_data = data;
+      $http.get(Configs.url, {params: data || {}}).then(function(response){
+        $scope.results = response.data.objects;
+        $scope.total_counts = response.data.meta.total_count;
+        $scope.$root.query_data = response.data;
         if (HAYSTACK_SEARCH) {
           if ($location.search().hasOwnProperty('q')){
             $scope.text_query = $location.search()['q'].replace(/\+/g," ");
@@ -347,11 +347,11 @@
             module.haystack_facets($http, $scope.$root, $location);
             $("#types").find("a").each(function(){
                 $(this).show();
-                if ($(this)[0].id in data.meta.facets.subtype) {
-                    $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
+                if ($(this)[0].id in response.data.meta.facets.subtype) {
+                    $(this).find("span").text(response.data.meta.facets.subtype[$(this)[0].id]);
                 }
-                else if ($(this)[0].id in data.meta.facets.type) {
-                    $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
+                else if ($(this)[0].id in response.data.meta.facets.type) {
+                    $(this).find("span").text(response.data.meta.facets.type[$(this)[0].id]);
                 } else {
                     $(this).hide();
                     $(this).find("span").text("0");
