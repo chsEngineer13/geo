@@ -58,6 +58,7 @@ def resource_variables(request):
         GEOQUERY_ENABLED=getattr(settings, 'GEOQUERY_ENABLED', False),
         GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None),
         EXTENT_FILTER_ENABLED=getattr(settings, 'EXTENT_FILTER_ENABLED', True),
+        ON_AIRGAPPED_NETWORK=getattr(settings, 'ON_AIRGAPPED_NETWORK', False),
     )
 
     return defaults
