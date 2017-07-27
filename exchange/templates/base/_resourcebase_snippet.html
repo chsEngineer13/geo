@@ -38,10 +38,10 @@
                   <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ item.geogig_link}}"  class="label copy-button" data-format="geogig" target="_registry">GEOGIG</a>
                 </li>
                 <li ng-if="item.subtype=='vector'">
-                  <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ location }}/geoserver/geonode/wms"  class="label copy-button" data-format="wms" target="_registry">WMS</a>
+                  <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ location }}/geoserver/geonode/wms?request=GetCapabilities&service=WMS&version=1.3.0&typename={{ item.typename }}"  class="label copy-button" data-format="wms" target="_registry">WMS</a>
                 </li>
                 <li ng-if="item.subtype=='vector'">
-                  <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ location }}/geoserver/geonode/wfs"  class="label copy-button" data-format="wfs" target="_registry">WFS</a>
+                  <a data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ location }}/geoserver/geonode/ows?service=WFS&version=1.1.0&request=GetFeature&typename={{ item.typename }}&outputFormat=application/json"  class="label copy-button" data-format="wfs" target="_registry">WFS</a>
                 </li>
               </ul>
             </div>
