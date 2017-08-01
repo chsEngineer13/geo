@@ -67,6 +67,9 @@ CLASSIFICATION_BACKGROUND_COLOR = os.getenv(
 )
 CLASSIFICATION_LINK = os.getenv('CLASSIFICATION_LINK', None)
 
+# extent filter
+EXTENT_FILTER_ENABLED = str2bool(os.getenv('EXTENT_FILTER_ENABLED', 'True'))
+
 # login warning
 LOGIN_WARNING_ENABLED = str2bool(os.getenv('LOGIN_WARNING_ENABLED', 'False'))
 
