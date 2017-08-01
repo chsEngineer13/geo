@@ -46,7 +46,7 @@ Installation
    following example, which assumes I keep my work repos under `~/boundless`::
 
        cd ~/boundless
-       git clone https://github.com/geonode/geonode
+       git clone https://github.com/boundlessgeo/geonode.git
        git clone https://github.com/boundlessgeo/exchange.git
        git clone https://github.com/boundlessgeo/MapLoom.git
 
