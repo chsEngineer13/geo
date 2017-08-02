@@ -94,7 +94,7 @@
     }
 
 
-  module.load_keywords = function ($http, $rootScope, $location){
+  module.load_trending_keywords = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
           params['title__icontains'] = $location.search()['title__icontains'];
@@ -104,9 +104,17 @@
                 response.data.objects = module.set_initial_filters_from_query(response.data.objects,
                     $location.search()['keywords__slug__in'], 'slug');
             }
-            $rootScope.keywords = response.data.objects;
+            $rootScope.keywords = response.data.objects.sort(function(kw1, kw2) {
+              return kw2.count - kw1.count;
+            });
             if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
                 module.haystack_facets($http, $rootScope, $location);
+            }
+            // Show up to top 15 trending keywords
+            // TODO: Load 15 from a variable somewhere, customizable?
+            $rootScope.trending_keywords = [];
+            for (var i = 0; i < $rootScope.keywords.length && i < 15; i++) {
+              $rootScope.trending_keywords.push($rootScope.keywords[i].slug);
             }
         });
     }
@@ -270,6 +278,7 @@
     //   module.load_keywords($http, $rootScope, $location);
     //}
     module.load_h_keywords($http, $rootScope, $location);
+    module.load_trending_keywords($http, $rootScope, $location);
 
     if ($('#regions').length > 0){
        module.load_regions($http, $rootScope, $location);
@@ -547,6 +556,15 @@
       }
     }
 
+    $scope.select_keyword_filter = function(filter) {
+      $scope.keywordFilter = filter;
+      if (filter == 'hierarchical') {
+        $('#treeview').css('display', 'inline-block');
+      } else {
+        $('#treeview').css('display', 'none');
+      }
+    }
+
     $scope.filterTime = function($event) {
         var element = $($event.target);
         var on = (element[0].checked === true);
@@ -562,6 +580,17 @@
         query_api($scope.query);
     }
 
+    // This is a hotfix to conflicting CSS styles between
+    // .nav .filter .active and .list-group-item .active
+    // Can be removed if .list-group-item .active takes priority
+    $scope.toggle_text_color = function($event) {
+      var element = $($event.target);
+      if (element.hasClass('active')) {
+        element.css('color', '#fff');
+      } else {
+        element.css('color', '#333');
+      }
+    }
 
     /*
     * Text search management
