@@ -8,7 +8,7 @@ from unittest import TestCase
 from celery import Celery
 import pytest
 
-from exchange.core.models import CSWRecordForm
+from exchange.core.forms import CSWRecordForm
 from exchange.tasks import create_new_csw
 from exchange import settings
 
