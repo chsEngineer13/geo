@@ -56,7 +56,8 @@ def resource_variables(request):
         NOMINATIM_ENABLED=getattr(settings, 'NOMINATIM_ENABLED', True),
         NOMINATIM_URL=getattr(settings, 'NOMINATIM_URL', '//nominatim.openstreetmap.org'),
         GEOQUERY_ENABLED=getattr(settings, 'GEOQUERY_ENABLED', False),
-        GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None)
+        GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None),
+        EXTENT_FILTER_ENABLED=getattr(settings, 'EXTENT_FILTER_ENABLED', True),
     )
 
     return defaults
