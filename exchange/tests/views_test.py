@@ -245,6 +245,7 @@ class UnifiedSearchTest(ViewTestCase):
 # This doesn't test a view but performs a functional
 # test on one of the views transformational objects.
 #
+@pytest.mark.skipif(settings.REGISTRYURL is None, reason="Only run if using registry")
 class ViewFunctionTests(ViewTestCase):
 
     def test_get_unified_search_result_objects(self):
