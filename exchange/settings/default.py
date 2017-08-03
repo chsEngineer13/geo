@@ -56,7 +56,7 @@ USE_TZ = str2bool(os.getenv('USE_TZ', 'True'))
 
 # Installation on a closed 'airgapped' network
 DISABLE_BOUNDLESS_LINK_IN_FOOTER = str2bool(os.getenv(
-    'ON_AIRGAPPED_NETWORK',
+    'DISABLE_BOUNDLESS_LINK_IN_FOOTER',
     'False')
 )
 
