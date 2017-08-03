@@ -116,7 +116,7 @@
 
         if(this.getItemById(item.id) === null){
           this.getCart().items.push(item);
-          $cookies.putObject(item['uuid'], item);
+          $cookies.putObject(item['uuid'], item, {path: '/'});
         }
       }
 
@@ -126,7 +126,7 @@
           angular.forEach(cart.items, function(cart_item, index){
             if(cart_item.id === item.id){
               cart.items.splice(index, 1);
-              $cookies.remove(cart_item['uuid']);
+              $cookies.remove(cart_item['uuid'], {path: '/'});
             }
           });
         }
