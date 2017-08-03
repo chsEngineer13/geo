@@ -200,7 +200,7 @@
                 {% if theme.pb_link %}
                   <a href="{{ theme.pb_link }}" target="_new">
                 {% else %}
-                  {% if not ON_AIRGAPPED_NETWORK %}
+                  {% if not DISABLE_BOUNDLESS_LINK_IN_FOOTER %}
                     <a href="http://boundlessgeo.com" target="_new">
                   {% endif %}
                 {% endif %}

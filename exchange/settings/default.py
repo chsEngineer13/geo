@@ -55,7 +55,7 @@ SOCIAL_BUTTONS = str2bool(os.getenv('SOCIAL_BUTTONS', 'False'))
 USE_TZ = str2bool(os.getenv('USE_TZ', 'True'))
 
 # Installation on a closed 'airgapped' network
-ON_AIRGAPPED_NETWORK = str2bool(os.getenv(
+DISABLE_BOUNDLESS_LINK_IN_FOOTER = str2bool(os.getenv(
     'ON_AIRGAPPED_NETWORK',
     'False')
 )
