@@ -54,6 +54,12 @@ SOCIAL_BUTTONS = str2bool(os.getenv('SOCIAL_BUTTONS', 'False'))
 
 USE_TZ = str2bool(os.getenv('USE_TZ', 'True'))
 
+# Installation on a closed 'airgapped' network
+DISABLE_BOUNDLESS_LINK_IN_FOOTER = str2bool(os.getenv(
+    'DISABLE_BOUNDLESS_LINK_IN_FOOTER',
+    'False')
+)
+
 # classification banner
 CLASSIFICATION_BANNER_ENABLED = str2bool(os.getenv(
     'CLASSIFICATION_BANNER_ENABLED',
