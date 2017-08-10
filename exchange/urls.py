@@ -47,13 +47,13 @@ urlpatterns = patterns(
     # Redirect help and developer links to the documentation page
     url(r'^help/$', views.documentation_page, name='help'),
     url(r'^developer/$', views.documentation_page, name='developer'),
-    url(r'^csw$', permission_required('is_superuser')(views.CSWRecordList.as_view()), name='csw-record-list'),
-    url(r'^csw/(?P<pk>[a-f0-9\-_]+)$', permission_required('is_superuser')(views.CSWRecordUpdate.as_view()), name='csw-record-update'),
-    url(r'^csw/([a-f0-9\-_]+)/delete$', permission_required('is_superuser')(views.delete_csw_view), name='csw-record-delete'),
-    url(r'^csw/new/$', permission_required('is_superuser')(views.CSWRecordCreate.as_view()), name='csw-record-add'),
-    url(r'^csw/search/$', views.csw_arcgis_search, name='csw_arcgis_search'),
-    url(r'^csw/status/$', views.csw_status, name='csw_status'),
-    url(r'^csw/status_table/$', views.csw_status_table, name='csw_status_table'),
+
+    url(r'^csw$', permission_required('core.change_cswrecord', raise_exception=True)(views.CSWRecordList.as_view()), name='csw-record-list'),
+    url(r'^csw/(?P<pk>[a-f0-9\-_]+)$', permission_required('core.change_cswrecord', raise_exception=True)(views.CSWRecordUpdate.as_view()), name='csw-record-update'),
+    url(r'^csw/([a-f0-9\-_]+)/delete$', permission_required('core.delete_cswrecord', raise_exception=True)(views.delete_csw_view), name='csw-record-delete'),
+    url(r'^csw/new/$', permission_required('core.add_cswrecord', raise_exception=True)(views.CSWRecordCreate.as_view()), name='csw-record-add'),
+    url(r'^csw/search/$', permission_required('core.add_cswrecord', raise_exception=True)(views.csw_arcgis_search), name='csw_arcgis_search'),
+
     url(r'^about/', views.about_page, name='about')
 )
 

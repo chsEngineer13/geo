@@ -27,7 +27,7 @@ field_attrs = {'required': '', 'class': 'form-control'}
 class CSWRecordForm(forms.ModelForm):
     class Meta:
         model = CSWRecord
-        fields = ('source', 'record_type', 'record_format', 'title', 'category', 'abstract',
+        fields = ('source', 'record_type', 'record_format', 'title', 'topic_category', 'abstract',
                   'alternative', 'creator', 'contact_email', 'contact_phone', 'gold')
 
         widgets = {
@@ -38,7 +38,7 @@ class CSWRecordForm(forms.ModelForm):
             'source': forms.TextInput(attrs=field_attrs),
             'contact_email': forms.TextInput(attrs=field_attrs),
             'contact_phone': forms.TextInput(attrs=field_attrs),
-            'category': forms.Select(attrs=field_attrs),
+            'topic_category': forms.Select(attrs=field_attrs),
             'record_type': forms.HiddenInput(),
             'record_format': forms.HiddenInput()
         }

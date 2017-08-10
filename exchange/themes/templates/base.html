@@ -117,11 +117,13 @@
                   <ul class="dropdown-menu">
                     <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
                     <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
-                    {% if user.is_staff %}
+                     {% if user.is_staff %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "csw-record-list" %}">Registry</a></li>
                     <li><a href="{% url "admin:index" %}">Admin</a></li>
                     <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
+                    {% endif %}
+                    {% if perms.core.add_cswrecord %}
+                    <li><a href="{% url "csw-record-list" %}">Registry</a></li>
                     {% endif %}
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>

@@ -29,6 +29,9 @@ from django import forms
 import os
 import uuid
 import datetime
+from django.db.models import Q
+from geonode.base.models import TopicCategory
+
 
 
 class ThumbnailImage(SingletonModel):
@@ -113,6 +116,7 @@ class CSWRecord(models.Model):
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
+    topic_category = models.ForeignKey(TopicCategory, null=True, blank=True, limit_choices_to=Q(is_choice=True))
     status_message = models.TextField(blank=True)
 
     @property

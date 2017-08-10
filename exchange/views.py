@@ -162,45 +162,19 @@ def geoserver_reverse_proxy(request):
     return HttpResponse(req.content, content_type='application/xml')
 
 
-@staff_member_required
 def csw_arcgis_search(request):
     default_response = HttpResponse(status=404)
     if request.method == 'GET':
         return default_response
     elif request.method == 'POST':
         url = request.POST.get("url", None)
-        if url and request.user.is_superuser:
+        if url:
             response = urllib.urlopen(url + '?f=pjson')
             data = json.loads(response.read())
             return JsonResponse(data)
         else:
             return default_response
 
-
-@staff_member_required
-def csw_status(request):
-    format = request.GET.get('format', "")
-    records = CSWRecord.objects.filter(user=request.user)
-    if records.count() == 0:
-        records=[]
-
-    if format.lower() == 'json':
-        return HttpResponse(serialize('json', records),
-                            content_type="application/json")
-    else:
-        return render_to_response("csw/status.html",
-                                  context_instance=RequestContext(request))
-
-
-@staff_member_required
-def csw_status_table(request):
-    records = CSWRecord.objects.filter(user=request.user)
-
-    return render_to_response("csw/status_fill.html",
-                              {
-                                  "records": records,
-                               },
-                              context_instance=RequestContext(request))
 
 # Reformat objects for use in the results.
 #
@@ -507,6 +481,7 @@ def unified_elastic_search(request, resourcetype='base'):
 
     return JsonResponse(object_list)
 
+
 def empty_page(request):
     return HttpResponse('')
         
@@ -526,7 +501,6 @@ class CSWRecordList(ListView):
         context = super(CSWRecordList, self).get_context_data(**kwargs)
         context['sort_by'] = self.request.GET.get('sort_by', 'title')
         return context
-
 
 
 class CSWRecordCreate(CreateView):
