@@ -195,7 +195,7 @@ def csw_write(self, record_id, operation):
         references=''.join(reference_element),
         relation=record.relation,
         gold=record.gold,
-        category=record.category,
+        category=record.topic_category.gn_description,
         contact=record.contact_information,
         bbox_l=record.bbox_lower_corner,
         bbox_u=record.bbox_upper_corner,
