@@ -214,6 +214,23 @@ def get_unified_search_result_objects(hits):
 
     return objects
 
+# Function returns a generator searching recursively for a key in a dict
+def gen_dict_extract(key, var):
+    if hasattr(var,'iteritems'):
+        for k, v in var.iteritems():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in gen_dict_extract(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in gen_dict_extract(key, d):
+                        yield result
+
+# Checks if key is present in dictionary
+def key_exists(key, var):
+    return any(True for _ in gen_dict_extract(key, var))
 
 def unified_elastic_search(request, resourcetype='base'):
     import requests
@@ -238,12 +255,27 @@ def unified_elastic_search(request, resourcetype='base'):
     parameters = request.GET
     es = Elasticsearch(settings.ES_URL)
     search = Search(using=es)
+    mappings = es.indices.get_mapping()
 
     # Set base fields to search
-    fields = ['title', 'text', 'abstract', 'title_alternate']
-    facets = ['_index', 'type', 'subtype',
+    fulltext_fields = ['title', 'text', 'abstract', 'title_alternate']
+
+
+    # This configuration controls what fields will be added to faceted search
+    facet_fields = ['_index', 'type', 'subtype',
               'owner__username', 'keywords', 'regions', 
               'category', 'has_time', 'source_type', 'source_host']
+
+    
+    # This configuration controls what fields will be searchable by range
+    range_fields = ['extent', 'date']
+
+    search_fields = []
+
+    # Get paging parameters
+    offset = int(parameters.get('offset', '0'))
+    limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
+
 
     # Text search
     query = parameters.get('q', None)
@@ -251,12 +283,69 @@ def unified_elastic_search(request, resourcetype='base'):
     offset = int(parameters.get('offset', '0'))
     limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
 
-    # Make sure Category search works with either category__in or category__identifier__in
-    categories = parameters.getlist('category__in',
-                                    parameters.getlist('category__identifier__in', None))
+    # Sort order
+    sort = parameters.get("order_by", "relevance")
 
-    keywords = parameters.getlist('keywords__in',
-                                  parameters.getlist('keywords__slug__in', None))
+    # Geospatial Elements
+    bbox = parameters.get("extent", None)
+
+    # Build base query
+    # The base query only includes filters relevant to what the user 
+    # is allowed to see and the overall types of documents to search.
+    # This provides the overall counts and all fields for faceting
+
+    # only show registry, documents, layers, stories, and maps
+    q = Q({"match": {"_type": "layer"}}) | Q(
+          {"match": {"type_exact": "layer"}}) | Q(
+          {"match": {"type_exact": "story"}}) | Q(
+          {"match": {"type_exact": "document"}}) | Q(
+          {"match": {"type_exact": "map"}})
+    search = search.query(q)
+
+    # Filter geonode layers by permissions
+    if not settings.SKIP_PERMS_FILTER:
+        # Get the list of objects the user has access to
+        filter_set = get_objects_for_user(
+            request.user, 'base.view_resourcebase')
+        if settings.RESOURCE_PUBLISHING:
+            filter_set = filter_set.filter(is_published=True)
+
+        filter_set_ids = map(str, filter_set.values_list('id', flat=True))
+        # Do the query using the filterset and the query term. Facet the
+        # results
+        q = Q({"match": {"_type": "layer"}})
+        if len(filter_set_ids) > 0:
+            q = Q({"terms": {"id": filter_set_ids}}) | q
+
+        search = search.query(q)
+
+    # Checks first if there is an [fieldname]_exact field and returns that 
+    # otherwise checks if [fieldname] is present
+    # if neither returns None
+    def field_name(field, mappings):
+        field_exact = '%s_exact' % field
+        if key_exists(field_exact, mappings):
+            return field_exact
+        elif key_exists(field, mappings):
+            return field
+        else:
+            return None
+
+    # Add facets to search
+    for f in facet_fields:
+        fn = field_name(f, mappings)
+        if fn:
+            search.aggs.bucket(f, 'terms', field=fn)
+    
+    overall_results = search.execute()
+    facet_results = {}
+    for f in facet_fields:
+        facet_results[f] = {}
+        for bucket in results.aggregations[f].buckets:
+            facet_results[f][bucket.key]['global_count'] = bucket.doc_count
+
+    return JsonResponse(facet_results)
+
 
     # Publication date range (start,end)
     date_range = parameters.get("date__range", None)
@@ -282,18 +371,8 @@ def unified_elastic_search(request, resourcetype='base'):
     # Geospatial Elements
     bbox = parameters.get("extent", None)
 
-    # only show registry, documents, layers, stories, and maps
-    q = Q({"match": {"_type": "layer"}}) | Q(
-          {"match": {"type_exact": "layer"}}) | Q(
-          {"match": {"type_exact": "story"}}) | Q(
-          {"match": {"type_exact": "document"}}) | Q(
-          {"match": {"type_exact": "map"}})
-    search = search.query(q)
+    
 
-    # filter by resource type if included by path
-    logger.debug('-------------------------------------------------------------')
-    logger.debug('>>>>>>>>> Filtering by Resource Type %s <<<<<<<<<<<<<' % resourcetype)
-    logger.debug('-------------------------------------------------------------')
 
     if resourcetype == 'documents':
         search = search.query("match", type_exact="document")
@@ -302,22 +381,7 @@ def unified_elastic_search(request, resourcetype='base'):
     elif resourcetype == 'maps':
         search = search.query("match", type_exact="map")
 
-    # Filter geonode layers by permissions
-    if not settings.SKIP_PERMS_FILTER:
-        # Get the list of objects the user has access to
-        filter_set = get_objects_for_user(
-            request.user, 'base.view_resourcebase')
-        if settings.RESOURCE_PUBLISHING:
-            filter_set = filter_set.filter(is_published=True)
-
-        filter_set_ids = map(str, filter_set.values_list('id', flat=True))
-        # Do the query using the filterset and the query term. Facet the
-        # results
-        q = Q({"match": {"_type": "layer"}})
-        if len(filter_set_ids) > 0:
-            q = Q({"terms": {"id": filter_set_ids}}) | q
-
-        search = search.query(q)
+    
 
     # Filter by Query Params
     if query:
