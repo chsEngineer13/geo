@@ -49,6 +49,16 @@
         return data;
     }
 
+  // Load facets
+  module.load_facets = function ($http, $rootScope, $location){
+        var base_search_url = '/api/base/search/?q=&limit=0';
+        $http.get(base_search_url).then(function(response){
+          var facets = response.data.meta.facets;
+          $rootScope.facets = facets;
+    });
+  }
+
+
   // Load categories, keywords, and regions
   module.load_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
@@ -259,8 +269,6 @@
               }
           }
       }
-
-      $rootScope.has_time_count = data.meta.facets.has_time.T;
   }
 
   /*
@@ -271,6 +279,7 @@
     * Load categories and keywords if the filter is available in the page
     * and set active class if needed
     */
+    module.load_facets($http, $rootScope, $location);
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
     }

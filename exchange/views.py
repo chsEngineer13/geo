@@ -380,7 +380,7 @@ def unified_elastic_search(request, resourcetype='base'):
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
-                bucket_dict = {'global_count': bucket_count, 'count': 0}
+                bucket_dict = {'global_count': bucket_count, 'count': 0, 'display': bucket.key}
                 if lookup:
                     if bucket_key in lookup:
                         bucket_dict.update(lookup[bucket_key])
@@ -393,7 +393,7 @@ def unified_elastic_search(request, resourcetype='base'):
         search = search.query("match", type_exact="layer")
     elif resourcetype == 'maps':
         search = search.query("match", type_exact="map")
-        
+
     # Build main query to search in fields[]
     # Filter by Query Params
     if query:
