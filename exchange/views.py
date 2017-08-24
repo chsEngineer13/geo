@@ -21,7 +21,9 @@ from exchange.version import get_version
 from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
+from geonode.base.models import TopicCategory
 from pip._vendor import pkg_resources
+from six import iteritems
 
 logger = logging.getLogger(__name__)
 
@@ -264,7 +266,19 @@ def unified_elastic_search(request, resourcetype='base'):
     # This configuration controls what fields will be added to faceted search
     facet_fields = ['_index', 'type', 'subtype',
               'owner__username', 'keywords', 'regions', 
-              'category', 'has_time', 'source_type', 'source_host']
+              'category', 'source_host']
+    
+    categories = TopicCategory.objects.all()
+    category_lookup = {}
+    for c in categories:
+        category_lookup[c.identifier] = {
+            'display': c.description,
+            'icon': c.fa_class
+        }
+
+    facet_lookups = {
+        'category': category_lookup
+    }
 
     
     # This configuration controls what fields will be searchable by range
@@ -332,17 +346,31 @@ def unified_elastic_search(request, resourcetype='base'):
             return None
 
     # Add facets to search
+    valid_facet_fields = [];
     for f in facet_fields:
         fn = field_name(f, mappings)
         if fn:
+            valid_facet_fields.append(f)
             search.aggs.bucket(f, 'terms', field=fn)
     
-    overall_results = search.execute()
+    overall_results = search[0:0].execute()
+    aggregations = overall_results.aggregations
     facet_results = {}
-    for f in facet_fields:
-        facet_results[f] = {}
-        for bucket in results.aggregations[f].buckets:
-            facet_results[f][bucket.key]['global_count'] = bucket.doc_count
+    for k in aggregations:
+        buckets = aggregations[k]['buckets']
+        if len(buckets)>0:
+            lookup = None
+            if k in facet_lookups:
+                lookup = facet_lookups[k]
+            facet_results[k] = {}
+            for bucket in buckets:
+                bucket_key = bucket.key
+                bucket_count = bucket.doc_count
+                bucket_dict = {'global_count': bucket_count, 'count': 0}
+                if lookup:
+                    if bucket_key in lookup:
+                        bucket_dict.update(lookup[bucket_key])
+                facet_results[k][bucket_key] = bucket_dict
 
     return JsonResponse(facet_results)
 
