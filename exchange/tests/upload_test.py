@@ -9,6 +9,10 @@ import time
 
 from . import ExchangeTest
 
+import pytest
+
+from exchange import settings
+
 
 # This is a dummy exception class
 #  used to make back tracing easier.
@@ -29,6 +33,11 @@ def parse_bbox_from_html(html):
         return [float(x) for x in bboxes[0]]
     return None
 
+class TestBBOXParser(ExchangeTest):
+
+    def test_invalid_bbox(self):
+        self.assertIsNone(parse_bbox_from_html(''), 
+                          'BBOX parser failed to fail properly')
 
 class UploaderMixin:
     # Upload a shapefile and create a new layer.
@@ -70,10 +79,9 @@ class UploaderMixin:
 
         while('redirect_to' in next_step):
             next_r = self.client.get(next_step['redirect_to'])
+            next_step = {}
             if(next_r.status_code == 200):
                 next_step = json.loads(next_r.content)
-            else:
-                next_step = {}
             time.sleep(3)
 
         # If the last "step" did not produce a url
@@ -86,16 +94,11 @@ class UploaderMixin:
 
     # Remove a layer from the list.
     #
-    # @param layerName The name of the layer, formulates the url
     # @param uri       Uri to the layer info, appends 'remove' to the end.
     #
-    def drop_layer(self, layerName=None, uri=None):
+    def drop_layer(self, uri=None):
         working_uri = uri+'/remove'
-        if(layerName is not None):
-            working_uri = '/layers/'+layerName+'/remove'
-
         drop_r = self.client.post(working_uri, follow=False)
-
         self.assertEqual(drop_r.status_code, 302,
                          "Did not return expected forwaring code!")
 
@@ -104,6 +107,8 @@ class UploaderMixin:
 #
 # Performs various uploads and drops of layers.
 #
+@pytest.mark.skipif(True or settings.ES_UNIFIED_SEARCH is False,
+                    reason="Only run if using unified search")
 class UploadLayerTest(UploaderMixin, ExchangeTest):
 
     def setUp(self):
@@ -225,3 +230,41 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
                             "Mismatched bounding Boxes! %s (geogig) != %s" % (
                                 s_geogig_bbox, s_bbox
                             ))
+
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+                    reason="Only run if using unified search")
+class NonAdminUploadTest(UploaderMixin, ExchangeTest):
+
+    def setUp(self):
+        super(UploadLayerTest, self).setUp()
+        # test user is not an admin
+        self.login(asTest=True)
+
+    # This is a meta function for executing uploader options.
+    #
+    # Uploads the shapefile, checks on the layer, and drops it.
+    #
+    def _test_meta(self, shapefile, uploaderParams={}):
+        layer_uri = self.upload_shapefile(shapefile).get('url', None)
+        if(layer_uri is not None):
+            self.drop_layer(uri=layer_uri)
+
+    # Test an upload to geogig of a basic single-point shapefile.
+    #
+    def test_geogig_upload(self):
+        data_path = './test_point.'
+        shapefile = [data_path+x for x in ['prj', 'shp', 'shx', 'dbf']]
+
+        shapefile = {
+            'base_file': data_path+'shp',
+            'dbf_file': data_path+'dbf',
+            'shx_file': data_path+'shx',
+            'prj_file': data_path+'prj'
+        }
+
+        params = {
+            'geogig': 'true',
+            'geogig_store': 'NoseTests'
+        }
+
+        self._test_meta(shapefile, uploaderParams=params)

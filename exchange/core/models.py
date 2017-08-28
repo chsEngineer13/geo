@@ -21,7 +21,6 @@
 from django.db import models
 from solo.models import SingletonModel
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -30,6 +29,9 @@ from django import forms
 import os
 import uuid
 import datetime
+from django.db.models import Q
+from geonode.base.models import TopicCategory
+
 
 
 class ThumbnailImage(SingletonModel):
@@ -93,65 +95,55 @@ class CSWRecord(models.Model):
     )
 
     classification = models.CharField(max_length=128, blank=True)
-    title = models.CharField(max_length=128, blank=False)
+    title = models.CharField(max_length=328, blank=False)
     modified = models.DateField(default=datetime.date.today, blank=False)
     # 'creator' is assumed to be distinct from logged-in User here
-    creator = models.CharField(max_length=128, blank=True)
+    creator = models.CharField(max_length=328, blank=True, verbose_name='Agency')
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
-    abstract = models.CharField(max_length=128, blank=True)
-    source = models.URLField(max_length=128, blank=False)
+    abstract = models.TextField(blank=True)
+    source = models.URLField(max_length=512, blank=False, verbose_name='Service Endpoint')
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     bbox_upper_corner = models.CharField(max_length=128,
-                                         default="180.0,85.0",
+                                         default="85.0 180",
                                          blank=True)
     bbox_lower_corner = models.CharField(max_length=128,
-                                         default="-180.0,-85.0",
+                                         default="-85.0 -180",
                                          blank=True)
-    contact_information = models.CharField(max_length=128, blank=True)
+    contact_email = models.CharField(max_length=128, blank=True)
+    contact_phone = models.CharField(max_length=128, blank=True)
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
+    topic_category = models.ForeignKey(TopicCategory, null=True, blank=True, limit_choices_to=Q(is_choice=True))
+    status_message = models.TextField(blank=True)
+
+    @property
+    def contact_information(self):
+        """Returns formatted contact information."""
+        return "Email: {}\nPhone: {}".format(self.contact_email, self.contact_phone)
+
+    class Meta(object):
+        verbose_name = 'CSW Record'
+        verbose_name_plural = 'CSW Records'
+        ordering = ['-modified', 'status', 'title']
 
 
-class CSWRecordForm(forms.ModelForm):
-    class Meta:
-        model = CSWRecord
-        fields = ('title', 'modified', 'creator', 'record_type', 'alternative', 'abstract',
-                  'source', 'relation', 'record_format', 'bbox_upper_corner',
-                  'bbox_lower_corner', 'contact_information', 'gold',
-                  'category')
-
-        labels = {
-            'title': _('Title'),
-            'modified': _('Date Last Modified'),
-            'creator': _('Creator'),
-            'record_type': _('Type'),
-            'alternative': _('Alternative'),
-            'abstract': _('Abstract'),
-            'source': _('Source'),
-            'relation': _('Relation'),
-            'record_format': _('Format'),
-            'bbox_upper_corner': _('Bounding Box: Upper Corner'),
-            'bbox_lower_corner': _('Bounding Box: Lower Corner'),
-            'contact_information': _('Contact Information'),
-            'gold': _('Gold'),
-            'category': _('Category'),
-        }
-
-        help_texts = {
-            # 'title': _('Title'),
-            # 'creator': _('Creator'),
-            # 'record_type': _('Type'),
-            # 'alternative': _('Alternative'),
-            # 'abstract': _('Abstract'),
-            # 'source': _('Source'),
-            # 'relation': _('Relation'),
-            # 'record_format': _('Format'),
-            'bbox_upper_corner': _('Coordinates for upper left corner'),
-            'bbox_lower_corner': _('Coordinates for lower right corner'),
-            # 'contact_information': _('Contact Information'),
-            # 'gold': _('Gold'),
-            # 'category': _('Category'),
-        }
+class CSWRecordReference(models.Model):
+    scheme_choices = (('ESRI:AIMS--http-get-map', 'MapServer'),
+                      ('ESRI:AIMS--http-get-feature', 'FeatureServer'),
+                      ('ESRI:AIMS--http-get-image', 'ImageServer'),
+                      ('WWW:LINK-1.0-http--json', 'JSON'),
+                      ('OGC:KML', 'KML'),
+                      ('WWW:LINK-1.0-http--rss', 'RSS'),
+                      ('WWW:DOWNLOAD', 'SHAPE'),
+                      ('WWW:LINK-1.0-http--soap', 'SOAP'),
+                      ('OGC:WCS', 'WCS'),
+                      ('OGC:WFS', 'WFS'),
+                      ('OGC:CS-W', 'CSW'),
+                      ('OGC:WMS', 'WMS'),
+                      ('OGC:WPS', 'WPS'))
+    record = models.ForeignKey(CSWRecord, related_name="references")
+    scheme = models.CharField(verbose_name='Service Type', choices=scheme_choices, max_length=100)
+    url = models.URLField(max_length=512, blank=False)

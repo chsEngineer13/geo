@@ -3,19 +3,14 @@
 {% load bootstrap_tags %}
 {% load url from future %}
 
-{% block title %} Insert New CSW Record - {{ block.super }} {% endblock %}
+{% block title %} Registry - Add Record - {{ block.super }} {% endblock %}
 
 {% block body %}
 <div class="block">
-    <div class="col-md-10">
-        <h2 class="page-title">{% trans "Insert A New CSW Record" %}</h2>
-        {% if errors %}
-        <div id="errors">
-            {% for error in errors %}
-            <div>{{ error }}</div>
-            {% endfor %}
+    <div class="col-md-12">
+        <div class="page-header">
+            <h2 class="page-title">{% trans "Register New Record" %}</h2>
         </div>
-        {% endif %}
 
         <div>
 
@@ -23,35 +18,209 @@
                 <div>{{ message }}</div>
             </div>
 
-            <form method="post" action="">
+            <form id="cswform" method="post" action="">
                 {% csrf_token %}
-
+                <div class="form_group">
+                    <p class="protocol-buttons"></p>
+                </div>
                 {{ form.as_p }}
 
-                <!--
-                {% if form.errors %}
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <div class="alert alert-danger">
-                                <strong>{{ error|escape }}</strong>
-                            </div>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                -->
+                <table id="tblReferences" class="table">
+                    {{ cswrecordreference.management_form }}
 
-             <div class="form_group">
-                 <input type="submit" class="btn btn-primary" value="{% trans 'Insert Record' %}"/>
-             </div>
+                    {% for form in cswrecordreference.forms %}
+                    {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        {% for field in form.visible_fields %}
+                        <th>{{ field.label|capfirst }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    {% endif %}
+                    <tr class="{% cycle row1 row2 %} formset_row">
+                        {% for field in form.visible_fields %}
+                        <td>
+                            {# Include the hidden fields in the form #}
+                            {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                            {% endfor %}
+                            {% endif %}
+                            {{ field.errors.as_ul }}
+                            {{ field }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <div class="form_group">
+                    <a class="btn btn-default" href="{% url 'csw-record-list' %}">Return to list</a>
+                    {% if object.id != None %}
+                    <a class="btn btn-danger" href="{% url 'csw-record-delete' object.id %}">{% trans 'Delete' %}</a>
+                    {% endif %}
+                    <input type="submit" class="btn btn-primary" value="{% trans 'Submit Record' %}"/>
+                </div>
 
             </form>
         </div>
     </div>
 </div>
 {% endblock body %}
+
+{% block extra_script %}
+<script src="/static/js/formset/jquery.formset.js"></script>
+<script type="text/javascript">
+    $('.formset_row').formset({
+        addText: 'add Service Reference',
+        deleteText: 'remove',
+        prefix: 'references'
+    });
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready( function() {
+
+        var handleProtocolBtns = function(html) {
+            $('.protocol-buttons').empty();
+            $('.protocol-buttons').append(html);
+            $('.protocol-buttons').show();
+        };
+
+        var clear = function(){
+             $('.protocol-buttons').empty();
+             $('#id_alternative').parent().show();
+        };
+
+        var cleanUrl = function(url) {
+            return stripTrailingSlash(url.split('?')[0]);
+        }
+
+        var stripTrailingSlash = function (str) {
+            if (str.endsWith('/')) {
+                return str.slice(0, -1);
+            }
+            return str;
+        };
+
+        var buildServiceUrl = function(service, type){
+            var url = service;
+            if(type == 'WMSServer'){
+                url = service.replace('rest/services', 'services');
+                url += '/WMSServer?request=GetCapabilities&amp;service=WMS';
+            }else if(type == 'KmlServer'){
+                url += '/generateKml';
+            }else if(type == 'FeatureServer'){
+                url = url.replace('MapServer', 'FeatureServer');
+            }else if(type == 'WFSServer'){
+                url = service.replace('rest/services', 'services');
+                url += '/WFSServer?request=GetCapabilities&amp;service=WFS';
+            }
+            return url;
+
+        };
+        var autoComplete = (function () {
+            var html = '<p>Below are the additional service types disovered from service url.</p>';
+            var htmlError = '<p class="alert alert-warning">Unfortunately we were unable to discover ' +
+                    'any layer or service metadata from the provided source. Please continue and manually ' +
+                    'complete the metadata form.</p>';
+            var source_url = cleanUrl($('#id_source').val());
+
+            if(isURL(source_url)){
+                clear();
+                var service_type = '';
+
+                if (source_url.indexOf('/MapServer') > 0) {
+                    service_type = 'MapServer';
+                } else if (source_url.indexOf('/ImageServer') > 0) {
+                    service_type = 'ImageServer';
+                } else if (source_url.indexOf('/FeatureServer') > 0) {
+                    service_type = 'FeatureServer';
+                }
+
+                if(service_type.length) {
+                    var service_map = { 'featureserver': 'FeatureServer', 'mapserver': 'MapServer',
+                        'kmlserver': 'KML', 'wmsserver': 'WMS', 'wfsserver': 'WFS', 'imageserver': 'ImageServer',};
+
+                    $.post( "{% url 'csw_arcgis_search' %}", { url: source_url }, function( data ) {
+
+                        $('#id_title').val(data.mapName);
+                        $('#id_abstract').val(data.serviceDescription);
+
+                        $('#id_record_type').val('ESRI:ArcGIS:'.concat(service_type));
+
+                        if(data.documentInfo) {
+                            $('#id_creator').val(data.documentInfo.Author);
+                        }
+
+                        if (data.layers && data.layers.length){
+                            $('#id_alternative').val(data.layers[0].id);
+                            $('#id_alternative').parent().hide();
+                        }
+
+                        if (data.supportedExtensions) {
+                            var services = data.supportedExtensions.split(',');
+                            services.push(service_type);
+                            $('.delete-row').click();
+                            for (var i = 0; i < services.length; i++) {
+                                var service = services[i].trim();
+                                html +=  '<a href="#tblReferences" class="btn btn-success" >'+ service +'</a> ';
+                                $('.add-row').click();
+                                $('#id_references-' + (i+1) + '-url').val(buildServiceUrl(source_url, service));
+                                $('#id_references-' + (i+1) + '-scheme option:contains(' + service_map[service.toLowerCase()] + ')').attr('selected', 'selected');
+                            }
+
+                            handleProtocolBtns(html);
+                        }else{
+                            $('#id_references-0-url').val(buildServiceUrl(source_url, service_type));
+                            $('#id_references-0-scheme option:contains(' + service_map[service_type.toLowerCase()] + ')').attr('selected', 'selected');
+                        }
+
+                    }).fail(function() {
+                        handleProtocolBtns(htmlError);
+                    });
+                }else{
+                    handleProtocolBtns(htmlError);
+                    if(source_url.toLowerCase().indexOf('/wms') > 0){
+                        $('#id_record_format').val('OGC:WMS');
+                        $('#id_references-0-url').val(buildServiceUrl(source_url, 'wms'));
+                        $("#id_references-0-scheme option:contains('WMS')").attr('selected', 'selected');
+                    }else if(source_url.toLowerCase().indexOf('/wfs') > 0){
+                        $('#id_record_format').val('OGC:WFS');
+                        $('#id_references-0-url').val(buildServiceUrl(source_url, 'wfs'));
+                        $("#id_references-0-scheme option:contains('WFS')").attr('selected', 'selected');
+                    }
+
+                    $('#id_record_type').val('dataset');
+                }
+            }else{
+                handleProtocolBtns("");
+            }
+
+        });
+
+        $('#id_source').keyup(autoComplete);
+        $('#id_source').change(autoComplete);
+        $('#id_source').bind('paste', autoComplete);
+
+
+        function isURL(str) {
+            var urlRegex = '^(?:(?:http|https)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
+            var url = new RegExp(urlRegex, 'i');
+            return str.length < 2083 && url.test(str);
+        }
+
+    });
+</script>
+<style>
+
+    .helptext {
+        font-size: small;
+    }
+</style>
+
+{% endblock extra_script %}
 

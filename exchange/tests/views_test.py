@@ -1,45 +1,23 @@
 import os
-import django
-from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
-from django.conf import settings
 import pytest
+from . import ExchangeTest
+from exchange import settings
 
-django.setup()
 
-test_img = os.path.join(os.path.dirname(__file__), 'test.png')
-testdir = os.path.dirname(os.path.realpath(__file__))
-User = get_user_model()
+TESTDIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
 
 # bury these warnings for testing
-
-
 class RemovedInDjango19Warning(Exception):
     pass
 
 
-class ViewTestCase(TestCase):
+class ViewTestCase(ExchangeTest):
 
-    def common_setup(self):
-        self.client = Client()
-        admin_users = User.objects.filter(
-            is_superuser=True
-        )
-        if admin_users.count() > 0:
-            self.admin_user = admin_users[0]
-        else:
-            self.admin_user = User.objects.create_superuser(
-                username='admin',
-                email=''
-            )
-        self.admin_user.set_password('admin')
-        self.admin_user.save()
-        logged_in = self.client.login(
-            username='admin',
-            password='admin'
-        )
-        self.assertTrue(logged_in)
+    def setUp(self):
+        super(ViewTestCase, self).setUp()
+        self.login()
 
+        self.url = '/'
         self.expected_status = 200
 
     def get_response(self):
@@ -68,10 +46,6 @@ class ViewTestCase(TestCase):
 
 class HomeScreenTest(ViewTestCase):
 
-    def setUp(self):
-        self.common_setup()
-        self.url = '/'
-
     def test(self):
         self.doit()
 
@@ -79,10 +53,11 @@ class HomeScreenTest(ViewTestCase):
 class LayerMetadataDetailTest(ViewTestCase):
 
     def setUp(self):
+        super(LayerMetadataDetailTest, self).setUp()
+
         from geonode.layers.utils import file_upload
-        self.common_setup()
         self.layer = file_upload(
-            os.path.join(testdir, 'test_point.shp'),
+            os.path.join(TESTDIR, 'test_point.shp'),
             name='testlayer'
         )
         self.url = '/layers/geonode:testlayer/metadata_detail'
@@ -90,14 +65,11 @@ class LayerMetadataDetailTest(ViewTestCase):
     def test(self):
         self.doit()
 
-    def test_thumb(self):
-        self.postfile(test_img, 'thumbnail_image')
-
-
 class MapMetadataDetailTest(ViewTestCase):
     def setUp(self):
+        super(MapMetadataDetailTest, self).setUp()
+
         from geonode.maps.models import Map
-        self.common_setup()
         self.map = Map.objects.create(
             owner=self.admin_user,
             zoom=0,
@@ -109,14 +81,11 @@ class MapMetadataDetailTest(ViewTestCase):
     def test(self):
         self.doit()
 
-    def test_thumb(self):
-        self.postfile(test_img, 'thumbnail_image')
-
 
 class GeoServerReverseProxyTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(GeoServerReverseProxyTest, self).setUp()
         self.url = '/wfsproxy/'
 
     def test(self):
@@ -126,7 +95,7 @@ class GeoServerReverseProxyTest(ViewTestCase):
 class HelpDocumentationPageTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(HelpDocumentationPageTest, self).setUp()
         self.expected_status = 302
         self.url = '/help/'
 
@@ -137,7 +106,7 @@ class HelpDocumentationPageTest(ViewTestCase):
 class DeveloperDocumentationPageTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(DeveloperDocumentationPageTest, self).setUp()
         self.expected_status = 302
         self.url = '/developer/'
 
@@ -148,34 +117,17 @@ class DeveloperDocumentationPageTest(ViewTestCase):
 class InsertCSWTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(InsertCSWTest, self).setUp()
         self.url = '/csw/new/'
 
     def test(self):
         self.doit()
 
-    @pytest.mark.skip
-    def test_post(self):
-        response = self.client.post(
-            self.url,
-            {
-                'title': 'foo',
-                'creator': 'me',
-                'modified': '2017-01-01',
-                'source': 'http://google.com'
-            }
-        )
-        self.assertEqual(
-            response.status_code,
-            302
-        )
-
-
 class CSWStatusTest(ViewTestCase):
 
     def setUp(self):
+        super(CSWStatusTest, self).setUp()
         self.url = '/csw/status/'
-        self.common_setup()
 
     def test(self):
         self.doit()
@@ -188,18 +140,19 @@ class CSWStatusTest(ViewTestCase):
 class CSWStatusTableTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(CSWStatusTableTest, self).setUp()
         self.url = '/csw/status_table/'
 
     def test(self):
         self.doit()
 
-@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH==False,
+
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
                     reason="Only run if using unified search")
 class UnifiedSearchTest(ViewTestCase):
 
     def setUp(self):
-        self.common_setup()
+        super(UnifiedSearchTest, self).setUp()
         self.url = '/api/base/search/?limit=100&offset=0&q=test'
         self.expected_status = 200
 
@@ -272,3 +225,61 @@ class UnifiedSearchTest(ViewTestCase):
                    '?limit=100&offset=0&q=test&' \
                    'order_by=-popular_count'
         self.doit()
+
+    def test_search_types(self):
+        url = '/api/%s/search/?q=test'
+        self.url = url % 'layers' 
+        self.doit()
+
+        self.url = url % 'documents' 
+        self.doit()
+
+        self.url = url % 'maps' 
+        self.doit()
+
+    def test_search_layer_by_id(self):
+        self.url = '/api/layers/search/?id=1'
+        self.doit()
+
+
+# This doesn't test a view but performs a functional
+# test on one of the views transformational objects.
+#
+@pytest.mark.skipif(settings.REGISTRYURL is None, reason="Only run if using registry")
+class ViewFunctionTests(ViewTestCase):
+
+    def test_get_unified_search_result_objects(self):
+        from exchange.views import get_unified_search_result_objects
+
+        test_hits = [{
+            '_index': 'registry',
+            '_source': {
+                'bbox': [1,2,3,4],
+            }
+        }, {
+            '_index': 'exchange',
+            '_source': {
+                'links' : {
+                    'xml' : 'layers/exchange:dummy.xml',
+                    'png' : 'layers/exchange:dummy/thumby.png'
+                }
+            }
+        }]
+
+        test_objects = get_unified_search_result_objects(test_hits)
+
+        # validate that the bbox parses correct in 
+        # the first result.
+
+        self.assertEqual(test_objects[0]['bbox_left'], 1, 
+                         'BBOX Was not formatted correctly!')
+
+        self.assertEqual(test_objects[0]['bbox_top'], 4, 
+                         'BBOX Was not formatted correctly!')
+
+
+        # ensure the thumbnail link is generated.
+
+        self.assertEqual(test_objects[1]['thumbnail_url'],
+                         '%s/layers/exchange:dummy/thumby.png' % settings.REGISTRYURL,
+                         'Wrong thumbnail URL (%s)' % test_objects[1]['thumbnail_url'])

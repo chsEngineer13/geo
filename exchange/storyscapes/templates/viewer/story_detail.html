@@ -1,0 +1,303 @@
+{% extends "maps/map_base.html" %}
+{% load i18n %}
+
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load guardian_tags %}
+
+{% load avatar_tags %}
+
+
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load url from future %}
+{% load guardian_tags %}
+
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+{% block body_class %}maps{% endblock %}
+
+{% block body_outer %}
+<link href="{{ STATIC_URL }}lib/viewer/site-theme.css" rel="stylesheet"/>
+<div ng-controller="detailController">
+    <section class="slice" id="dashboard">
+        <div class="container">
+            <div class="row">
+                {{ resource.tags }}
+                <div class="col-7 fixed-aspect">
+                    <div id="embedded_map" class="mrg-btm story">
+                        <div id="preview_map"></div>
+                    </div>
+                </div>
+                <div class="mobile-thumb">
+                    <img ng-src="{{ thumbnail }}" src="{{ thumbnail }}">
+                </div>
+                {% if user == resource.owner %}
+                <a href="{% url 'composer-draft-view' resource.id %}">
+                    <button class="btn btn-danger resume-edit">
+                        <i class="fa fa-pencil"></i>
+                        {% if resource.is_published %} Change Published {{SITE_NAME}}
+                        {% else %} Resume Draft
+                        {% endif %}
+                    </button>
+                </a>
+                <a href="/story/{{ resource.id }}/embed">
+                    <button class="btn btn-detail mobile-play">
+                        <i class="fa fa-play"></i> Play {{SITE_NAME}}
+                    </button>
+                </a>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="col-sm-11">
+                    <div class="overview">
+                        <h2> {{resource.title}} </h2>
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <a href="{# url 'profile_detail' slug=resource.owner.username #}">
+                                    <img class="img-circle" src="{% avatar_url resource.owner 45 %}" />
+                                </a>
+                                <a ng-href="{# url 'profile_detail' slug=resource.owner.username #}" target="_blank" style="font-size: larger;">
+                                    {% if resource.owner.first_name != '' %}
+                                    {{ resource.owner.first_name }} {{ resource.owner.last_name }}
+                                    {% else %}
+                                    {{ resource.owner.username }}
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="col-sm-2">
+                                <p class="views">{{ resource.popular_count }} {% trans 'views' %}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="pull-right" ng-click="showShare()">Share <i class="fa fa-share"></i></p>
+                        <!-- insert story rating here -->
+                    </div>
+                    <div id="shareLinks" ng-show="sharing">
+                        <div class="embed">Share
+                            <input id="shareStory" value ="https://{{ request.get_host }}{% url 'storyscapes.views.story_detail' resource.id %}">
+                            <button class="copyclip btn" data-clipboard-target="#shareStory">
+                                <i class="fa fa-clipboard" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        {% comment %}
+                        <div class="embed"> Embed
+                            <input id="embedStory" value="<iframe style='border: none;' height='400' width='600' src='https://{{ request.get_host }}/story/{{ resource.id }}/embed'></iframe>">
+                            <button  class="copyclip btn" data-clipboard-target="#embedStory">
+                                <i class="fa fa-clipboard" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        {% endcomment %}
+                    </div>
+                </div>
+
+                <div class="col-sm-11">
+                    <div class="Summary" style="text-align:left;">
+                        <div><h3>Summary</h3></div>
+                        <hr>
+                        <div>
+                            {% if resource.abstract != '' %}
+                            {{ resource.abstract }}
+                            {% else %}
+                            <div class="no-chapter-summary"> Unfortunately, no summary has been provided for this {{SITE_NAME}}.</div>
+                            {% endif %}
+                        </div>
+                        {% if resource.chapters.count = 1 %}
+                        {% for item in resource.chapters.all %}
+                        {% if item.abstract != '' %}
+                        <div class="short-abstract">
+                            <h4>{{ item.title }}</h4>
+                            <hr>
+                            {{ item.abstract  }}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                        <br>
+                        <div>Category: {{ resource.category }}</div>
+                        <!-- <div>Region: Placeholder {{ resource.region.name }}</div> -->
+                        <div class="story-tags">Tags:
+                            <script type="text/javascript">
+                                // Pass the keyword list from the django template into the javascript
+                                var keywords = {{keywords|safe}};
+                                var url = "{{ resource.detail_url }}";
+                                var loggedIn = "{{user.is_authenticated}}";
+                            </script>
+                            <md-content class="md-padding" layout="column">
+                                <md-chips ng-model="chips"
+                                          readonly="readOnly"
+                                          md-on-add="addTag($chip)"
+                                          md-on-remove="removeTag($chip)"
+                                          md-transform-chip="newChip($chip)"
+                                          md-separator-keys="separateOn"
+                                          placeholder="Add tags for this StoryLayer...">
+                                </md-chips>
+                            </md-content>
+                        </div>
+                    </div>
+                    {% if resource.chapters.count > 1 %}
+                    <div class="chapters">
+                        <div><h3> Chapters </h3></div>
+                        <hr>
+                        <div class='row'>
+                            <div class="col-sm-3 chapter-tabs">
+                                <ul class="nav nav-pills nav-stacked">
+                                    {% for item in resource.chapters.all %}
+                                    {% if forloop.first %}
+                                    <li class="active"><a href="#ch-{{ item.id }}" data-toggle="tab">
+                                        {% if item.title != '' %}
+                                        {{ item.title }}
+                                        {% else %}
+                                        Chapter {{forloop.counter}}
+                                        {% endif %}
+                                    </a></li>
+                                    {% else %}
+                                    <li><a href="#ch-{{ item.id }}" data-toggle="tab">
+                                        {% if item.title != '' %}
+                                        {{ item.title }}
+                                        {% else %}
+                                        Chapter {{forloop.counter}}
+                                        {% endif %}
+                                    </a></li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="col-sm-9 tab-content">
+                                {% for item in resource.chapters.all %}
+                                {% if forloop.first %}
+                                <div class="tab-pane active" id="ch-{{ item.id }}">
+                                    {% else %}
+                                    <div class="tab-pane" id="ch-{{ item.id }}">
+                                        {% endif %}
+                                        {% if item.abstract != '' %}
+                                        <h3>Chapter {{forloop.counter}}: {{ item.title }}</h3>
+                                        <p>{{ item.abstract  }}</p>
+                                        {% else %}
+                                        <div class="no-chapter-summary"> Unfortunately, there are no details provided for Chapter {{forloop.counter}}.</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="story-layers">
+                            <div><h3> Layers </h3></div>
+                            <hr>
+                            <div class='row'>
+                                <div class="col-sm-3 layer-tabs">
+                                    <ul class="nav nav-pills nav-stacked">
+                                        {% for item in layers %}
+                                        {% if forloop.first %}
+                                        <li class="active"><a href="#layer-{{ item.id }}" data-toggle="tab">{{ item.title }}</a></li>
+                                        {% else %}
+                                        <li><a href="#layer-{{ item.id }}" data-toggle="tab">{{ item.title }}</a></li>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="col-sm-9 tab-content">
+                                    {% for item in layers %}
+                                    {% if forloop.first %}
+                                    <div class="tab-pane active" id="layer-{{ item.id }}">
+                                        {% else %}
+                                        <div class="tab-pane" id="layer-{{ item.id }}">
+                                            {% endif %}
+                                            <div class="col-sm-5">
+                                                <a href="{{ item.detail_url }}">
+                                                    <img class="thumb img-responsive details" ng-src="{{ item.thumbnail_url }}"/>
+                                                </a>
+                                                <p> {{item.title}}</p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p>{{ item.abstract  }}</p>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% if content_moderators in user.groups.all or user == resource.owner or user.is_superuser %}
+                            <div class="Summary" style="text-align:left;">
+                                <div>
+                                    <h3>
+                                        Thumbnail
+                                    </h3>
+                                </div>
+                                <hr>
+                                <tr>
+                                    <td width="35%">
+                                        <a href="{{ thumbnail }}"><img ng-src="{{ thumbnail }}" src="{{ thumbnail }}" id="change-thumbnail-image"></a>
+
+                                        <form action="" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <p>{{ thumb_form.non_field_errors }}</p>
+                                            <p>{{ thumb_form.docfile.label_tag }} </p>
+                                            <p>
+                                                {{ thumb_form.thumbnail_image.errors }}
+                                                {{ thumb_form.thumbnail_image }}
+                                            </p>
+                                            <button style="width:200px" class="btn btn-primary btn-md btn-block" type="submit">
+                                                Change Image
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </div>
+                            {% endif %}
+                            {% if resource.owner == user %}
+                            <div style= "padding-top: 40px">
+                                <button class="btn btn-danger">
+                                    <a href="{% url "map_remove" resource.id %}">{% trans "Delete this Story" %}</a>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+    </section>
+</div>
+
+{% endblock %}
+{% block extra_script %}
+<script type="text/javascript">
+    var app;
+    $(document).ready(function() {
+        {% autoescape off %}
+        $('<iframe>', {
+        {% if resource.chapters %}
+            src: '{%  url 'story_view' resource.id %}',
+        {% else %}
+        src: '{%  url 'story-viewer' resource.id %}',
+        {% endif %}
+    id:  'myFrame',
+            allowfullscreen: 'true',
+            frameborder: 0,
+            style:'width: 100%; height: 100%;',
+            scrolling: 'no'
+    }).appendTo('#embedded_map');
+    {% endautoescape %}
+    });
+</script>
+{% if SOCIAL_BUTTONS %}
+<div id="fb-root"></div>
+<script>
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+{% endif %}
+{% endblock extra_script %}

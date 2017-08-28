@@ -1,4 +1,4 @@
-{% load base_tags %}
+{% load base_tags_exchange %}
 {% if DEBUG_STATIC %}
 
 <script src="{{ STATIC_URL }}lib/js/angular.js?v={{ VERSION }}"></script>
@@ -16,8 +16,10 @@
 {% include 'search/_spatial_tags.html' %}
 
 {% endif %}
+<script src="{{ STATIC_URL }}js/clipboard.min.js"></script>
+<script src="{{ STATIC_URL }}js/ngclipboard.min.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
-<script src="{{ STATIC_URL }}geonode/js/search/search.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}js/search/search.js?v={{ VERSION }}"></script>
 <script src="{{ STATIC_URL }}js/search/workspace.js"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
@@ -48,10 +50,31 @@
         {% endif %}
   AUTOCOMPLETE_URL_REGION = '{% url "autocomplete_light_autocomplete" "RegionAutocomplete" %}';
 
-  var module = angular.module('search', ['geonode_main_search', 'cart']);
-  module.constant('Configs', {
-    url: SEARCH_URL
-  });
+    var module = angular.module('search', ['geonode_main_search', 'cart']);
+    module.constant('Configs', {
+        url: SEARCH_URL
+    });
+
+    module.directive('tooltip', function(){
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs){
+                $(element).hover(function(){
+                    $(element).tooltip('show');
+                }, function(){
+                    $(element).tooltip('hide');
+                });
+                //Bind event for clipboard copying
+                $(element).bind('copied', function(event, message) {
+                    $(this).attr('title', message)
+                            .tooltip('fixTitle')
+                            .tooltip('show')
+                            .attr('title', "Copy to Clipboard")
+                            .tooltip('fixTitle');
+                });
+            }
+        };
+    });
 
   var deps = ['search'];
   {% if include_spatial == 'true' %}

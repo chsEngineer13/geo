@@ -20,6 +20,17 @@
 
 from django.conf import settings
 from exchange.version import get_version
+import logging
+from urlparse import urlparse
+
+logger = logging.getLogger(__name__)
+
+if settings.GEOQUERY_ENABLED:
+    if settings.GEOQUERY_URL is None:
+        logger.warn('No search endpoint defined.')
+        logger.warn('GEOQUERY_ENABLED was set to True, but GEOQUERY_URL was not defined.')
+    elif urlparse(settings.GEOQUERY_URL).netloc is '':
+        logger.warn('GEOQUERY_URL improperly defined or is not a valid URL.')
 
 
 def resource_variables(request):
@@ -33,9 +44,21 @@ def resource_variables(request):
         ENABLE_GOOGLE_LOGIN=getattr(settings, 'ENABLE_GOOGLE_LOGIN', False),
         ENABLE_FACEBOOK_LOGIN=getattr(settings, 'ENABLE_FACEBOOK_LOGIN', False),
         ENABLE_GEOAXIS_LOGIN=getattr(settings, 'ENABLE_GEOAXIS_LOGIN', False),
+        ENABLE_AUTH0_LOGIN=getattr(settings, 'ENABLE_AUTH0_LOGIN', False),
+        AUTH0_APP_NAME=getattr(settings, 'AUTH0_APP_NAME', 'Boundless Connect'),
         INSTALLED_APPS=set(settings.INSTALLED_APPS),
         GEOAXIS_ENABLED=getattr(settings, 'GEOAXIS_ENABLED', False),
         MAP_PREVIEW_LAYER=getattr(settings, 'MAP_PREVIEW_LAYER', "''"),
+        LOCKDOWN_EXCHANGE=getattr(settings, 'LOCKDOWN_GEONODE', False),
+        LOGIN_WARNING=getattr(settings, 'LOGIN_WARNING_ENABLED', False),
+        LOGIN_WARNING_TEXT=getattr(settings, 'LOGIN_WARNING_TEXT', "''"),
+        STORYSCAPES_ENABLED=getattr(settings, 'STORYSCAPES_ENABLED', False),
+        NOMINATIM_ENABLED=getattr(settings, 'NOMINATIM_ENABLED', True),
+        NOMINATIM_URL=getattr(settings, 'NOMINATIM_URL', '//nominatim.openstreetmap.org'),
+        GEOQUERY_ENABLED=getattr(settings, 'GEOQUERY_ENABLED', False),
+        GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None),
+        EXTENT_FILTER_ENABLED=getattr(settings, 'EXTENT_FILTER_ENABLED', True),
+        DISABLE_BOUNDLESS_LINK_IN_FOOTER=getattr(settings, 'DISABLE_BOUNDLESS_LINK_IN_FOOTER', False),
     )
 
     return defaults

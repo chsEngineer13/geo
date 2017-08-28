@@ -20,6 +20,7 @@ export STATIC_ROOT='/vagrant/.storage/static_root'
 export STATIC_URL='/static/'
 export MEDIA_ROOT='/vagrant/.storage/media'
 export MEDIA_URL='/media/'
+export FILESERVICE_MEDIA_ROOT='/vagrant/.storage/media/fileservice'
 export DEBUG_STATIC='False'
 export ALLOWED_HOSTS="['*']"
 export LANGUAGE_CODE='en-us'

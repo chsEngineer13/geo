@@ -1,13 +1,18 @@
+import cStringIO
 import os
+import sys
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command, CommandError
 from django.test import TestCase, RequestFactory
+from django.utils.six import StringIO
 from exchange.themes.models import Theme
 from shutil import rmtree
 
-test_img = os.path.join(os.path.dirname(__file__), 'test.png')
+from . import ExchangeTest
+
 theme_dir = os.path.join(
     settings.MEDIA_ROOT,
     'theme'
@@ -17,10 +22,11 @@ theme_dir = os.path.join(
 class MockRequest:
     pass
 
+
 request = MockRequest()
 
 
-class ThemeTestCase(TestCase):
+class ThemeTestCase(ExchangeTest):
     def setUp(self):
         self.factory = RequestFactory()
         self.site = AdminSite()
@@ -65,6 +71,8 @@ class ThemeTestCase(TestCase):
         self.t2.save()
 
     def test(self):
+        test_img = self.get_file_path('test.png')
+
         self.assertEqual(
             self.ma.get_fieldsets(request),
             [(None,
@@ -131,3 +139,51 @@ class ThemeTestCase(TestCase):
 
     def tearDown(self):
             rmtree(theme_dir)
+
+
+class ThemeViewTest(ExchangeTest):
+
+    def setUp(self):
+        super(ThemeViewTest, self).setUp()
+
+        self.login()
+
+    def test_model_admin(self):
+        r = self.client.get('/admin/themes/theme/')
+
+        self.assertEqual(r.status_code, 200,
+                         'Did not get admin theme list (status: %d)' % (
+                           r.status_code
+                         ))
+
+        r = self.client.get('/admin/themes/theme/add/')
+
+        self.assertEqual(r.status_code, 200, 'Did not get admin theme add')
+
+        r = self.client.get('/admin/themes/theme/1/')
+        r = self.client.get('/admin/themes/theme/2/')
+
+
+class ListThemeTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command('list_themes', stdout=out)
+        self.assertTrue('Available Themes:' in out.getvalue())
+
+
+class SetActiveThemeByIdTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command('set_active_theme_by_id', theme_id=1, stdout=out)
+        self.assertTrue('Successfully' in out.getvalue())
+
+
+class SetActiveThemeByNameTest(TestCase):
+    def test_command_output(self):
+        out = StringIO()
+        call_command(
+            'set_active_theme_by_name',
+            theme_name='GEOINT',
+            stdout=out
+        )
+        self.assertTrue('Successfully' in out.getvalue())

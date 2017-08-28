@@ -24,6 +24,7 @@
       {% block extra_head %}
       {% endblock %}
     {% endblock %}
+    {% include 'tracking_header.html' %}
     <!--[if IE]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
       <style>
@@ -40,102 +41,118 @@
   <body class="{% block body_class %}{% endblock %}">
     <!-- Navbar -->
     {% block header %}
-	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-	  <div class="container">
-        <div class="navbar-header">
-	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-	        <i class="fa fa-navicon fa-lg"></i>
-	      </button>
-	      <a class="navbar-brand" href="{% url "home" %}">Exchange</a>
-	    </div>
-	    <div id="navbar" class="navbar-collapse collapse">
-	      <ul class="nav navbar-nav toolbar">
-	        {% block tabs %}
-	        <li id="nav_layers">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
-                <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
-                {% if user.is_authenticated %}
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
-                {% endif %}
-              </ul>
-            </li>
-	        <li id="nav_maps">
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <i class="fa fa-navicon fa-lg"></i>
+            </button>
+            <a class="navbar-brand" href="{% url "home" %}">Exchange</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav toolbar">
+              {% block tabs %}
               {% if user.is_authenticated %}
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
-                <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-              </ul>
-              {% else %}
-              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
-              {% endif %}
-            </li>
-            <li>
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
-                <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
-                {% if perms.announcements.can_manage %}
-                <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
-                {% endif %}
-                {% if user.is_superuser %}
-                <li role="separator" class="divider"></li>
-                <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-                <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
-                <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
-                {% endif %}
-              </ul>
-            </li>
-	        {% block extra_tab %}
-            {% endblock %}
-            {% endblock %}
-          </ul>
-	      <ul class="nav navbar-nav navbar-right">
-            <li>
-              <div class="search">
-                <form id="search" action="{% url "search" %}" >
-                  <span class="fa fa-search"></span>
-                  {% if HAYSTACK_SEARCH %}
-                  <input id="search_input" type="text" placeholder="Search" name="q">
-                  {% else %}
-                  <input id="search_input" type="text" placeholder="Search" name="title__icontains">
-                  {% endif %}
-                </form>
-              </div>
-	        </li>
-            {% if not user.is_authenticated and REGISTRATION_OPEN %}
-            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
-            {% endif %}
-            {% if user.is_authenticated %}
-            <li><a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% avatar user 42 %} {{ user.username }}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
-                <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
-                <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "admin:index" %}">Admin</a></li>
-                <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
-                <li role="separator" class="divider"></li>
-                {% if not GEOAXIS_ENABLED %}
-                <li><a href="/account/logout/">Logout</a></li>
-                {% endif %}
+              <li id="nav_layers">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  {% trans "Data" %}
+                  <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
+                  <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                  <li><a href="{% url "document_upload" %}">Upload Document</a></li>
                 </ul>
               </li>
-		      {% else %}
-		      <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
+              <li id="nav_maps">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {% trans "Maps" %}
+                    <i class="fa fa-caret-down"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
+                    <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+                    {% if STORYSCAPES_ENABLED %}
+                    <li><a href="/story/new">Compose Story</a></li>
+                    {% endif %}
+                  </ul>
+              </li>
+              <li>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  {% trans "About" %}
+                  <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
+                  <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
+                  {% if perms.announcements.can_manage %}
+                    <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+                  {% endif %}
+                  {% if user.is_superuser %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                    <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
+                    <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+                  {% endif %}
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url "about" %}" target="_new">{% trans "Exchange" %}</a></li>
+                </ul>
+              </li>
+              {% endif %}
+              {% block extra_tab %}
+              {% endblock %}
+              {% endblock %}
+
+              {% if not user.is_authenticated and REGISTRATION_OPEN %}
+                <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <li>
+                  <a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {% avatar user 42 %} {{ user.username }}
+                    <i class="fa fa-caret-down"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
+                    <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
+                     {% if user.is_staff %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{% url "admin:index" %}">Admin</a></li>
+                    <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
+                    {% endif %}
+                    {% if perms.core.add_cswrecord %}
+                    <li><a href="{% url "csw-record-list" %}">Registry</a></li>
+                    {% endif %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
+                    <li role="separator" class="divider"></li>
+                    {% if not GEOAXIS_ENABLED %}
+                      <li><a href="/account/logout/">Logout</a></li>
+                    {% endif %}
+                  </ul>
+                </li>
+
+              <li>
+                <div class="search">
+                  <form id="search" action="{% url "search" %}" >
+                    <span class="fa fa-search"></span>
+                    {% if HAYSTACK_SEARCH %}
+                      <input id="search_input" type="text" placeholder="Search" name="q">
+                    {% else %}
+                      <input id="search_input" type="text" placeholder="Search" name="title__icontains">
+                    {% endif %}
+                  </form>
+                </div>
+              </li>
               {% endif %}
             </ul>
           </div> <!--/.nav-collapse -->
         </div>
       </nav>
-      {% endblock header %}
-      <!-- End of Navbar -->
+    {% endblock header %}
+    <!-- End of Navbar -->
 
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -169,11 +186,25 @@
         <div class="container">
           <div class="row">
             <div class="text-center stacked">
+              {% if theme.about_link %}
+                <a href="{{ theme.about_link }}" target="_new">
+              {% else %}
+                <a href="{% url "about" %}" target="_new">
+              {% endif %}
+              {% if theme.about_text %}
+                {{ theme.about_text }}
+              {% else %}
+                {% trans "About" %}
+              {% endif %}
+              </a>
+              &nbsp;&nbsp;|&nbsp;&nbsp;
               <span>{% trans "Powered by" %}&nbsp;&nbsp;
                 {% if theme.pb_link %}
                   <a href="{{ theme.pb_link }}" target="_new">
                 {% else %}
-                  <a href="https://boundlessgeo.com/" target="_new">
+                  {% if not DISABLE_BOUNDLESS_LINK_IN_FOOTER %}
+                    <a href="http://boundlessgeo.com" target="_new">
+                  {% endif %}
                 {% endif %}
                 {% if theme.pb_text %}
                   {{ theme.pb_text }}</a>
@@ -194,6 +225,7 @@
             </div>
           </div>
         </div> <!-- /.container -->
+        {% include 'tracking_footer.html' %}
       </footer>
   {% endblock footer %}
 
@@ -205,7 +237,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Log In" %}</h4>
           </div>
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
             <div class="modal-body">
@@ -223,7 +255,7 @@
               </label>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
+              <button type="submit" class="btn btn-primary btn-block">{% trans "Log In" %}</button>
             </div>
           </form>
         </div>

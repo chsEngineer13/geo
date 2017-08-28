@@ -1,9 +1,21 @@
 import os
 
-from default import * 
+from default import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = '6((ie#5#8yu%r4j)s@*qzhp!o2*6lu07s846(xahxi^uoy52h6'
+STATIC_ROOT = os.path.join(BASE_DIR, '../.storage/static_root')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../.storage/media')
+
+# ensures tests are run on writing to file
+AUDIT_TO_FILE = True
+
+FILESERVICE_CONFIG = {
+    'store_dir': os.path.join(MEDIA_ROOT, 'fileservice'),
+    'types_allowed': ['.jpg', '.jpeg', '.png'],
+    'streaming_supported': True
+}
+
+SECRET_KEY = os.getenv('SECRET_KEY', 'unit tests only not for production')
 DEBUG = True
 ALLOWED_HOSTS = ['testserver']
 _INSTALLED_APPS = (
@@ -16,16 +28,6 @@ _INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-)
-MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 )
 #TEMPLATES = [
 #    {

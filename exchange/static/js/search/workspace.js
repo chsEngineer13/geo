@@ -1,7 +1,7 @@
 'use strict';
 //Clarence
 (function(){
-  angular.module('cart', [])
+  angular.module('cart', ['ngCookies'])
     .controller('CartList', function($scope, cart){
       $scope.cart = cart;
       $scope.layers_params = '';
@@ -10,7 +10,14 @@
         var items = cart.getCart().items;
         var params = '';
         for(var i=0; i<items.length; i++){
-          params += 'layer=' + items[i].detail_url.split('/')[2] +'&';
+          // check to see if the item is a registry layer.
+          var layer_name = '';
+          if(items[i].registry_url) {
+            layer_name = 'registry:' + items[i].id;
+          } else {
+            layer_name = items[i].detail_url.split('/')[2];
+          }
+          params += 'layer=' + layer_name + '&';
         }
         window.location = '/maps/new?' + params;
       }
@@ -62,12 +69,39 @@
       };
     }])
 
-    .service('cart', function(){
+    .service('cart', function($cookies){
 
       this.init = function(){
         this.$cart = {
-          items: []
+          items: this.fillCart()
         };
+      };
+
+      this.fillCart = function(){
+        // This will fail if angular<1.4.0
+        try {
+          var geonodeCart = $cookies.getAll();
+        } catch(err) {
+          var geonodeCart = null;
+        }
+        var cartSession = [];
+        if (geonodeCart !== null) {
+          if(Object.keys(geonodeCart).length > 1) {
+            Object.keys(geonodeCart).forEach(function(key,index) {
+              if(key !== 'csrftoken') {
+                try {
+                  var obj = JSON.parse(geonodeCart[key]);
+                  obj['$$hashKey'] = "object:" + index;
+                  cartSession.push(obj);
+                } catch(err) {
+                  console.log("Cart Session Issue: " + err.message);
+                }
+              }
+            });
+          }
+        }
+
+        return cartSession;
       };
 
       this.getCart = function(){
@@ -82,6 +116,7 @@
 
         if(this.getItemById(item.id) === null){
           this.getCart().items.push(item);
+          $cookies.putObject(item['uuid'], item, {path: '/'});
         }
       }
 
@@ -91,6 +126,7 @@
           angular.forEach(cart.items, function(cart_item, index){
             if(cart_item.id === item.id){
               cart.items.splice(index, 1);
+              $cookies.remove(cart_item['uuid'], {path: '/'});
             }
           });
         }
@@ -119,8 +155,13 @@
         if(this.getItemById(id) === null){
           return 'fa-plus';
         }else{
-          return 'fa-remove'
+          return 'fa-remove';
         }
+      }
+
+      this.getThumbnailUrl = function(item) {
+        var parts = item.detail_url.split('/').slice(-2);
+        return '/thumbnails/' + parts[0] + '/' + parts[1];
       }
     })
 

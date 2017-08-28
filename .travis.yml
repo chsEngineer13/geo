@@ -30,8 +30,8 @@ before_install:
 
 install:
   # setup and start container
-  - docker build -t ci-exchange -f docker/travis/Dockerfile.ci .
-  - docker run -v $PWD:/opt/boundless/exchange -d -p 8000:8000 -p 8080:8080 --name ci-exchange ci-exchange
+  - docker build -t boundlessgeo/ci-exchange-el7 -f docker/travis/Dockerfile.ci .
+  - docker run -v $PWD:/opt/boundless/exchange -d -p 8000:8000 -p 8080:8080 --name ci-exchange boundlessgeo/ci-exchange-el7
   # Install chromedriver
   - wget http://chromedriver.storage.googleapis.com/2.24/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
@@ -44,13 +44,13 @@ before_script:
   - "export DISPLAY=:99.0"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   # give services some time to start
-  - sleep 60
+  - sleep 20
 
 script:
   # basic test if django is up
   - wget http://localhost:8000
   # basic test if geoserver is up
-  - wget http://localhost:8080/geoserver/index.html
+  - wget http://localhost:8080/geoserver/web/
   # run pytests for selenium only
   - py.test tests/selenium/log_in_test.py
   # flake8 tests

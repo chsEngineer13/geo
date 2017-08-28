@@ -1,0 +1,85 @@
+{% extends "viewer/view_base.html" %}
+{% load theme_tags %}
+{% load static from staticfiles %}
+{% load i18n %}
+
+{% block title %} {% trans "Viewer" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+<link href="{{ STATIC_URL}}geonode/css/font-awesome.css" rel="stylesheet">
+{{ block.super }}
+
+{% endblock head %}
+
+{% block middle %}
+<div ng-app="viewer" ng-controller="viewerController as viewer">
+    <div class="st-legend"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="viewer-nav">
+            <a target="_blank" href="{% url "home" %}">
+            {% get_theme as theme %}
+                {% if theme.banner_logo_url %}
+                    <img src="{{ theme.banner_logo_url }}" style="height: 25px; margin-top: 8px; margin-left: 8px;"/>
+                {% else %}
+                    <img src="{% static "theme/img/default-banner-logo.png"%}" style="height: 25px; margin-top: 8px; margin-left: 8px;"/>
+                {% endif %}
+
+            </a>
+            <i class="fa fa-caret-left" ng-click="toggleSidebar()"></i>
+            <i class="fa fa-caret-right" ng-click="toggleSidebar()"></i>
+        </div>
+        <div class="content">
+            {% verbatim %}
+            <a target="_blank" href="/story/{{ mapManager.storyMap.get('id') - 1 }}/view" class="viewer-story-title" ng-bind="mapManager.title"></a>
+            <a target="_blank" href="/storyteller/{{ mapManager.username }}" class="viewer-author">{% endverbatim %}{{ SITE_NAME }} {% verbatim %}by {{ mapManager.owner }}</a>
+            <div class="viewer-chapter-number">Chapter {{ mapManager.storyChapter}}</div>
+            <div class="viewer-chapter-title" ng-bind="mapManager.storyMap.getStoryTitle()"></div>
+            <p ng-bind="mapManager.storyMap.getStoryAbstract()"></p>
+            {% endverbatim %}
+
+            <div ng-if="mapManager.chapterCount > 1" class="viewer-chapter-nav">
+                <a class="pointer" ng-click="previousChapter()" ng-disabled="mapManager.storyChapter == 1">
+                    <i class="fa fa-step-backward"></i>
+                    Previous Chapter
+                </a>
+                <a class="pointer" ng-click="nextChapter()" ng-disabled="mapManager.storyChapter == mapManager.chapterCount">
+                    Next Chapter
+                    <i class="fa fa-step-forward"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="map" id="mapContainer">
+        <div id="map"></div>
+        <div id="footer" class="footer">
+            <div id="time-controls-panel2" ng-show="timeControlsManager.timeControls" class="floating-below">
+                <div class="navbar" ng-controller="tileProgressController">
+                    <st-playback-controls class="pull-left" playback-options="playbackOptions"
+                                          time-controls="timeControlsManager.timeControls"></st-playback-controls>
+                    <progressbar animate="false" class="navbar-nav navbar-right" value="tilesLoadedProgress">
+                        <b ng-if="tilesLoaded" ng-bind="tilesLoaded + '/' + tilesToLoad"></b>
+                    </progressbar>
+                </div>
+                <div id="playback-settings" class="panel-collapse collapse">
+                    <div class="panel-heading">Playback Options</div>
+                    <st-playback-settings playback-options="playbackOptions"
+                                          time-controls="timeControlsManager.timeControls"></st-playback-settings>
+                </div>
+                <div id="timeline" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    <div featureinfobox id="info-box" ng-show="featureInfoService.getSelectedItem() && featureInfoService.getEnabled()"
+        class="feature-info-box-popup">
+   </div>
+</div>
+{% endblock middle %}
+{% block extra_script %}
+<script src="{{ STATIC_URL }}viewer/assets/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}viewer/assets/angular.min.js"></script>
+<script src="{{ STATIC_URL }}viewer/assets/story-tools-vendor-all.js"></script>
+<script src="{{ STATIC_URL }}viewer/assets/story-tools-core-all.js"></script>
+<script src="{{ STATIC_URL }}viewer/assets/story-tools-mapstory.js"></script>
+{% include 'viewer/ol3-popup.js' %}
+{% include 'viewer/story_viewer.js' %}
+{% endblock extra_script %}
