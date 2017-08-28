@@ -140,6 +140,32 @@ services:
             # export ssl version as well.
             - "443"
 
+    # Container running registry        
+    registry:
+        container_name: registry
+        image: registry
+        build: ./docker/registry
+        links:
+            - search
+        ports:
+            - "8001"
+        volumes:
+            - scratch:/scratch
+
+            # For local dev'ing, uncomment the below
+            #  If using the line below verbatim, 
+            #  registry must be cloned to ~/boundless/registry
+            # - ~/boundless/registry:/opt/registry:ro
+
+        networks:
+            internal:
+            # Expose on a fixed host IP for diagnostic purposes.
+            external:
+                ipv4_address: 172.16.238.6
+        environment:
+            # Setup registry to use included search
+            - REGISTRY_SEARCH_URL=http://search:9200
+  
     # worker process which does "background" work for the django app
     worker:
         container_name: worker
