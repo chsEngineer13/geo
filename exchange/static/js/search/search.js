@@ -58,25 +58,7 @@
     });
   }
 
-  module.load_regions = function ($http, $rootScope, $location){
-        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-        if ($location.search().hasOwnProperty('title__icontains')){
-          params['title__icontains'] = $location.search()['title__icontains'];
-        }
-        $http.get(REGIONS_ENDPOINT, {params: params}).then(function(response){
-            if($location.search().hasOwnProperty('regions__name__in')){
-                response.data.objects = module.set_initial_filters_from_query(response.data.objects,
-                    $location.search()['regions__name__in'], 'name');
-            }
-            $rootScope.regions = response.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
-        });
-    }
-
-
-  // Update facet counts for categories and keywords
+  // Update facet counts 
   module.haystack_facets = function($http, $rootScope, $location) {
       var data = $rootScope.query_data;
       $rootScope.facets = data.meta.facets;
@@ -119,7 +101,7 @@
     };
 
     $scope.onCopyError = function(e) {
-	$(e.trigger).trigger('copied', ['Failed to Copy!']);
+	    $(e.trigger).trigger('copied', ['Failed to Copy!']);
     }
 
     //Get data from apis and make them available to the page
@@ -128,20 +110,11 @@
         $scope.results = response.data.objects;
         $scope.total_counts = response.data.meta.total_count;
         $scope.$root.query_data = response.data;
-        if (HAYSTACK_SEARCH) {
-          if ($location.search().hasOwnProperty('q')){
-            $scope.text_query = $location.search()['q'].replace(/\+/g," ");
-          }
-        } else {
-          if ($location.search().hasOwnProperty('title__icontains')){
-            $scope.text_query = $location.search()['title__icontains'].replace(/\+/g," ");
-          }
+        
+        if ($location.search().hasOwnProperty('q')){
+          $scope.text_query = $location.search()['q'].replace(/\+/g," ");
         }
-
-        //Update facet/keyword/category counts from search results
-        if (HAYSTACK_FACET_COUNTS){
-            module.haystack_facets($http, $scope.$root, $location);
-        }
+        module.haystack_facets($http, $scope.$root, $location);
       });
     };
     query_api($scope.query);
