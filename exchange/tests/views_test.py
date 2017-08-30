@@ -207,6 +207,8 @@ class CSWStatusTableTest(ViewTestCase):
                     reason="Only run if using unified search")
 class UnifiedSearchTest(ViewTestCase, UploaderMixin):
 
+    # TODO: Need to create two layers with different
+    # category, keyword, bbox, date, title
     def setUp(self):
         super(UnifiedSearchTest, self).setUp()
         self.url = '/api/base/search/?limit=100&offset=0&q=test'
@@ -217,11 +219,13 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         from geonode.maps.models import Map
 
         # Layer
-        files = ['./test_point.zip']
+        # TODO: Check it works with 2nd file
+        files = ['./test_point.zip', 'boxes_with_end_date.zip']
         configs = [{'upload_file_name': 'test_point.zip'}]
         # Upload the layer
         upload_layers = self.upload_files(files, configs)
         test_layer = upload_layers[0]
+        test_layer2 = upload_layers[1]
         # test_layer should hold a test layer object
 
         # Map
