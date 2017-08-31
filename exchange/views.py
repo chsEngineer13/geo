@@ -263,8 +263,11 @@ def unified_elastic_search(request, resourcetype='base'):
     fields = ['title', 'text', 'abstract', 'title_alternate']
 
 
+
     # This configuration controls what fields will be added to faceted search
-    facet_fields = ['_index', 'type', 'subtype',
+    # there is some special exception code later that combines the subtype search
+    # and facet with type
+    facet_fields = ['type', 'subtype',
               'owner__username', 'keywords', 'regions', 
               'category', 'source_host']
     
@@ -277,7 +280,27 @@ def unified_elastic_search(request, resourcetype='base'):
         }
 
     facet_lookups = {
-        'category': category_lookup
+        'category': category_lookup,
+        'type': {
+            'OGC:WMS': {'display': 'ESRI MapServer'},
+            'OGC:WFS': {'display': 'ESRI MapServer'},
+            'OGC:WCS': {'display': 'ESRI MapServer'},
+            'ESRI:ArcGIS:MapServer': {'display': 'ArcGIS MapServer'},
+            'ESRI:ArcGIS:ImageServer': {'display': 'ArcGIS ImageServer'}
+        }
+    }
+
+    # Allows settings that can be used by a client for display of the facets
+    # 'open' is used by exchange client side to determine if a facet menu shows
+    # up open or closed by default
+    default_facet_settings = {'open': False, 'show': True}
+    facet_settings = {
+        'category': {'open': True},
+        'source_host': {'open': False, 'display': 'Host'},
+        'owner__username': {'open': True, 'display': 'Owner'},
+        'type': {'open': True, 'display': 'Type'},
+        'keywords': {'show': False},
+        'regions': {'show': False}
     }
 
     
@@ -302,6 +325,9 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # Geospatial Elements
     bbox = parameters.get("extent", None)
+
+    # get has_time element not used with facets
+    has_time = parameters.get("extent", None)
 
     # Build base query
     # The base query only includes filters relevant to what the user 
@@ -359,6 +385,8 @@ def unified_elastic_search(request, resourcetype='base'):
             fp = parameters.getlist(f)
             if fp:
                 fq = Q({'terms': {fn: fp}})
+                if fn == 'type_exact': # search across both type_exact and subtype
+                    fq = fq | Q({'terms': {'subtype_exact': fp}})
                 facet_filters.append(fq)
     
     # run search only filtered by what a particular user is able to see
@@ -376,7 +404,15 @@ def unified_elastic_search(request, resourcetype='base'):
             lookup = None
             if k in facet_lookups:
                 lookup = facet_lookups[k]
-            facet_results[k] = {}
+            fsettings = default_facet_settings.copy()
+            fsettings['display'] = k
+            # Default display to the id of the facet in case none is set
+            if k in facet_settings:
+                fsettings.update(facet_settings[k])
+            if parameters.getlist(k): # Make sure list starts open when a filter is set
+                fsettings['open'] = True
+            facet_results[k] = {'settings': fsettings, 'facets':{}}
+                
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
@@ -384,7 +420,7 @@ def unified_elastic_search(request, resourcetype='base'):
                 if lookup:
                     if bucket_key in lookup:
                         bucket_dict.update(lookup[bucket_key])
-                facet_results[k][bucket_key] = bucket_dict
+                facet_results[k]['facets'][bucket_key] = bucket_dict
 
     # filter by resourcetype
     if resourcetype == 'documents':
@@ -427,6 +463,10 @@ def unified_elastic_search(request, resourcetype='base'):
     # Add the facet queries to the main search
     for fq in facet_filters:
         search = search.query(fq)
+
+    # Add in has_time filter if set
+    if has_time:
+        search = search.query(Q({'terms':{'has_time':has_time}}))
 
     # Add in Bounding Box filter
     if bbox:
@@ -523,7 +563,12 @@ def unified_elastic_search(request, resourcetype='base'):
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
-                facet_results[k][bucket_key]['count'] = bucket_count
+                facet_results[k]['facets'][bucket_key]['count'] = bucket_count
+
+    # combine buckets for type and subtype and get rid of subtype bucket
+    if 'subtype' in facet_results:
+        facet_results['type']['facets'].update(facet_results['subtype']['facets'])
+        del facet_results['subtype']
     
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
