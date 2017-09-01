@@ -383,7 +383,7 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
     def test_keywords(self):
         # Should get test_layer, given foo keyword
         self.url = '/api/base/search/' \
-                   '?limit=100&offset=0&q=test&keywords__in=foo'
+                   '?limit=100&offset=0&keywords__in=foo'
         self.doit()
         search_results = json.loads(self.response.content)
         self.assertEqual(search_results['meta']['total_count'], 1)
