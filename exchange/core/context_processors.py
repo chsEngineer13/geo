@@ -59,6 +59,9 @@ def resource_variables(request):
         GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None),
         EXTENT_FILTER_ENABLED=getattr(settings, 'EXTENT_FILTER_ENABLED', True),
         DISABLE_BOUNDLESS_LINK_IN_FOOTER=getattr(settings, 'DISABLE_BOUNDLESS_LINK_IN_FOOTER', False),
+        MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
+            settings, 'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS', False
+        ),
     )
 
     return defaults
