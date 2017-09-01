@@ -337,7 +337,7 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         search_results = json.loads(self.response.content)
         self.assertEqual(search_results['meta']['total_count'], 2)
         self.assertEqual(search_results['meta']['facets']['type']['layer'], 2)
-        self.assertEqual(len(search_results['objects']), self.test_layer2.id)
+        self.assertEqual(len(search_results['objects']), 2)
 
     def test_bbox(self):
         # This will grab test_layer
@@ -351,12 +351,23 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         self.assertEqual(search_results['objects'][0]['id'], self.test_layer.id)
 
     def test_date(self):
+        # this should get nothing
         self.url = '/api/base/search/' \
-                   '?limit=100&offset=0&q=test&' \
+                   '?limit=100&offset=0&' \
                    'date__gte=2000-01-01&date__lte=2000-01-02'
         self.doit()
         search_results = json.loads(self.response.content)
-        # TODO: How to test this when this checks upload date?
+        self.assertEqual(search_results['meta']['total_count'], 0)
+        # this should get everything
+        # TODO: this might include the map as well
+        self.url = '/api/base/search/' \
+                   '?limit=100&offset=0&' \
+                   'date__gte=2000-01-01&date__lte=9999-01-02'
+        self.doit()
+        search_results = json.loads(self.response.content)
+        self.assertEqual(search_results['meta']['total_count'], 2)
+        self.assertEqual(search_results['meta']['facets']['type']['layer'], 2)
+        self.assertEqual(len(search_results['objects']), 2)
 
     def test_categories(self):
         # Should get test_layer2, assigned to air category
@@ -389,7 +400,7 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         search_results = json.loads(self.response.content)
         self.assertEqual(search_results['meta']['total_count'], 2)
         self.assertEqual(search_results['meta']['facets']['type']['layer'], 2)
-        self.assertEqual(len(search_results['objects']), self.test_layer2.id)
+        self.assertEqual(len(search_results['objects']), 2)
 
     # TODO: Check how map is reflected here, may change this output slightly
     def test_datesorta(self):
