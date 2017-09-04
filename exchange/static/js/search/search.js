@@ -265,12 +265,13 @@
 
     $scope.navcontrol = function(e) {
       e.preventDefault();
-      if ($(this).parents("h4").siblings(".nav").is(":visible")) {
-          $(this).parents("h4").siblings(".nav").slideUp();
-          $(this).find("i").attr("class", "fa fa-chevron-right");
+      var element = $(e.target);
+      if (element.parents("h4").siblings(".nav").is(":visible")) {
+        element.parents("h4").siblings(".nav").slideUp();
+        element.find("i").attr("class", "fa fa-chevron-right");
       } else {
-          $(this).parents("h4").siblings(".nav").slideDown();
-          $(this).find("i").attr("class", "fa fa-chevron-down");
+        element.parents("h4").siblings(".nav").slideDown();
+        element.find("i").attr("class", "fa fa-chevron-down");
       }
   };
 

@@ -330,6 +330,9 @@ def unified_elastic_search(request, resourcetype='base'):
     # get has_time element not used with facets
     has_time = parameters.get("has_time", None)
 
+    # get max number of facets to return
+    nfacets = parameters.get("nfacets", 15)
+
     # Build base query
     # The base query only includes filters relevant to what the user 
     # is allowed to see and the overall types of documents to search.
@@ -380,7 +383,7 @@ def unified_elastic_search(request, resourcetype='base'):
         fn = field_name(f, mappings)
         if fn:
             valid_facet_fields.append(f)
-            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=40)
+            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=nfacets)
             # if there is a filter set in the parameters for this facet
             # add to the filters
             fp = parameters.getlist(f)
