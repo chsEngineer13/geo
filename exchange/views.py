@@ -380,7 +380,7 @@ def unified_elastic_search(request, resourcetype='base'):
         fn = field_name(f, mappings)
         if fn:
             valid_facet_fields.append(f)
-            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=4)
+            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=40)
             # if there is a filter set in the parameters for this facet
             # add to the filters
             fp = parameters.getlist(f)

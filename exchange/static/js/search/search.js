@@ -189,7 +189,6 @@
     * and pushes/removes the value of the element from the query object
     */
     $scope.multiple_choice_listener = function($event){
-      console.log($event);
       var element = $($event.target);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
@@ -264,6 +263,16 @@
       }
     }
 
+    $scope.navcontrol = function(e) {
+      e.preventDefault();
+      if ($(this).parents("h4").siblings(".nav").is(":visible")) {
+          $(this).parents("h4").siblings(".nav").slideUp();
+          $(this).find("i").attr("class", "fa fa-chevron-right");
+      } else {
+          $(this).parents("h4").siblings(".nav").slideDown();
+          $(this).find("i").attr("class", "fa fa-chevron-down");
+      }
+  };
 
     $scope.filterTime = function($event) {
         var element = $($event.target);
