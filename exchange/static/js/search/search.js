@@ -37,6 +37,20 @@
         }
     });
 
+    module.filter('orderObjectBy', function() {
+      return function(items, field, reverse) {
+        var filtered = [];
+        angular.forEach(items, function(item) {
+          filtered.push(item);
+        });
+        filtered.sort(function (a, b) {
+          return (a[field] > b[field] ? 1 : -1);
+        });
+        if(reverse) filtered.reverse();
+        return filtered;
+      };
+    });
+
     // Used to set the class of the filters based on the url parameters
     module.set_initial_filters_from_query = function (data, url_query, filter_param){
         for(var i=0;i<data.length;i++){
@@ -230,6 +244,7 @@
     * and pushes/removes the value of the element from the query object
     */
     $scope.multiple_choice_listener = function($event){
+      console.log($event);
       var element = $($event.target);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
@@ -340,29 +355,7 @@
       }
     }
 
-    /*
-    * Region search management
-    */
-    var region_autocomplete = $('#region_search_input').yourlabsAutocomplete({
-          url: AUTOCOMPLETE_URL_REGION,
-          choiceSelector: 'span',
-          hideAfter: 200,
-          minimumCharacters: 1,
-          appendAutocomplete: $('#region_search_input'),
-          placeholder: gettext('Enter your region here ...')
-    });
-    $('#region_search_input').bind('selectChoice', function(e, choice, region_autocomplete) {
-          if(choice[0].children[0] == undefined) {
-              $('#region_search_input').val(choice[0].innerHTML);
-              $('#region_search_btn').click();
-          }
-    });
-
-    $('#region_search_btn').click(function(){
-        $scope.query['regions__name__in'] = $('#region_search_input').val();
-        query_api($scope.query);
-    });
-
+    
     $scope.feature_select = function($event){
       var element = $($event.target);
       var article = $(element.parents('article')[0]);

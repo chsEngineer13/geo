@@ -236,6 +236,7 @@ def key_exists(key, var):
 
 def unified_elastic_search(request, resourcetype='base'):
     import requests
+    import collections
     from elasticsearch import Elasticsearch
     from six import iteritems
     from guardian.shortcuts import get_objects_for_user
@@ -299,7 +300,7 @@ def unified_elastic_search(request, resourcetype='base'):
         'source_host': {'open': False, 'display': 'Host'},
         'owner__username': {'open': True, 'display': 'Owner'},
         'type': {'open': True, 'display': 'Type'},
-        'keywords': {'show': False},
+        'keywords': {'show': True},
         'regions': {'show': False}
     }
 
@@ -379,7 +380,7 @@ def unified_elastic_search(request, resourcetype='base'):
         fn = field_name(f, mappings)
         if fn:
             valid_facet_fields.append(f)
-            search.aggs.bucket(f, 'terms', field=fn)
+            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=20)
             # if there is a filter set in the parameters for this facet
             # add to the filters
             fp = parameters.getlist(f)
@@ -563,7 +564,10 @@ def unified_elastic_search(request, resourcetype='base'):
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
-                facet_results[k]['facets'][bucket_key]['count'] = bucket_count
+                try:
+                    facet_results[k]['facets'][bucket_key]['count'] = bucket_count
+                except Exception as e:
+                    facet_results['errors'] = "%s %s %s" % (k, bucket_key, e)
 
     # combine buckets for type and subtype and get rid of subtype bucket
     if 'subtype' in facet_results:
