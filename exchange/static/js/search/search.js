@@ -183,62 +183,7 @@
         }, true);
     }
 
-    // Hyerarchical keywords listeners
-    $scope.$on('select_h_keyword', function($event, element){
-      var data_filter = 'keywords__slug__in';
-      var query_entry = [];
-      var value = element.text;
-      // If the query object has the record then grab it
-      if ($scope.query.hasOwnProperty(data_filter)){
-
-        // When in the location are passed two filters of the same
-        // type then they are put in an array otherwise is a single string
-        if ($scope.query[data_filter] instanceof Array){
-          query_entry = $scope.query[data_filter];
-        }else{
-          query_entry.push($scope.query[data_filter]);
-        }
-      }
-
-      // Add the entry in the correct query
-      if (query_entry.indexOf(value) == -1){
-        query_entry.push(value);
-      }
-
-      //save back the new query entry to the scope query
-      $scope.query[data_filter] = query_entry;
-
-      query_api($scope.query);
-    });
-
-    $scope.$on('unselect_h_keyword', function($event, element){
-      var data_filter = 'keywords__slug__in';
-      var query_entry = [];
-      var value = element.text;
-      // If the query object has the record then grab it
-      if ($scope.query.hasOwnProperty(data_filter)){
-
-        // When in the location are passed two filters of the same
-        // type then they are put in an array otherwise is a single string
-        if ($scope.query[data_filter] instanceof Array){
-          query_entry = $scope.query[data_filter];
-        }else{
-          query_entry.push($scope.query[data_filter]);
-        }
-      }
-
-      query_entry.splice(query_entry.indexOf(value), 1);
-
-      //save back the new query entry to the scope query
-      $scope.query[data_filter] = query_entry;
-
-      //if the entry is empty then delete the property from the query
-      if(query_entry.length == 0){
-        delete($scope.query[data_filter]);
-      }
-      query_api($scope.query);
-    });
-
+    
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
     * and pushes/removes the value of the element from the query object
@@ -319,14 +264,6 @@
       }
     }
 
-    $scope.select_keyword_filter = function(filter) {
-      $scope.keywordFilter = filter;
-      if (filter == 'hierarchical') {
-        $('#treeview').css('display', 'inline-block');
-      } else {
-        $('#treeview').css('display', 'none');
-      }
-    }
 
     $scope.filterTime = function($event) {
         var element = $($event.target);

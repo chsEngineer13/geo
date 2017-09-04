@@ -328,7 +328,7 @@ def unified_elastic_search(request, resourcetype='base'):
     bbox = parameters.get("extent", None)
 
     # get has_time element not used with facets
-    has_time = parameters.get("extent", None)
+    has_time = parameters.get("has_time", None)
 
     # Build base query
     # The base query only includes filters relevant to what the user 
@@ -384,6 +384,8 @@ def unified_elastic_search(request, resourcetype='base'):
             # if there is a filter set in the parameters for this facet
             # add to the filters
             fp = parameters.getlist(f)
+            if not fp:
+                fp = parameters.getlist("%s__in"%(f))
             if fp:
                 fq = Q({'terms': {fn: fp}})
                 if fn == 'type_exact': # search across both type_exact and subtype
@@ -472,14 +474,10 @@ def unified_elastic_search(request, resourcetype='base'):
     # Add in Bounding Box filter
     if bbox:
         left, bottom, right, top = bbox.split(',')
-        leftq = Q({'range': {'bbox_left': {'gte': left}}}) | Q(
-            {'range': {'min_x': {'gte': left}}})
-        bottomq = Q({'range': {'bbox_bottom': {'gte': bottom}}}) | Q(
-            {'range': {'min_y': {'gte': bottom}}})
-        rightq = Q({'range': {'bbox_right': {'lte': right}}}) | Q(
-            {'range': {'max_x': {'lte': right}}})
-        topq = Q({'range': {'bbox_top': {'lte': top}}}) | Q(
-            {'range': {'max_y': {'lte': top}}})
+        leftq = Q({'range': {'bbox_left': {'gte': float(left)}}})
+        bottomq = Q({'range': {'bbox_bottom': {'gte': float(bottom)}}})
+        rightq = Q({'range': {'bbox_right': {'lte': float(right)}}})
+        topq = Q({'range': {'bbox_top': {'lte': float(top)}}})
         q = leftq & bottomq & rightq & topq
         search = search.query(q)
 
@@ -573,7 +571,10 @@ def unified_elastic_search(request, resourcetype='base'):
     if 'subtype' in facet_results:
         facet_results['type']['facets'].update(facet_results['subtype']['facets'])
         del facet_results['subtype']
+
+    # Sort Facets
     
+
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
 

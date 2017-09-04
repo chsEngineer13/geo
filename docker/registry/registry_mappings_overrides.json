@@ -32,6 +32,22 @@
                     "source_type": {
                         "type": "string",
                         "copy_to": "type_exact"
+                    },
+                    "min_x": {
+                        "type": "float",
+                        "copy_to": "bbox_left"
+                    },
+                    "min_y": {
+                        "type": "float",
+                        "copy_to": "bbox_bottom"
+                    },
+                    "max_x": {
+                        "type": "float",
+                        "copy_to": "bbox_right"
+                    },
+                    "max_y": {
+                        "type": "float",
+                        "copy_to": "bbox_top"
                     }
             }
         }
