@@ -21,7 +21,9 @@ from exchange.version import get_version
 from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
+from geonode.base.models import TopicCategory
 from pip._vendor import pkg_resources
+from six import iteritems
 
 logger = logging.getLogger(__name__)
 
@@ -214,9 +216,27 @@ def get_unified_search_result_objects(hits):
 
     return objects
 
+# Function returns a generator searching recursively for a key in a dict
+def gen_dict_extract(key, var):
+    if hasattr(var,'iteritems'):
+        for k, v in var.iteritems():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in gen_dict_extract(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in gen_dict_extract(key, d):
+                        yield result
+
+# Checks if key is present in dictionary
+def key_exists(key, var):
+    return any(True for _ in gen_dict_extract(key, var))
 
 def unified_elastic_search(request, resourcetype='base'):
     import requests
+    import collections
     from elasticsearch import Elasticsearch
     from six import iteritems
     from guardian.shortcuts import get_objects_for_user
@@ -238,12 +258,62 @@ def unified_elastic_search(request, resourcetype='base'):
     parameters = request.GET
     es = Elasticsearch(settings.ES_URL)
     search = Search(using=es)
+    mappings = es.indices.get_mapping()
 
     # Set base fields to search
     fields = ['title', 'text', 'abstract', 'title_alternate']
-    facets = ['_index', 'type', 'subtype',
+
+
+
+    # This configuration controls what fields will be added to faceted search
+    # there is some special exception code later that combines the subtype search
+    # and facet with type
+    facet_fields = ['type', 'subtype',
               'owner__username', 'keywords', 'regions', 
-              'category', 'has_time', 'source_type', 'source_host']
+              'category', 'source_host']
+    
+    categories = TopicCategory.objects.all()
+    category_lookup = {}
+    for c in categories:
+        category_lookup[c.identifier] = {
+            'display': c.description,
+            'icon': c.fa_class
+        }
+
+    facet_lookups = {
+        'category': category_lookup,
+        'type': {
+            'OGC:WMS': {'display': 'ESRI MapServer'},
+            'OGC:WFS': {'display': 'ESRI MapServer'},
+            'OGC:WCS': {'display': 'ESRI MapServer'},
+            'ESRI:ArcGIS:MapServer': {'display': 'ArcGIS MapServer'},
+            'ESRI:ArcGIS:ImageServer': {'display': 'ArcGIS ImageServer'}
+        }
+    }
+
+    # Allows settings that can be used by a client for display of the facets
+    # 'open' is used by exchange client side to determine if a facet menu shows
+    # up open or closed by default
+    default_facet_settings = {'open': False, 'show': True}
+    facet_settings = {
+        'category': {'open': True},
+        'source_host': {'open': False, 'display': 'Host'},
+        'owner__username': {'open': True, 'display': 'Owner'},
+        'type': {'open': True, 'display': 'Type'},
+        'keywords': {'show': True},
+        'regions': {'show': False}
+    }
+
+    
+    # This configuration controls what fields will be searchable by range
+    range_fields = ['extent', 'date']
+
+    search_fields = []
+
+    # Get paging parameters
+    offset = int(parameters.get('offset', '0'))
+    limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
+
 
     # Text search
     query = parameters.get('q', None)
@@ -251,36 +321,22 @@ def unified_elastic_search(request, resourcetype='base'):
     offset = int(parameters.get('offset', '0'))
     limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
 
-    # Make sure Category search works with either category__in or category__identifier__in
-    categories = parameters.getlist('category__in',
-                                    parameters.getlist('category__identifier__in', None))
-
-    keywords = parameters.getlist('keywords__in',
-                                  parameters.getlist('keywords__slug__in', None))
-
-    # Publication date range (start,end)
-    date_range = parameters.get("date__range", None)
-    date_end = parameters.get("date__lte", None)
-    date_start = parameters.get("date__gte", None)
-    if date_range is not None:
-        dr = date_range.split(',')
-        date_start = dr[0]
-        date_end = dr[1]
-
-    # Time Extent range (start, end)
-    extent_range = parameters.get("extent__range", None)
-    extent_end = parameters.get("extent__lte", None)
-    extent_start = parameters.get("extent__gte", None)
-    if extent_range is not None:
-        er = extent_range.split(',')
-        extent_start = er[0]
-        extent_end = er[1]
-
     # Sort order
     sort = parameters.get("order_by", "relevance")
 
     # Geospatial Elements
     bbox = parameters.get("extent", None)
+
+    # get has_time element not used with facets
+    has_time = parameters.get("has_time", None)
+
+    # get max number of facets to return
+    nfacets = parameters.get("nfacets", 15)
+
+    # Build base query
+    # The base query only includes filters relevant to what the user 
+    # is allowed to see and the overall types of documents to search.
+    # This provides the overall counts and all fields for faceting
 
     # only show registry, documents, layers, stories, and maps
     q = Q({"match": {"_type": "layer"}}) | Q(
@@ -289,18 +345,6 @@ def unified_elastic_search(request, resourcetype='base'):
           {"match": {"type_exact": "document"}}) | Q(
           {"match": {"type_exact": "map"}})
     search = search.query(q)
-
-    # filter by resource type if included by path
-    logger.debug('-------------------------------------------------------------')
-    logger.debug('>>>>>>>>> Filtering by Resource Type %s <<<<<<<<<<<<<' % resourcetype)
-    logger.debug('-------------------------------------------------------------')
-
-    if resourcetype == 'documents':
-        search = search.query("match", type_exact="document")
-    elif resourcetype == 'layers':
-        search = search.query("match", type_exact="layer")
-    elif resourcetype == 'maps':
-        search = search.query("match", type_exact="map")
 
     # Filter geonode layers by permissions
     if not settings.SKIP_PERMS_FILTER:
@@ -319,6 +363,80 @@ def unified_elastic_search(request, resourcetype='base'):
 
         search = search.query(q)
 
+    # Checks first if there is an [fieldname]_exact field and returns that 
+    # otherwise checks if [fieldname] is present
+    # if neither returns None
+    def field_name(field, mappings):
+        field_exact = '%s_exact' % field
+        if key_exists(field_exact, mappings):
+            return field_exact
+        elif key_exists(field, mappings):
+            return field
+        else:
+            return None
+
+    # Add facets to search
+    # add filters to facet_filters to be used *after* initial overall search
+    valid_facet_fields = [];
+    facet_filters = []
+    for f in facet_fields:
+        fn = field_name(f, mappings)
+        if fn:
+            valid_facet_fields.append(f)
+            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=nfacets)
+            # if there is a filter set in the parameters for this facet
+            # add to the filters
+            fp = parameters.getlist(f)
+            if not fp:
+                fp = parameters.getlist("%s__in"%(f))
+            if fp:
+                fq = Q({'terms': {fn: fp}})
+                if fn == 'type_exact': # search across both type_exact and subtype
+                    fq = fq | Q({'terms': {'subtype_exact': fp}})
+                facet_filters.append(fq)
+    
+    # run search only filtered by what a particular user is able to see
+    # this makes sure to get every item that is possible in the facets
+    # in order for a UI to build the choices
+    overall_results = search[0:0].execute()
+
+    # build up facets dict which contains all the options for a facet along
+    # with overall count and any display name or icon that should be used in UI
+    aggregations = overall_results.aggregations
+    facet_results = {}
+    for k in aggregations:
+        buckets = aggregations[k]['buckets']
+        if len(buckets)>0:
+            lookup = None
+            if k in facet_lookups:
+                lookup = facet_lookups[k]
+            fsettings = default_facet_settings.copy()
+            fsettings['display'] = k
+            # Default display to the id of the facet in case none is set
+            if k in facet_settings:
+                fsettings.update(facet_settings[k])
+            if parameters.getlist(k): # Make sure list starts open when a filter is set
+                fsettings['open'] = True
+            facet_results[k] = {'settings': fsettings, 'facets':{}}
+                
+            for bucket in buckets:
+                bucket_key = bucket.key
+                bucket_count = bucket.doc_count
+                bucket_dict = {'global_count': bucket_count, 'count': 0, 'display': bucket.key}
+                if lookup:
+                    if bucket_key in lookup:
+                        bucket_dict.update(lookup[bucket_key])
+                facet_results[k]['facets'][bucket_key] = bucket_dict
+
+    # filter by resourcetype
+    if resourcetype == 'documents':
+        search = search.query("match", type_exact="document")
+    elif resourcetype == 'layers':
+        search = search.query("match", type_exact="layer")
+    elif resourcetype == 'maps':
+        search = search.query("match", type_exact="map")
+
+    # Build main query to search in fields[]
     # Filter by Query Params
     if query:
         if query.startswith('"') or query.startswith('\''):
@@ -347,20 +465,45 @@ def unified_elastic_search(request, resourcetype='base'):
             # logger.debug('******* WORD_QUERY %s', word_query.to_dict())
             search = search.query(word_query)
 
+
+    # Add the facet queries to the main search
+    for fq in facet_filters:
+        search = search.query(fq)
+
+    # Add in has_time filter if set
+    if has_time and has_time == 'true':
+        search = search.query(Q({'match':{'has_time': True}}))
+
+    # Add in Bounding Box filter
     if bbox:
         left, bottom, right, top = bbox.split(',')
-        leftq = Q({'range': {'bbox_left': {'gte': left}}}) | Q(
-            {'range': {'min_x': {'gte': left}}})
-        bottomq = Q({'range': {'bbox_bottom': {'gte': bottom}}}) | Q(
-            {'range': {'min_y': {'gte': bottom}}})
-        rightq = Q({'range': {'bbox_right': {'lte': right}}}) | Q(
-            {'range': {'max_x': {'lte': right}}})
-        topq = Q({'range': {'bbox_top': {'lte': top}}}) | Q(
-            {'range': {'max_y': {'lte': top}}})
+        leftq = Q({'range': {'bbox_left': {'gte': float(left)}}})
+        bottomq = Q({'range': {'bbox_bottom': {'gte': float(bottom)}}})
+        rightq = Q({'range': {'bbox_right': {'lte': float(right)}}})
+        topq = Q({'range': {'bbox_top': {'lte': float(top)}}})
         q = leftq & bottomq & rightq & topq
         search = search.query(q)
 
-    # filter by date
+    # Add in Range Queries
+    # Publication date range (start,end)
+    date_range = parameters.get("date__range", None)
+    date_end = parameters.get("date__lte", None)
+    date_start = parameters.get("date__gte", None)
+    if date_range is not None:
+        dr = date_range.split(',')
+        date_start = dr[0]
+        date_end = dr[1]
+
+    # Time Extent range (start, end)
+    extent_range = parameters.get("extent__range", None)
+    extent_end = parameters.get("extent__lte", None)
+    extent_start = parameters.get("extent__gte", None)
+    if extent_range is not None:
+        er = extent_range.split(',')
+        extent_start = er[0]
+        extent_end = er[1]
+    
+    # Add range filters to the search
     if date_start:
         q = Q({'range': {'date': {'gte': date_start}}})
         search = search.query(q)
@@ -380,45 +523,9 @@ def unified_elastic_search(request, resourcetype='base'):
                 {'range': {'temporal_extent_start': {'lte': extent_end}}}
             )
         search = search.query(q)
+        
 
-    if categories:
-        q = Q(
-                {'terms': {'category_exact': categories}}
-            )
-        search = search.query(q)
-
-    if keywords:
-        q = Q({'terms': {'keywords_exact': keywords}})
-        search = search.query(q)
-
-    def facet_search(search, parameters, paramfield, esfield=None):
-        if esfield is None:
-            esfield = paramfield.replace('__in', '')
-        if esfield not in ['_index', 'source_type', 'source_host']:
-            esfield = esfield + '_exact'
-        getparams = parameters.getlist(paramfield)
-        if not getparams:
-            getparams = parameters.getlist(paramfield.replace('__in',''))
-
-        if getparams:
-            q = Q({'terms': {esfield: getparams}})
-            if esfield == 'type_exact':
-                q = q | Q({'terms': {'subtype_exact': getparams}})
-            return search.query(q)
-        return search
-
-    # Setup aggregations and filters for faceting
-    for f in facets:
-        param = '%s__in' % f
-        if f not in ['category', 'keywords', 'regions']:
-            search = facet_search(search, parameters, param)
-        if f not in ['_index', 'source_type', 'source_host']:
-            search.aggs.bucket(f, 'terms', field=f + '_exact')
-        else:
-            search.aggs.bucket(f, 'terms', field=f)
-
-
-    # Apply sort
+     # Apply sort
     if sort.lower() == "-date":
         search = search.sort({"date":
                               {"order": "desc",
@@ -444,26 +551,33 @@ def unified_elastic_search(request, resourcetype='base'):
                                "unmapped_type": "date"
                                }})
 
-    # print search.to_dict()
+    # Run the search using the offset and limit
     search = search[offset:offset + limit]
     results = search.execute()
-
+    
     logger.debug('search: %s, results: %s', search, results)
 
-    # Get facet counts
-    facet_results = {}
-    facet_results['alltypes'] = {}
-    for f in facets:
-        facet_results[f] = {}
-        for bucket in results.aggregations[f].buckets:
-            if f in ['_index', 'subtype', 'source_type', 'type']:
-                facet_results['alltypes'][bucket.key] = bucket.doc_count
-            facet_results[f][bucket.key] = bucket.doc_count
-    facet_results['subtype'] = facet_results['alltypes']
+    # get facets based on search criteria, add to overall facets
+    aggregations = results.aggregations
+    for k in aggregations:
+        buckets = aggregations[k]['buckets']
+        if len(buckets)>0:
+            for bucket in buckets:
+                bucket_key = bucket.key
+                bucket_count = bucket.doc_count
+                try:
+                    facet_results[k]['facets'][bucket_key]['count'] = bucket_count
+                except Exception as e:
+                    facet_results['errors'] = "%s %s %s" % (k, bucket_key, e)
 
+    # combine buckets for type and subtype and get rid of subtype bucket
+    if 'subtype' in facet_results:
+        facet_results['type']['facets'].update(facet_results['subtype']['facets'])
+        del facet_results['subtype']
 
-    # create alias for owners
-    facet_results['owners']=facet_results['owner__username']
+    # Sort Facets
+    
+
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
 
@@ -484,7 +598,7 @@ def unified_elastic_search(request, resourcetype='base'):
 
 def empty_page(request):
     return HttpResponse('')
-        
+    
 
 class CSWRecordList(ListView):
     model = CSWRecord
