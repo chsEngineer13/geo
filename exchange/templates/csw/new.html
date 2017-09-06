@@ -23,7 +23,7 @@
                 <div class="form_group">
                     <p class="protocol-buttons"></p>
                 </div>
-                {{ form.as_p }}
+                {{ form|as_bootstrap }}
 
                 <table id="tblReferences" class="table">
                     {{ cswrecordreference.management_form }}
@@ -227,6 +227,7 @@
     .helptext {
         font-size: small;
     }
+    label.required-field:after { content: '*', color: red; }
 </style>
 
 {% endblock extra_script %}
