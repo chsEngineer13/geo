@@ -308,7 +308,7 @@ Elastic Search for both Registry and GeoNode must running
 on same elasticsearch instance at ES_URL
 REGISTRY_URL must be set in order to provide links to Registry
 '''
-ES_UNIFIED_SEARCH = True
+ES_UNIFIED_SEARCH = str2bool(os.getenv('ES_UNIFIED_SEARCH', 'False'))
 
 # haystack settings
 ES_URL = os.getenv('ES_URL', 'http://127.0.0.1:9200/')
