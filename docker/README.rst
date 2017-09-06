@@ -68,6 +68,15 @@ Installation
        bower install
        grunt watch
 
+   Or simply run the bash script ::
+
+       cd ~/boundless/MapLoom
+       ./quick_setup.sh
+
+   If you run into any issues with dependencies, you may be able to fix this with a clean build ::
+
+       ./clean-build
+
 5. Edit `.env` to reflect where you keep checkouts of Exchange, GeoNode, and
    MapLoom.
 
