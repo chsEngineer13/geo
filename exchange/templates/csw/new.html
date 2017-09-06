@@ -9,7 +9,7 @@
 <div class="block">
     <div class="col-md-12">
         <div class="page-header">
-            <h2 class="page-title">{% trans "Register New Record" %}</h2>
+            <h2 class="page-title"> {% if object.id != None %}{% trans "Update Existing Record" %} {%else%}{% trans "Register New Record" %}{%endif%}</h2>
         </div>
 
         <div>
