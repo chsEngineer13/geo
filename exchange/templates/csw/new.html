@@ -58,7 +58,8 @@
                 <div class="form_group">
                     <a class="btn btn-default" href="{% url 'csw-record-list' %}">Return to list</a>
                     {% if object.id != None %}
-                    <a class="btn btn-danger" href="{% url 'csw-record-delete' object.id %}">{% trans 'Delete' %}</a>
+                        <a class="btn btn-primary" href="{% url 'csw-record-xml' object.id %}">{% trans 'View XML' %}</a>
+                        <a class="btn btn-danger" href="{% url 'csw-record-delete' object.id %}">{% trans 'Delete' %}</a>
                     {% endif %}
                     <input type="submit" class="btn btn-primary" value="{% trans 'Submit Record' %}"/>
                 </div>

@@ -18,7 +18,7 @@ from django.views.generic import CreateView, UpdateView, ListView
 from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecord, CSWRecordReference
 from exchange.core.forms import CSWRecordReferenceFormSet, CSWRecordReferenceForm, CSWRecordForm
 from exchange.version import get_version
-from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers
+from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers, write_xml
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from geonode.base.models import TopicCategory
@@ -676,6 +676,12 @@ class CSWRecordUpdate(UpdateView):
 
             update_csw.delay(self.object.id)
         return super(CSWRecordUpdate, self).form_valid(form)
+
+
+def xml_csw_view(request, pk):
+    xml = write_xml(pk, 'INSERT')
+    return HttpResponse(xml, content_type="text/xml")
+
 
 # Attempt to delete the record.
 #
