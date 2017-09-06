@@ -30,7 +30,9 @@ import os
 import uuid
 import datetime
 from django.db.models import Q
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, License
+from geonode.base.enumerations import UPDATE_FREQUENCIES
+from django.conf import settings
 
 
 
@@ -68,6 +70,25 @@ class ThumbnailImageForm(forms.Form):
     )
 
 
+def get_classifications():
+        return [(x, str(x)) for x in getattr(settings, 'CLASSIFICATION_LEVELS', [])]
+
+
+def get_caveats():
+        return [(x, str(x)) for x in getattr(settings, 'CAVEATS', [])]
+
+
+def get_provenances():
+        default = [('Commodity', 'Commodity'), ('Crowd-sourced data', 'Crowd-sourced data'),
+                   ('Derived by trusted agents ', 'Derived by trusted agents '),
+                   ('Open Source', 'Open Source'), ('Structured Observations (SOM)',
+                                                    'Structured Observations (SOM)'), ('Unknown', 'Unknown')]
+
+        provenance_choices = [(x, str(x)) for x in getattr(settings, 'REGISTRY_PROVENANCE_CHOICES', [])]
+
+        return provenance_choices + default
+
+
 class CSWRecord(models.Model):
     # Registry requires a UUID for all new records
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -94,9 +115,13 @@ class CSWRecord(models.Model):
         ('Weather', 'Weather')
     )
 
-    classification = models.CharField(max_length=128, blank=True)
+    classification = models.CharField(max_length=128, blank=True, choices=get_classifications())
+    releasability = models.CharField(max_length=128, blank=True, choices=get_caveats())
     title = models.CharField(max_length=328, blank=False)
+    short_name = models.CharField(max_length=328, blank=True)
     modified = models.DateField(default=datetime.date.today, blank=False)
+    created = models.DateField(default=datetime.date.today, blank=False)
+    registered = models.DateField(default=datetime.date.today, blank=False)
     # 'creator' is assumed to be distinct from logged-in User here
     creator = models.CharField(max_length=328, blank=True, verbose_name='Agency')
     record_type = models.CharField(max_length=128, blank=True)
@@ -105,6 +130,7 @@ class CSWRecord(models.Model):
     source = models.URLField(max_length=512, blank=False, verbose_name='Service Endpoint')
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
+    srid = models.CharField(max_length=255, default='EPSG:4326')
     bbox_upper_corner = models.CharField(max_length=128,
                                          default="85.0 180",
                                          blank=True)
@@ -113,9 +139,26 @@ class CSWRecord(models.Model):
                                          blank=True)
     contact_email = models.CharField(max_length=128, blank=True)
     contact_phone = models.CharField(max_length=128, blank=True)
+    contact_position = models.CharField(max_length=128, blank=True)
+    contact_address_type = models.CharField(max_length=128, blank=True, choices=(('Physical', 'Physical'), ('Postal', 'Postal')))
+    contact_address = models.CharField(max_length=128, blank=True)
+    contact_city = models.CharField(max_length=128, blank=True)
+    contact_state = models.CharField(max_length=2, blank=True)
+    contact_country = models.CharField(max_length=128, blank=True)
+    contact_zip = models.CharField(max_length=128, blank=True)
+    provenance = models.CharField(max_length=100, blank=True, choices=get_provenances())
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
+    maintenance_frequency = models.CharField('maintenance frequency', max_length=255, choices=UPDATE_FREQUENCIES,
+                                             blank=True, null=True, help_text='Frequency with which modifications and deletions are made to the data after '
+                                        'it is first produced')
+    license = models.ForeignKey(License, null=True, blank=True,
+                                verbose_name='License',
+                                help_text='License of the dataset')
+    keywords = models.CharField(max_length=128, blank=True)
+
+    fees = models.CharField(max_length=1000, null=True, blank=True)
     topic_category = models.ForeignKey(TopicCategory, null=True, blank=True, limit_choices_to=Q(is_choice=True))
     status_message = models.TextField(blank=True)
 

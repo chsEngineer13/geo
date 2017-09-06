@@ -3,9 +3,8 @@
   <div ng-if="facet.settings.show">
   {% verbatim %}
   <h4>
-    <a href="#" class="toggle toggle-nav">
-      <i class="fa {{ facet.settings.open ? 'fa-chevron-down' : 'fa-chevron-right' }}" 
-      ng-click="navcontrol($event)" ></i>{{ facet.settings.display }}
+    <a href="#" class="toggle toggle-nav" ng-click="navcontrol($event)">
+      <i class="fa {{ facet.settings.open ? 'fa-chevron-down' : 'fa-chevron-right' }}"></i>{{ facet.settings.display }}
     </a>
   </h4>
   <ul class="nav {{ facet.settings.open ? '' : 'closed' }}" id="{{ facetid }}_ul">

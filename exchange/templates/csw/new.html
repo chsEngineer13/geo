@@ -23,7 +23,7 @@
                 <div class="form_group">
                     <p class="protocol-buttons"></p>
                 </div>
-                {{ form.as_p }}
+                {{ form|as_bootstrap }}
 
                 <table id="tblReferences" class="table">
                     {{ cswrecordreference.management_form }}
@@ -152,6 +152,13 @@
 
                         $('#id_record_type').val('ESRI:ArcGIS:'.concat(service_type));
 
+                        $('#id_srid').val('EPSG:'.concat(data.spatialReference.wkid));
+                        $('#id_keywords').val(data.documentInfo.Keywords);
+
+                        $('#id_bbox_upper_corner').val(''.concat(data.fullExtent.ymin).concat(' ').concat(data.fullExtent.xmin));
+                        $('#id_bbox_lower_corner').val(''.concat(data.fullExtent.ymax).concat(' ').concat(data.fullExtent.xmax));
+
+
                         if(data.documentInfo) {
                             $('#id_creator').val(data.documentInfo.Author);
                         }
@@ -220,7 +227,7 @@
     .helptext {
         font-size: small;
     }
+    label.required-field:after { content: '*', color: red; }
 </style>
 
 {% endblock extra_script %}
-
