@@ -270,7 +270,7 @@ def unified_elastic_search(request, resourcetype='base'):
     # and facet with type
     facet_fields = ['type', 'subtype',
               'owner__username', 'keywords', 'regions', 
-              'category', 'source_host']
+              'category', 'source_host', 'classification']
     
     categories = TopicCategory.objects.all()
     category_lookup = {}
@@ -301,7 +301,8 @@ def unified_elastic_search(request, resourcetype='base'):
         'owner__username': {'open': True, 'display': 'Owner'},
         'type': {'open': True, 'display': 'Type'},
         'keywords': {'show': True},
-        'regions': {'show': False}
+        'regions': {'show': False},
+        'classification': {'open': False, 'display': 'Classification'}
     }
 
     
