@@ -126,14 +126,12 @@ def csw_post(self, record, post_data):
 
 # Insert/Update CSW Record to registry.
 #
-def csw_write(self, record_id, operation):
+def write_xml(record_id, operation):
     """
     Attempt to create a new CSW record in Registry
     """
 
     record = CSWRecord.objects.get(id=record_id)
-    record.status = "Pending"
-    record.save()
 
     csw_record_template = """
         <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
@@ -150,6 +148,7 @@ def csw_write(self, record_id, operation):
             <csw:Record xmlns:registry="http://gis.harvard.edu/HHypermap/registry/0.1">
             <dc:identifier>{uuid}</dc:identifier>
             <dc:title>{title}</dc:title>
+            <dc:title_alternate>{title_alternate}</dc:title_alternate>
             <dc:creator>{creator}</dc:creator>
             <dc:type>{record_type}</dc:type>
             <dct:alternative>{alternative}</dct:alternative>
@@ -159,6 +158,13 @@ def csw_write(self, record_id, operation):
             <dc:source>{source}</dc:source>
             <dc:relation>{relation}</dc:relation>
             <dc:gold>{gold}</dc:gold>
+            <dc:classification>{classification}</dc:classification>
+            <dc:releasability>{releasability}</dc:releasability>
+            <dc:fees>{fees}</dc:fees>
+            <dc:provenance>{provenance}</dc:provenance>
+            <dc:maintenance_frequency>{maintenance_frequency}</dc:maintenance_frequency>
+            <dc:license>{license}</dc:license>
+            <dc:keywords>{keywords}</dc:keywords>
             {references}
             <registry:property name="category" value="{category}"/>
             <registry:property
@@ -199,10 +205,24 @@ def csw_write(self, record_id, operation):
         contact=record.contact_information,
         bbox_l=record.bbox_lower_corner,
         bbox_u=record.bbox_upper_corner,
+        classification=record.classification,
+        releasability=record.releasability,
+        fees=record.fees,
+        provenance=record.provenance,
+        maintenance_frequency=record.maintenance_frequency,
+        license=record.license,
+        keywords=record.keywords,
+        title_alternate=record.short_name
     )
+    return post_data
 
 
-    results = csw_post(self, record, post_data)
+def send(self, record_id, operation, payload):
+    record = CSWRecord.objects.get(id=record_id)
+    record.status = "Pending"
+    record.save()
+
+    results = csw_post(self, record, payload)
 
     past_tense = {
         'Insert' : 'Inserted',
@@ -224,14 +244,18 @@ def csw_write(self, record_id, operation):
     max_retries=1,
 )
 def create_new_csw(self, record_id):
-    csw_write(self, record_id, 'Insert')
+    payload = write_xml(record_id, 'Insert')
+    send(self, record_id, 'Insert', payload)
+
 
 @task(
     bind=True,
     max_retries=1,
 )
 def update_csw(self, record_id):
-    csw_write(self, record_id, 'Update')
+    payload = write_xml(record_id, 'Update')
+    send(self, record_id, 'Update', payload)
+
 
 @task(
     bind=True,
