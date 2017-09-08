@@ -121,6 +121,11 @@ eliminate `.env` and instead make everyone edit `docker-compose.yml` directly.)
 Starting Containers
 -------------------
 
+If using MacOSX, run the following commands prior to starting the containers::
+
+   sudo ifconfig lo0 alias 172.16.238.2
+   sudo ifconfig lo0 alias 172.16.238.3
+
 In this Docker configuration, the whole application is made up of a set of
 containers that run together.
 
