@@ -8,26 +8,32 @@
 
 {% block body_outer %}
 {% if LOGIN_WARNING %}
-<div class="login-root">
-
-    <h1>Welcome to {{ SITE_NAME }}!</h1>
-    <div class="login-warning">
-        {% autoescape off %}
-        {{ LOGIN_WARNING_TEXT }}
-        {% endautoescape%}
+<div class="modal" id='modal' style="background:white;">
+    <div class="modal-header">
+        <h3 style="text-align: center;">Welcome to {{ SITE_NAME }}!</h3>
     </div>
+    <div class="modal-body" style="background:white;">
+        <div class="login-warning">
+         {% autoescape off %}
+            {{ LOGIN_WARNING_TEXT }}
+         {% endautoescape%}
+        </div>
+    </div>
+    <div class="modal-footer" style="background:white; text-align: center;">
+        
     {% if ENABLE_GEOAXIS_LOGIN %}
     <a class="btn-geoaxis btn-social btn bg-ms btn-block" href="{% url 'social:begin' 'geoaxis' %}?{{ redirect_field_name }}={{ redirect_field_value }}">
         <i class="fa fa-lock"></i> Accept and Log In with GeoAxis
     </a>
     {% else %}
-    <a href="#" class="btn-geoaxis btn-social btn bg-ms btn-block" data-toggle="modal" data-target="#SigninModal" role="button" >
-        <i class="fa fa-lock"></i>  {% trans "Accept and Log In with " %}{{ SITE_NAME }}
+    <a href="#" class="btn-geoaxis btn-social btn" data-dismiss="modal" role="button" >
+        <i class="fa fa-lock"></i>  {% trans "Accept and Continue" %}
     </a>
     {% endif %}
+        
+    </div>
 </div>
-
-{% else %}
+{% endif %}
 <div class="page-header">
     <h2>{% trans "Log In to an existing account" %}</h2>
 </div>
@@ -76,7 +82,6 @@
     </div>
     {% endif %}
 </div>
-{% endif %}
 {% endblock %} 
  
  
