@@ -30,6 +30,9 @@ services:
         # see docker/nginx/Dockerfile
         # The only change from upstream is to add a section to the nginx config
         build: ./docker/nginx
+        ports:
+          - "8084:80"
+          - "443:443"
         networks:
             internal:
             # users need nginx visible to host on a fixed IP for convenience;
@@ -51,7 +54,11 @@ services:
         # also bakes in the initialization to avoid doing it at boot time
         build: ./docker/postgres
         networks:
-            - internal
+            internal:
+            external:
+                ipv4_address: 172.16.238.7
+        ports:
+            - "54320:5432"
 
     # Message queue receives tasks from django to be consumed by celery worker
     queue:
@@ -83,7 +90,7 @@ services:
         build: ./docker/geoserver
         ports:
             # 8080 is the traditional HTTP port baked into server.xml
-            - "8080"
+            - "8080:8080"
         links:
             - database
         volumes:
@@ -165,7 +172,7 @@ services:
         environment:
             # Setup registry to use included search
             - REGISTRY_SEARCH_URL=http://search:9200
-  
+
     # worker process which does "background" work for the django app
     worker:
         container_name: worker
