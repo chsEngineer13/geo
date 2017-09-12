@@ -319,6 +319,10 @@
               this.box.insertAfter(this.input).css({top: pos.top + pos.height, left: pos.left});
             }
         };
+      
+      $(function () {
+        $('#modal').modal('toggle');
+      });
     </script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
 

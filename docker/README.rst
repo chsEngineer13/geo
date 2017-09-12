@@ -121,6 +121,11 @@ eliminate `.env` and instead make everyone edit `docker-compose.yml` directly.)
 Starting Containers
 -------------------
 
+If using MacOSX, run the following commands prior to starting the containers::
+
+   sudo ifconfig lo0 alias 172.16.238.2
+   sudo ifconfig lo0 alias 172.16.238.3
+
 In this Docker configuration, the whole application is made up of a set of
 containers that run together.
 
@@ -162,7 +167,7 @@ If you happen to see a 502 error, that's probably coming from proxy (nginx) and
 it probably means that proxy is waiting on Exchange to come up. The logs will
 tell the tale.
 
-You can log in with username `admin` and password `exchange`.
+You can log in with username :code:`admin` and password :code:`exchange`. A non-admin user, :code:`test`, with password :code:`exchange` is also available.
 
 
 Using GeoServer
@@ -173,7 +178,7 @@ GeoServer can be browsed at
     http://172.16.238.2/geoserver
 
 If you want to log in from the GeoServer interface, you can use username
-`admin` and password `geoserver`.
+:code:`admin` and password :code:`geoserver`.
 
 
 Restarting Containers

@@ -3,6 +3,7 @@ import pytest
 from . import ExchangeTest
 from exchange import settings
 import json
+from osgeo_importer.tasks import import_object
 
 
 TESTDIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
