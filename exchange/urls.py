@@ -58,11 +58,6 @@ urlpatterns = patterns(
     url(r'^about/', views.about_page, name='about')
 )
 
-if settings.REGISTRY is False:
-    urlpatterns += [
-        url(r'^services(.*)$', page_not_found)
-    ]
-
 if settings.ENABLE_SOCIAL_LOGIN is True:
     urlpatterns += [
         url('', include('social_django.urls', namespace='social'))
