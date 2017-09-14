@@ -15,7 +15,7 @@
           if(items[i].registry_url) {
             layer_name = 'registry:' + items[i].id;
           } else {
-            layer_name = items[i].detail_url.split('/')[2];
+            layer_name = items[i].typename;
           }
           params += 'layer=' + layer_name + '&';
         }
@@ -116,7 +116,7 @@
 
         if(this.getItemById(item.id) === null){
           this.getCart().items.push(item);
-          $cookies.putObject(item['uuid'], item, {path: '/'});
+          $cookies.putObject(item['uuid'], {title: item['title'], typename: item['typename']}, {path: '/'});
         }
       }
 
