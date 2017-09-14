@@ -116,7 +116,7 @@
 
         if(this.getItemById(item.id) === null){
           this.getCart().items.push(item);
-          $cookies.putObject(item['uuid'], {title: item['title'], typename: item['typename'], id: item['id']}, {path: '/'});
+          $cookies.putObject(item['uuid'], {uuid: item['uuid'], title: item['title'], typename: item['typename'], id: item['id']}, {path: '/'});
         }
       }
 
