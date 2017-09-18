@@ -1,0 +1,32 @@
+<csw:Record xmlns:registry="http://gis.harvard.edu/HHypermap/registry/0.1">
+    <dc:identifier>{{ layer.uuid }}</dc:identifier>
+    <dc:title>{{ layer.title }}</dc:title>
+    <dc:title_alternate>{{ layer.typename }}</dc:title_alternate>
+    <dc:creator>{{ layer.creator }}</dc:creator>
+    <dc:type>{{ layer.record_type }}</dc:type>
+    {% if layer.alternative %}
+    <dct:alternative>{{ layer.alternative }}</dct:alternative>
+    {% endif %}
+    <dct:modified>{{ layer.modified|date:"Y-m-d\TH:i:s\Z" }}</dct:modified>
+    <dct:abstract>{{ layer.abstract }}</dct:abstract>
+    <dc:format>{{ layer.format }}</dc:format>
+    <dc:source>{{ layer.base_url }}</dc:source>
+    <dc:classification>{{ layer.classification }}</dc:classification>
+    <dc:releasability>{{ layer.releasability }}</dc:releasability>
+    <dc:fees>{{ layer.fees }}</dc:fees>
+    <dc:provenance>{{ layer.provenance }}</dc:provenance>
+    <dc:maintenance_frequency>{{ layer.maintenance_frequency }}</dc:maintenance_frequency>
+    <dc:license>{{ layer.license }}</dc:license>
+    <dc:keywords>{{ layer.keywords }}</dc:keywords>
+    {{ layer.references }}
+    <registry:property name="category" value="{{ layer.category }}"/>
+    <registry:property
+            name="ContactInformation/Primary/organization"
+            value="{{ layer.contact }}"/>
+    <ows:BoundingBox
+            crs="http://www.opengis.net/def/crs/EPSG/0/4326"
+            dimensions="2">
+        <ows:LowerCorner>{{ layer.bbox_l }}</ows:LowerCorner>
+        <ows:UpperCorner>{{ layer.bbox_u }}</ows:UpperCorner>
+    </ows:BoundingBox>
+</csw:Record>
