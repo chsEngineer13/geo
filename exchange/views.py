@@ -1,29 +1,20 @@
-import os
 import re
-import urllib
-import json
 import requests
 import logging
-import datetime
-from geonode.base.models import TopicCategory
+
 from django.conf import settings
-from django.core.urlresolvers import reverse, reverse_lazy
-from django.core.serializers import serialize
-from django.contrib.admin.views.decorators import staff_member_required
-from django.db import transaction
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.views.generic import CreateView, UpdateView, ListView
-from exchange.core.models import ThumbnailImage, ThumbnailImageForm, CSWRecord, CSWRecordReference
-from exchange.core.forms import CSWRecordReferenceFormSet, CSWRecordReferenceForm, CSWRecordForm
+from exchange.core.models import ThumbnailImage, ThumbnailImageForm
 from exchange.version import get_version
-from exchange.tasks import create_new_csw, update_csw, delete_csw, load_service_layers, write_xml
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from geonode.base.models import TopicCategory
 from pip._vendor import pkg_resources
-from six import iteritems
+from exchange.tasks import create_record, delete_record
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -162,20 +153,6 @@ def geoserver_reverse_proxy(request):
     req = requests.post(url, data=data, headers=headers,
                         cookies=request.COOKIES)
     return HttpResponse(req.content, content_type='application/xml')
-
-
-def csw_arcgis_search(request):
-    default_response = HttpResponse(status=404)
-    if request.method == 'GET':
-        return default_response
-    elif request.method == 'POST':
-        url = request.POST.get("url", None)
-        if url:
-            response = urllib.urlopen(url + '?f=pjson')
-            data = json.loads(response.read())
-            return JsonResponse(data)
-        else:
-            return default_response
 
 
 # Reformat objects for use in the results.
@@ -599,96 +576,14 @@ def unified_elastic_search(request, resourcetype='base'):
 
 def empty_page(request):
     return HttpResponse('')
-    
-
-class CSWRecordList(ListView):
-    model = CSWRecord
-    paginate_by = '20'
-    context_object_name = "records"
-    template_name = 'csw/record_list.html'
-
-    def get_queryset(self):
-        order = self.request.GET.get('sort_by', 'title')
-        context = CSWRecord.objects.filter().order_by(order)
-        return context
-
-    def get_context_data(self, **kwargs):
-        context = super(CSWRecordList, self).get_context_data(**kwargs)
-        context['sort_by'] = self.request.GET.get('sort_by', 'title')
-        return context
 
 
-class CSWRecordCreate(CreateView):
-    model = CSWRecord
-    form_class = CSWRecordForm
-    template_name = 'csw/new.html'
-    success_url = reverse_lazy('csw-record-list')
-
-    def get_context_data(self, **kwargs):
-        data = super(CSWRecordCreate, self).get_context_data(**kwargs)
-        if self.request.POST:
-            data['cswrecordreference'] = CSWRecordReferenceFormSet(self.request.POST)
-        else:
-            data['cswrecordreference'] = CSWRecordReferenceFormSet()
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        cswrecordreference = context['cswrecordreference']
-        with transaction.atomic():
-            self.object = form.save()
-            self.object.user = self.request.user
-            self.object.save()
-
-            if cswrecordreference.is_valid():
-                cswrecordreference.instance = self.object
-                cswrecordreference.save()
-
-            create_new_csw.delay(self.object.id)
-        return super(CSWRecordCreate, self).form_valid(form)
+def publish_service(request, pk):
+    create_record.delay(pk)
+    return redirect('services')
 
 
-class CSWRecordUpdate(UpdateView):
-    model = CSWRecord
-    form_class = CSWRecordForm
-    template_name = 'csw/new.html'
-    
-    success_url = reverse_lazy('csw-record-list')
-
-    def get_context_data(self, **kwargs):
-        data = super(CSWRecordUpdate, self).get_context_data(**kwargs)
-        if self.request.POST:
-            data['cswrecordreference'] = CSWRecordReferenceFormSet(self.request.POST, instance=self.object)
-        else:
-            data['cswrecordreference'] = CSWRecordReferenceFormSet(instance=self.object)
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        cswrecordreference = context['cswrecordreference']
-        with transaction.atomic():
-            self.object = form.save()
-            self.object.user = self.request.user
-            self.object.save()
-
-            if cswrecordreference.is_valid():
-                cswrecordreference.instance = self.object
-                cswrecordreference.save()
-
-            update_csw.delay(self.object.id)
-        return super(CSWRecordUpdate, self).form_valid(form)
-
-
-def xml_csw_view(request, pk):
-    xml = write_xml(pk, 'INSERT')
-    return HttpResponse(xml, content_type="text/xml")
-
-
-# Attempt to delete the record.
-#
-def delete_csw_view(request, pk):
-    # trigger the CSW delete task
-    delete_csw.delay(pk)
-
+def delete_service(request, pk):
+    delete_record.delay(pk)
     # bounce the user back to the index.
-    return redirect('csw-record-list')
+    return redirect('services')

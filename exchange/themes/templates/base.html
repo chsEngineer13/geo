@@ -123,9 +123,6 @@
                     <li><a href="{% url "admin:index" %}">Admin</a></li>
                     <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                     {% endif %}
-                    {% if perms.core.add_cswrecord %}
-                    <li><a href="{% url "csw-record-list" %}">Registry</a></li>
-                    {% endif %}
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                     <li role="separator" class="divider"></li>
