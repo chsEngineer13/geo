@@ -1,0 +1,57 @@
+{% extends "services/services_base.html" %}
+{% load bootstrap_tags %}
+{% load i18n %}
+
+{% block head %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block title %} Edit Service - {{ block.super }} {% endblock %}
+
+{% block body %}
+<div class="page-header">
+  <h2>{% trans "Edit Service" %}</h2>
+</div>
+<form method="POST" id="service_edit_form">
+  {% csrf_token %}
+  {{ service_form|as_bootstrap }}
+
+
+  <table id="tblReferences" class="table">
+                    {{ cswrecordreference.management_form }}
+
+                    {% for form in cswrecordreference.forms %}
+                    {% if forloop.first %}
+                    <thead>
+                    <tr>
+                        {% for field in form.visible_fields %}
+                        <th>{{ field.label|capfirst }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    {% endif %}
+                    <tr class="{% cycle row1 row2 %} formset_row">
+                        {% for field in form.visible_fields %}
+                        <td>
+                            {# Include the hidden fields in the form #}
+                            {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                            {% endfor %}
+                            {% endif %}
+                            {{ field.errors.as_ul }}
+                            {{ field }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+
+
+  <div class="grid-spacer">
+    <p><input type="submit" class="btn btn-primary" value="{% trans "Save" %}"/></p>
+  </div>
+</form>
+{% endblock %}

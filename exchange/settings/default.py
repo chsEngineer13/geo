@@ -298,8 +298,21 @@ WGS84_MAP_CRS = str2bool(os.getenv('WGS84_MAP_CRS', 'False'))
 if WGS84_MAP_CRS:
     DEFAULT_MAP_CRS = "EPSG:4326"
 
-# local pycsw
-CATALOGUE['default']['URL'] = '%s/catalogue/csw' % SITEURL.rstrip('/')
+# NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
+REGISTRY = str2bool(os.getenv('ENABLE_REGISTRY', 'False'))
+REGISTRYURL = os.getenv('REGISTRYURL', None)
+REGISTRY_CAT = os.getenv('REGISTRY_CAT', 'registry')
+REGISTRY_LOCAL_URL = os.getenv('REGISTRY_LOCAL_URL', 'http://localhost:8001')
+
+# CSW settings
+CATALOGUE = {
+    'default': {
+        'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'URL': REGISTRY_LOCAL_URL + '/catalog/'+ REGISTRY_CAT +'/csw',
+    }
+}
+
 
 '''
 unified search settings
@@ -425,12 +438,6 @@ if GEOAXIS_ENABLED:
             MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
             MIDDLEWARE_CLASSES.insert(i+1, 'exchange.auth.middleware.GeoAxisMiddleware')
 
-
-# NEED TO UPDATE DJANGO_MAPLOOM FOR ONLY THIS ONE VALUE
-REGISTRY = str2bool(os.getenv('ENABLE_REGISTRY', 'False'))
-REGISTRYURL = os.getenv('REGISTRYURL', None)
-REGISTRY_CAT = os.getenv('REGISTRY_CAT', 'registry')
-REGISTRY_LOCAL_URL = os.getenv('REGISTRY_LOCAL_URL', 'http://localhost:8001')
 
 # NearSight Options, adding NEARSIGHT_ENABLED to env will enable nearsight.
 NEARSIGHT_ENABLED = str2bool(os.getenv('NEARSIGHT_ENABLED', 'False'))
