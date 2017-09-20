@@ -290,6 +290,17 @@
         query_api($scope.query);
     }
 
+    $('#text_search_btn').click(function(){
+      $scope.query['q'] = $('#text_search_input').val();
+      query_api($scope.query);
+    });
+    
+    $('#text_search_input').keypress(function(e) {
+      if(e.which == 13) {
+        $('#text_search_btn').click();
+      }
+    });
+
     // This is a hotfix to conflicting CSS styles between
     // .nav .filter .active and .list-group-item .active
     // Can be removed if .list-group-item .active takes priority
