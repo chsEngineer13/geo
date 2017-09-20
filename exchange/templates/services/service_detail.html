@@ -100,7 +100,7 @@ Ext.onReady(function() {
             <tr>
                 {% widthratio 25 1 layers.number as offset %}
                 <th scope="row">{{offset|add:"-25"|add:forloop.counter}}</th>
-                <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
+                <td>{{layer.title}}</td>
                 <td>{% if layer.abstract %}{{layer.abstract}}{% else %}No abstract provided{%endif%}</td>
             </tr>
             {% endif %}
