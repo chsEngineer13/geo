@@ -150,6 +150,7 @@ services:
 
     # Container running registry        
     registry:
+        env_file: .env
         container_name: registry
         image: registry
         build: ./docker/registry
@@ -163,7 +164,7 @@ services:
             # For local dev'ing, uncomment the below
             #  If using the line below verbatim, 
             #  registry must be cloned to ~/boundless/registry
-            # - ~/boundless/registry:/opt/registry:ro
+            - ~/boundless/registry:/opt/registry:ro
 
         networks:
             internal:
