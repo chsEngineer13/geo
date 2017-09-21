@@ -25,7 +25,7 @@
     {% if layer.doc_file %}
     <a href="{% url 'document_detail' docid=docid %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
     {% else %}
-    <a href="{% url 'map_detail' map_id=map_id %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
+    <a href="{% url 'map_detail' mapid=mapid %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
     {% endif %}
     <h2 class="page-title">{% trans "Metadata" %} : {{ layer.title }}</h2>
 </div>

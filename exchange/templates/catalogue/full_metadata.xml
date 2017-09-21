@@ -14,7 +14,7 @@
     <dc:classification>{{ layer.classification }}</dc:classification>
     <dc:releasability>{{ layer.releasability }}</dc:releasability>
     <dc:fees>{{ layer.fees }}</dc:fees>
-    <dc:provenance>{{ layer.provenance }}</dc:provenance>
+    <dct:provenance>{{ layer.provenance }}</dct:provenance>
     <dc:maintenance_frequency>{{ layer.maintenance_frequency }}</dc:maintenance_frequency>
     <dc:license>{{ layer.license }}</dc:license>
     <dc:keywords>{{ layer.keywords }}</dc:keywords>
