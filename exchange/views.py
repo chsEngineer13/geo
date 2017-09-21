@@ -13,6 +13,7 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from geonode.base.models import TopicCategory
 from pip._vendor import pkg_resources
 from exchange.tasks import create_record, delete_record
+from django.core.urlresolvers import reverse
 
 
 
@@ -131,6 +132,18 @@ def layer_metadata_detail(request, layername,
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+def layer_publish(request, layername):
+    layer = _resolve_layer(request, layername, 'view_resourcebase',
+                           _PERMISSION_MSG_METADATA)
+    layer.is_published = True
+    layer.save()
+
+    return HttpResponseRedirect(reverse(
+                                'layer_detail',
+                                args=([layer.service_typename])
+                                ))
 
 
 def map_metadata_detail(request, mapid,
