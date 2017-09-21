@@ -41,6 +41,7 @@ services:
         links:
             - exchange
             - geoserver
+            - registry
 
     # Database for use by Django, Celery and GeoServer
     database:
