@@ -150,6 +150,7 @@ services:
 
     # Container running registry        
     registry:
+        env_file: .env
         container_name: registry
         image: registry
         build: ./docker/registry
