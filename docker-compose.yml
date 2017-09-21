@@ -173,7 +173,7 @@ services:
                 ipv4_address: 172.16.238.6
         environment:
             # Setup registry to use included search
-            - REGISTRY_SEARCH_URL=http://search:9200
+            # - REGISTRY_SEARCH_URL=http://search:9200
 
     # worker process which does "background" work for the django app
     worker:
