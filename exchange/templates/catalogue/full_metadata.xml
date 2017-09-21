@@ -4,8 +4,8 @@
     <dc:title_alternate>{{ layer.typename }}</dc:title_alternate>
     <dc:creator>{{ layer.creator }}</dc:creator>
     <dc:type>{{ layer.record_type }}</dc:type>
-    {% if layer.alternative %}
-    <dct:alternative>{{ layer.alternative }}</dct:alternative>
+    {% if layer.typename %}
+    <dct:alternative>{{ layer.typename }}</dct:alternative>
     {% endif %}
     <dct:modified>{{ layer.modified|date:"Y-m-d\TH:i:s\Z" }}</dct:modified>
     <dct:abstract>{{ layer.abstract }}</dct:abstract>
