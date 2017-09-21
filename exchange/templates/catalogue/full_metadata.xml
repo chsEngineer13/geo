@@ -4,8 +4,8 @@
     <dc:title_alternate>{{ layer.typename }}</dc:title_alternate>
     <dc:creator>{{ layer.creator }}</dc:creator>
     <dc:type>{{ layer.record_type }}</dc:type>
-    {% if layer.alternative %}
-    <dct:alternative>{{ layer.alternative }}</dct:alternative>
+    {% if layer.typename %}
+    <dct:alternative>{{ layer.typename }}</dct:alternative>
     {% endif %}
     <dct:modified>{{ layer.modified|date:"Y-m-d\TH:i:s\Z" }}</dct:modified>
     <dct:abstract>{{ layer.abstract }}</dct:abstract>
@@ -14,7 +14,7 @@
     <dc:classification>{{ layer.classification }}</dc:classification>
     <dc:releasability>{{ layer.releasability }}</dc:releasability>
     <dc:fees>{{ layer.fees }}</dc:fees>
-    <dc:provenance>{{ layer.provenance }}</dc:provenance>
+    <dct:provenance>{{ layer.provenance }}</dct:provenance>
     <dc:maintenance_frequency>{{ layer.maintenance_frequency }}</dc:maintenance_frequency>
     <dc:license>{{ layer.license }}</dc:license>
     <dc:keywords>{{ layer.keywords }}</dc:keywords>
