@@ -18,7 +18,9 @@
     <dc:maintenance_frequency>{{ layer.maintenance_frequency }}</dc:maintenance_frequency>
     <dc:license>{{ layer.license }}</dc:license>
     <dc:keywords>{{ layer.keywords }}</dc:keywords>
-    {{ layer.references }}
+    {% for reference in layer.references %}
+    <dct:references scheme="{{reference.scheme}}">{{reference.url}}</dct:references>
+    {% endfor %}
     <registry:property name="category" value="{{ layer.category }}"/>
     <registry:property
             name="ContactInformation/Primary/organization"
