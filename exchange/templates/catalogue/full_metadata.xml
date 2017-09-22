@@ -11,17 +11,20 @@
     <dct:abstract>{{ layer.abstract }}</dct:abstract>
     <dc:format>{{ layer.format }}</dc:format>
     <dc:source>{{ layer.base_url }}</dc:source>
-    <dc:classification>{{ layer.classification }}</dc:classification>
-    <dc:releasability>{{ layer.releasability }}</dc:releasability>
     <dc:fees>{{ layer.fees }}</dc:fees>
-    <dc:provenance>{{ layer.provenance }}</dc:provenance>
-    <dc:maintenance_frequency>{{ layer.maintenance_frequency }}</dc:maintenance_frequency>
-    <dc:license>{{ layer.license }}</dc:license>
     <dc:keywords>{{ layer.keywords }}</dc:keywords>
     {% for reference in layer.references %}
     <dct:references scheme="{{reference.scheme}}">{{reference.url}}</dct:references>
     {% endfor %}
+    <registry:property name="provenance" value="{{ layer.provenance }}"/>
+    <registry:property name="license" value="{{ layer.license}}"/>
     <registry:property name="category" value="{{ layer.category }}"/>
+    <registry:property name="releasability" value="{{ layer.caveat }}"/>
+    <registry:property name="updateFreq" value="{{ layer.maintenance_frequency }}"/>
+    <registry:property name="classification" value="{{ layer.classification}}"/>
+    <registry:property name="ContactInformation/Primary/owner" value=""/>
+    <registry:property name="ContactInformation/Email" value=""/>
+    <registry:property name="ContactInformation/Phone" value=""/>
     <registry:property
             name="ContactInformation/Primary/organization"
             value="{{ layer.contact }}"/>
