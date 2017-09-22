@@ -13,6 +13,7 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from geonode.base.models import TopicCategory
 from pip._vendor import pkg_resources
 from exchange.tasks import create_record, delete_record
+from django.core.urlresolvers import reverse
 
 
 
@@ -133,6 +134,18 @@ def layer_metadata_detail(request, layername,
     }))
 
 
+def layer_publish(request, layername):
+    layer = _resolve_layer(request, layername, 'view_resourcebase',
+                           _PERMISSION_MSG_METADATA)
+    layer.is_published = True
+    layer.save()
+
+    return HttpResponseRedirect(reverse(
+                                'layer_detail',
+                                args=([layer.service_typename])
+                                ))
+
+
 def map_metadata_detail(request, mapid,
                         template='maps/metadata_detail.html'):
 
@@ -247,7 +260,8 @@ def unified_elastic_search(request, resourcetype='base'):
     # and facet with type
     facet_fields = ['type', 'subtype',
               'owner__username', 'keywords', 'regions', 
-              'category', 'source_host', 'classification']
+              'category', 'source_host', 'classification',
+              'releasability', 'provenance']
     
     categories = TopicCategory.objects.all()
     category_lookup = {}
@@ -279,7 +293,9 @@ def unified_elastic_search(request, resourcetype='base'):
         'type': {'open': True, 'display': 'Type'},
         'keywords': {'show': True},
         'regions': {'show': False},
-        'classification': {'open': False, 'display': 'Classification'}
+        'classification': {'open': False, 'display': 'Classification'},
+        'provenance': {'open': False, 'display': 'Provenance'},
+        'releasability': {'open': False, 'display': 'Releasability'}
     }
 
     
