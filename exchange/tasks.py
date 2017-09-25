@@ -6,8 +6,6 @@ from xml.sax.saxutils import escape
 from geonode.services.models import Service
 import datetime
 
-import time
-
 logger = get_task_logger(__name__)
 
 

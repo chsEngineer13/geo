@@ -51,7 +51,8 @@
 
 
   <div class="grid-spacer">
-    <p><input type="submit" class="btn btn-primary" value="{% trans "Save" %}"/></p>
+      <a href="javascript:history.back()" class="btn btn-default">{% trans "Cancel" %}</a>
+    <input type="submit" class="btn btn-primary" value="{% trans "Save" %}"/>
   </div>
 </form>
 {% endblock %}
