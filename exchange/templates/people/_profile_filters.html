@@ -1,0 +1,12 @@
+{% load i18n %}
+
+<ul class="nav nav-pills filter pull-left" id="sort">
+  <li><a class="selected" ng-click="clear_filters(); single_choice_listener($event)">{% trans "All contents" %}</a></li>
+  {% if user == profile %}
+  <li><a ng-click="clear_filters(); api_query('/api/layers/?owner__username={{profile.username}}'); tab_activation($event)">{% trans "Layers" %}</a></li>
+  {% else %}
+  <li><a data-value="layer" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Layers" %}</a></li>
+  {% endif %}
+  <li><a data-value="map" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Maps" %}</a></li>
+  <li><a data-value="document" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Documents" %}</a></li>
+</ul>

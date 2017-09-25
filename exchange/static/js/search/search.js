@@ -263,6 +263,37 @@
       }
     }
 
+    $scope.clear_filters = function() {
+      // reset query
+      $scope.query = {};
+      $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
+      $scope.query.offset = $scope.query.offset || 0;
+    }
+
+    $scope.api_query = function(endpoint) {
+      // expecting a django api endpoint i.e. /api/layers/
+      $http.get(endpoint, {params: $scope.query || {}}).then(function(response){
+        $scope.results = response.data.objects;
+        $scope.total_counts = response.data.meta.total_count;
+        $scope.$root.query_data = response.data;
+        
+        if ($location.search().hasOwnProperty('q')){
+          $scope.text_query = $location.search()['q'].replace(/\+/g," ");
+        }
+        module.haystack_facets($http, $scope.$root, $location);
+      });
+    }
+
+    $scope.tab_activation = function($event) {
+      var element = $($event.target).closest("a");
+      if(!element.hasClass('selected')){
+        // clear the active class from it
+        element.parents('ul').find('a').removeClass('selected');
+
+        element.addClass('selected');
+      }
+    }
+
     $scope.navcontrol = function(e) {
       e.preventDefault();
       var element = $(e.target);
