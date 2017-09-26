@@ -123,6 +123,30 @@ class LayerMetadataDetailTest(ViewTestCase):
     def test(self):
         self.doit()
 
+
+class LayerPublishTest(ViewTestCase):
+
+    def setUp(self):
+        super(LayerPublishTest, self).setUp()
+
+        from geonode.layers.utils import file_upload
+        self.layer = file_upload(
+            os.path.join(TESTDIR, 'test_point.shp'),
+            name='testlayer'
+        )
+        self.url = '/layers/geonode:testlayer/publish'
+        # We expect to be redirected
+        self.expected_status = 302
+
+    def test(self):
+        self.layer.is_published = False
+        self.layer.save()
+        self.doit()
+        from geonode.layers.models import Layer
+        self.layer = Layer.objects.get(id=self.layer.id)
+        self.assertEqual(self.layer.is_published, True)
+
+
 class MapMetadataDetailTest(ViewTestCase):
     def setUp(self):
         super(MapMetadataDetailTest, self).setUp()
