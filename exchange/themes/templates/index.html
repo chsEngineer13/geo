@@ -45,7 +45,7 @@
         <h2>Discover the available content</h2>
         {% for category in categories %}
         <div class="col-xs-4 col-sm-2" style="height:200px">
-          <a href="/search/?limit=100&offset=0&category__identifier__in={{ category.identifier }}" data-toggle="tooltip" data-placement="auto"
+          <a href="/search/?limit=100&offset=0&category={{ category.identifier }}" data-toggle="tooltip" data-placement="auto"
              title="{{ category.description }}">
             <div class="category">
               <i class="fa {{ category.fa_class }} fa-4x"></i>
