@@ -85,7 +85,7 @@ def create_record(self, id):
                 'uuid': record.uuid,
                 'title': record.title.encode('ascii', 'xmlcharrefreplace'),
                 'creator': service.owner.username,
-                'record_type': 'dataset',
+                'record_type': get_types(service.type),
                 'modified': datetime.datetime.now(),
                 'typename': record.typename,
                 'date': service.date,

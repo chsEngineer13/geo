@@ -57,6 +57,7 @@ def resource_variables(request):
         NOMINATIM_URL=getattr(settings, 'NOMINATIM_URL', '//nominatim.openstreetmap.org'),
         GEOQUERY_ENABLED=getattr(settings, 'GEOQUERY_ENABLED', False),
         GEOQUERY_URL=getattr(settings, 'GEOQUERY_URL', None),
+        LOOM_STYLING_ENABLED=getattr(settings, 'LOOM_STYLING_ENABLED', False),
         EXTENT_FILTER_ENABLED=getattr(settings, 'EXTENT_FILTER_ENABLED', True),
         DISABLE_BOUNDLESS_LINK_IN_FOOTER=getattr(settings, 'DISABLE_BOUNDLESS_LINK_IN_FOOTER', False),
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
