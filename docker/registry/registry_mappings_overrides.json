@@ -9,10 +9,42 @@
                                 "type": "string", 
                                 "index": "not_analyzed",
                                 "copy_to": "category_exact"
+                            }, "classification": {
+                                "type": "string",
+                                "index": "not_analyzed",
+                                "copy_to": "classification_exact"
+                            }, "releasability": {
+                                "type": "string",
+                                "index": "not_analyzed",
+                                "copy_to": "releasability_exact"
+                            }, "license": {
+                                "type": "string",
+                                "index": "not_analyzed",
+                                "copy_to": "license_exact"
+                            }, "provenance": {
+                                "type": "string",
+                                "index": "not_analyzed",
+                                "copy_to": "provenance_exact"
                             }
                         }
                     },
                     "category_exact": {
+                        "type": "string",
+                        "index": "analyzed"
+                    },
+                    "classification_exact": {
+                        "type": "string",
+                        "index": "analyzed"
+                    },
+                    "releasability_exact": {
+                        "type": "string",
+                        "index": "analyzed"
+                    },
+                    "license_exact": {
+                        "type": "string",
+                        "index": "analyzed"
+                    },
+                    "provenance_exact": {
                         "type": "string",
                         "index": "analyzed"
                     },
