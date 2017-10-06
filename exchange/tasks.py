@@ -142,54 +142,10 @@ def create_record(self, id):
     bind=True,
     max_retries=1,
 )
-def delete_record(self, record_id):
+def delete_record(self, id):
     """
-    Remove a CSW record from CSW then the database.
-    """
-
-    record = CSWRecord.objects.get(id=record_id)
-    record.status = "Pending"
-    record.save()
-
-    # Why write XML when there are strings?
-    # This is a CSW delete request, it uses any filter
-    # but this one specifys using the identifier.
-    csw_delete = """
-        <csw:Transaction xmlns:ogc="http://www.opengis.net/ogc"
-                         xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-                         xmlns:ows="http://www.opengis.net/ows"
-                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd"
-
-                         xmlns:dc="http://purl.org/dc/elements/1.1/"
-                         xmlns:dct="http://purl.org/dc/terms/"
-                         service="CSW"
-                         version="2.0.2">
-          <csw:Delete>
-            <csw:Constraint version="1.1.0">
-              <ogc:Filter>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:PropertyName>dc:identifier</ogc:PropertyName>
-                  <ogc:Literal>{record_id}</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
-              </ogc:Filter>
-            </csw:Constraint>
-          </csw:Delete>
-        </csw:Transaction>
+    Remove a CSW record
     """
 
-
-    post_data = csw_delete.format(
-        record_id=record_id
-    )
-    print post_data 
-
-    #results = csw_post(self, record, post_data)
-    #results = { 'Deleted' : 0 }
-
-    # ensure the record is removed from CSW,
-    #  if it is, then delete it.
-    #if(results['Deleted'] != 1):
-      #  csw_fail(self, record, "Failed to remove CSW record")
-    #else:
-        #record.delete()
+    catalogue = get_catalogue()
+    catalogue.remove_record(id)

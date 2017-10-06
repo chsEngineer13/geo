@@ -61,7 +61,9 @@
                 <ul class="dropdown-menu">
                   <li><a href="{% url "search" %}?type=layer">{% trans "Layers" %}</a></li>
                   <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
+                  {% if perms.services.change_service %}
                   <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
+                  {% endif %}
                   <li role="separator" class="divider"></li>
                   <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
                   <li><a href="{% url "document_upload" %}">Upload Document</a></li>
