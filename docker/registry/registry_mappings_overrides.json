@@ -34,19 +34,19 @@
                     },
                     "classification_exact": {
                         "type": "string",
-                        "index": "analyzed"
+                        "index": "not_analyzed"
                     },
                     "releasability_exact": {
                         "type": "string",
-                        "index": "analyzed"
+                        "index": "not_analyzed"
                     },
                     "license_exact": {
                         "type": "string",
-                        "index": "analyzed"
+                        "index": "not_analyzed"
                     },
                     "provenance_exact": {
                         "type": "string",
-                        "index": "analyzed"
+                        "index": "not_analyzed"
                     },
                     "type_exact": {
                         "type": "string",

@@ -14,6 +14,7 @@ from geonode.base.models import TopicCategory
 from pip._vendor import pkg_resources
 from exchange.tasks import create_record, delete_record
 from django.core.urlresolvers import reverse
+from geonode.services.models import Service
 
 
 
@@ -595,11 +596,41 @@ def empty_page(request):
 
 
 def publish_service(request, pk):
+    """
+    Publish the service records to the csw catalog
+    """
     create_record.delay(pk)
     return redirect('services')
 
 
-def delete_service(request, pk):
-    delete_record.delay(pk)
-    # bounce the user back to the index.
-    return redirect('services')
+from django.db.models.signals import pre_delete, post_save
+from django.dispatch import receiver
+
+@receiver(pre_delete, sender=Service, dispatch_uid='remove_record_from_registry')
+def remove_record_from_csw(sender, instance, using, **kwargs):
+    """
+    Delete all csw records associated with the service. We only
+    run on service pre_delete to clean up the csw prior to the django db.
+    """
+    if instance.type in ["WMS", "OWS"]:
+        for record in instance.servicelayer_set.all():
+            delete_record(record.uuid)
+    else:
+        delete_record(instance.uuid)
+
+
+from django.contrib.auth.models import Group
+from guardian.shortcuts import assign_perm
+
+@receiver(post_save, sender=Service)
+def service_post_save(sender, **kwargs):
+    """
+    Assign CSW Manager permissions for all newly created Service instances. We only
+    run on service creation to avoid having to check for existence on each call
+    to Service.save.
+    """
+    service, created = kwargs["instance"], kwargs["created"]
+    if created:
+        group = Group.objects.get(name='csw_manager')
+        assign_perm("change_service", group, service)
+        assign_perm("delete_service", group, service)
