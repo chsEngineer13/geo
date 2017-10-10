@@ -68,6 +68,8 @@ def create_record(self, id):
 
         if 'REST' in server_type or 'mapserver' in server_type:
             layer_type = 'ESRI:ArcGIS:MapServer'
+        if 'REST' in server_type or 'featureserver' in server_type:
+            layer_type = 'ESRI:ArcGIS:FeatureServer'
         elif 'kml' in server_type:
             layer_type = 'OGC:KML'
         elif 'wfs' in server_type:
@@ -113,13 +115,13 @@ def create_record(self, id):
                 'uuid': service.uuid,
                 'title': service.title.encode('ascii', 'xmlcharrefreplace'),
                 'creator': service.owner.username,
-                'record_type': 'dataset',
+                'record_type': get_types(service.type),
                 'modified': datetime.datetime.now(),
                 'typename': service.servicelayer_set.all()[0].typename,
                 'date': service.date,
-                'abstract': service.description.encode('ascii', 'xmlcharrefreplace') if service.description else '',
+                'abstract': service.abstract.encode('ascii', 'xmlcharrefreplace') if service.abstract else '',
                 'format': get_types(service.type),
-                'base_url': service.base_url,
+                'base_url': service.base_url[:-1] if service.base_url.endswith('/') else service.base_url,
                 'references': get_refs(service) if service.service_refs else [],
                 'category': escape(service.category.gn_description if service.category else ''),
                 'contact': 'registry',
