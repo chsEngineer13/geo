@@ -9,7 +9,7 @@ git+https://github.com/venicegeo/nearsight@master#egg=nearsight
 django-jsonfield==1.0.1
 django-jsonfield-compat==0.4.4
 numpy==1.11.3
-django-geonode-client==0.0.23
+django-geonode-client==1.0.0
 dj-database-url==0.4.2
 celery[redis]==3.1.18
 django-storages==1.1.8
