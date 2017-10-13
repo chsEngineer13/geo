@@ -3,7 +3,7 @@
 git+https://github.com/MapStory/composer.git@master#composer
 git+https://github.com/boundlessgeo/django-exchange-maploom.git@master#django-exchange-maploom
 git+https://github.com/boundlessgeo/geonode@exchange/1.3.0#egg=geonode
-git+https://github.com/GeoNode/django-osgeo-importer@master#egg=django-osgeo-importer
+git+https://github.com/GeoNode/django-osgeo-importer@angular-1.6#egg=django-osgeo-importer
 git+https://github.com/boundlessgeo/exchange-documentation@master#egg=django-exchange-docs
 git+https://github.com/venicegeo/nearsight@master#egg=nearsight
 django-jsonfield==1.0.1
