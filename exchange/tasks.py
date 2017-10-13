@@ -80,7 +80,11 @@ def create_record(self, id):
         return layer_type
 
     catalogue = get_catalogue()
+
     service = Service.objects.get(pk=id)
+    service.is_published = False
+    service.save()
+
     if service.type in ["WMS", "OWS"]:
         for record in service.servicelayer_set.all():
             item = Record({
@@ -139,6 +143,9 @@ def create_record(self, id):
         resp = catalogue.create_record(item)
         logger.debug(resp)
 
+
+    service.is_published = True
+    service.save()
 
 @task(
     bind=True,
