@@ -634,3 +634,5 @@ def service_post_save(sender, **kwargs):
         group = Group.objects.get(name='csw_manager')
         assign_perm("change_service", group, service)
         assign_perm("delete_service", group, service)
+        service.is_published = False
+        service.save()
