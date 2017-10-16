@@ -354,7 +354,7 @@ def unified_elastic_search(request, resourcetype='base'):
         # results
         q = Q({"match": {"_type": "layer"}})
         if len(filter_set_ids) > 0:
-            q = Q({"terms": {"id": filter_set_ids}}) | q
+            q = Q({"terms": {"django_id": filter_set_ids}}) | q
 
         search = search.query(q)
 
