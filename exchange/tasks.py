@@ -68,7 +68,7 @@ def create_record(self, id):
 
         if 'REST' in server_type or 'mapserver' in server_type:
             layer_type = 'ESRI:ArcGIS:MapServer'
-        if 'REST' in server_type or 'featureserver' in server_type:
+        elif 'REST' in server_type or 'featureserver' in server_type:
             layer_type = 'ESRI:ArcGIS:FeatureServer'
         elif 'kml' in server_type:
             layer_type = 'OGC:KML'
@@ -100,9 +100,9 @@ def create_record(self, id):
                 'base_url': service.base_url,
                 'references': [{ 'scheme': "OGC:WMS", 'url': service.base_url}],#.join(reference_element),
                 'category': escape(service.category.gn_description if service.category else ''),
-                'contact': 'registry',
-                'bbox_l': '{} {}'.format(record.bbox_y1, record.bbox_x1),
-                'bbox_u': '{} {}'.format(record.bbox_y0, record.bbox_x0),
+                'contact': service.owner,
+                'bbox_l': '-85.0 -180',#.format(record.bbox_y1, record.bbox_x1),
+                'bbox_u': '85.0 180',#.format(record.bbox_y0, record.bbox_x0),
                 'classification': service.classification,
                 'caveat': service.caveat,
                 'fees': service.fees,
@@ -129,8 +129,8 @@ def create_record(self, id):
                 'references': get_refs(service) if service.service_refs else [],
                 'category': escape(service.category.gn_description if service.category else ''),
                 'contact': 'registry',
-                'bbox_l': '-85.0 -180',#.format(record.bbox_y1, record.bbox_x1),
-                'bbox_u': '85.0 180',#.format(record.bbox_y0, record.bbox_x0),
+                'bbox_l': '-85.0 -180',
+                'bbox_u': '85.0 180',
                 'classification': service.classification,
                 'caveat': service.caveat,
                 'fees': service.fees,
