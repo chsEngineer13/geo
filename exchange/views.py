@@ -561,7 +561,8 @@ def unified_elastic_search(request, resourcetype='base'):
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
                 try:
-                    facet_results[k]['facets'][bucket_key]['count'] = bucket_count
+                    if bucket_count > 0:
+                        facet_results[k]['facets'][bucket_key]['count'] = bucket_count
                 except Exception as e:
                     facet_results['errors'] = "%s %s %s" % (k, bucket_key, e)
 
@@ -570,8 +571,11 @@ def unified_elastic_search(request, resourcetype='base'):
         facet_results['type']['facets'].update(facet_results['subtype']['facets'])
         del facet_results['subtype']
 
-    # Sort Facets
-    
+    # Remove Empty Facets
+    for item in facet_results.keys():
+        facets = facet_results[item]['facets']
+        if sum(facets[prop]['count'] for prop in facets) == 0:
+            del facet_results[item] 
 
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
