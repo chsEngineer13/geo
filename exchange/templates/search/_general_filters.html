@@ -8,7 +8,7 @@
     </a>
   </h4>
   <ul class="nav {{ facet.settings.open ? '' : 'closed' }}" id="{{ facetid }}_ul">
-      <li ng-repeat="(facetitemid, facetitem) in facet.facets" >
+      <li ng-repeat="(facetitemid, facetitem) in facet.facets" ng-if="facetitem.count > 0">
         <a data-value="{{ facetitemid }}" data-filter="{{ facetid }}"
          ng-click="multiple_choice_listener($event)" class="{{ facetitem.active}}">
          <div ng-if="facetitem.icon !== undefined" class="fa-stack fa-1g">
