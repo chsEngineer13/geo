@@ -144,9 +144,7 @@ services:
 
         ports:
             # Django at /
-            - "80"
-            # export ssl version as well.
-            - "443"
+            - "8000:80"
 
     # Container running registry
     registry:
