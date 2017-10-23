@@ -61,12 +61,13 @@
                 <ul class="dropdown-menu">
                   <li><a href="{% url "search" %}?type=layer">{% trans "Layers" %}</a></li>
                   <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
-                  {% if perms.services.change_service %}
-                  <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
-                  {% endif %}
                   <li role="separator" class="divider"></li>
                   <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
                   <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+                  <li><a href="{% url "uploads" %}">Manage Your Data</a></li>
+                  {% if perms.services.change_service %}
+                  <li><a href="{% url "services" %}">{% trans "Manage Remote Services" %}</a></li>
+                  {% endif %}
                 </ul>
               </li>
               <li id="nav_maps">
@@ -318,7 +319,7 @@
               this.box.insertAfter(this.input).css({top: pos.top + pos.height, left: pos.left});
             }
         };
-      
+
       $(function () {
         $('#modal').modal('toggle');
       });
