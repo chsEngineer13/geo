@@ -259,10 +259,13 @@ def unified_elastic_search(request, resourcetype='base'):
     # This configuration controls what fields will be added to faceted search
     # there is some special exception code later that combines the subtype search
     # and facet with type
+    additional_facets = getattr(settings, 'ADDITIONAL_FACETS', {})
+
     facet_fields = ['type', 'subtype',
-              'owner__username', 'keywords', 'regions', 
-              'category', 'source_host', 'classification',
-              'releasability', 'provenance']
+              'owner__username', 'keywords', 'category', 'source_host']
+
+    if additional_facets:
+        facet_fields.extend(additional_facets.keys())
     
     categories = TopicCategory.objects.all()
     category_lookup = {}
@@ -288,18 +291,16 @@ def unified_elastic_search(request, resourcetype='base'):
     # up open or closed by default
     default_facet_settings = {'open': False, 'show': True}
     facet_settings = {
-        'category': {'open': True},
+        'category': default_facet_settings,
         'source_host': {'open': False, 'display': 'Host'},
         'owner__username': {'open': True, 'display': 'Owner'},
         'type': {'open': True, 'display': 'Type'},
-        'keywords': {'show': True},
-        'regions': {'show': False},
-        'classification': {'open': False, 'display': 'Classification'},
-        'provenance': {'open': False, 'display': 'Provenance'},
-        'releasability': {'open': False, 'display': 'Releasability'}
+        'keywords': {'show': True}
     }
 
-    
+    if additional_facets:
+        facet_settings.update(additional_facets)
+
     # This configuration controls what fields will be searchable by range
     range_fields = ['extent', 'date']
 
@@ -573,9 +574,12 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # Remove Empty Facets
     for item in facet_results.keys():
-        facets = facet_results[item]['facets']
-        if sum(facets[prop]['count'] for prop in facets) == 0:
-            del facet_results[item] 
+        try:
+            facets = facet_results[item]['facets']
+            if sum(facets[prop]['count'] for prop in facets) == 0:
+                del facet_results[item]
+        except Exception as e:
+            logger.warn(e)
 
     # Get results
     objects = get_unified_search_result_objects(results.hits.hits)
