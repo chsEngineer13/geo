@@ -1,7 +1,8 @@
 <div class="modal-header">
-    <div class="modal-title text-center"><h4>{{appending() === true ? "Append data to layer" : "Import a layer"}}
-        <i class="fa fa-times pointer import-wizard-icon" ng-click="ok()"></i>
-    </h4>
+    <i class="fa fa-times pointer import-wizard-icon" ng-click="ok()"></i>
+    <div class="modal-title text-center">
+        <h4>{{appending() === true ? "Append data to layer" : "Import " + layer.file_type + " Dataset" }}
+        </h4>
     </div>
 </div>
 <div class="modal-body row">
@@ -54,14 +55,12 @@
             </wz-step>
 
 
-            <wz-step title="Metadata">
-                <h3 align="center"><strong>Layer Metadata</strong></h3>
+            <wz-step title="Summary Info">
+                <h3 align="center"><strong>Summary Information</strong></h3>
+                <p>Providing a title, category, and description of the {{ layer.layer_type }} dataset will make the layer easily discoverable
+                    via the application search interface once it is imported.</p>
+
                 <form name="importOptionsForm" class="form-horizontal import-options-form">
-
-
-                    <p>
-                        <i>Title, Category, and Abstract will improve discoverability of the layer within Exchange.</i>
-                    </p>
                     <div class="form-group">
                         <label for="layerName">Title</label>
                         <input id="layerName" name="layerName" type="text" class="form-control" ng-model="layer.configuration_options.name">
@@ -75,26 +74,37 @@
 
                         </select>
                     </div>
+                    <div class="form-group" ng-if="layer.configuration_options.styles">
+                        <label for="default_style">Default Style</label>
+                        <select class="form-control ng-pristine ng-valid" id="default_style" name="default_style" ng-model="layer.configuration_options.default_style">
+                            <option value="" selected="selected">---------</option>
+                            <option ng-repeat="style in layer.configuration_options.styles" value="{{style}}">{{style}}</option>
+
+                        </select>
+                    </div>
                     <div class="form-group">
-                        <label for="layerAbstract">Abstract</label>
+                        <label for="layerAbstract">Description</label>
                         <textarea id="layerAbstract" name="layerAbstract" type="text" class=form-control ng-model="layer.configuration_options.layer_abstract"></textarea>
                     </div>
-
-                    <div class="import-wizard-button">
-                        <button class="btn btn-block" type="submit" wz-next value="Next Step">Next Step <i class="fa fa-arrow-circle-right"></i></button>
+                    <div class="row">
+                        <div style="margin:auto; width:50%;">
+                            <div class="col-md-12 import-wizard-button">
+                                <button class="btn btn-block" type="submit" wz-next value="Next Step">Continue <i class="fa fa-arrow-circle-right"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </wz-step>
 
-            <wz-step title="Attributes">
+            <wz-step title="Temporal Info" wz-disabled="{{!timeEnabled(true)}}">
 
                 <div class="gray-container">
                     <img class="import-wizard-image" ng-src="{{ staticUrl }}/osgeo_importer/img/time.png"/>
                     <h4><strong>Does the dataset have time attributes?</strong></h4>
 
                     <div class="btn-group">
-                        <label class="btn btn-success" ng-model="layer.configuration_options.configureTime" uib-btn-radio="true">Yes</label>
-                        <label class="btn btn-success" ng-model="layer.configuration_options.configureTime" uib-btn-radio="false">No</label>
+                        <label class="btn btn-primary" ng-model="layer.configuration_options.configureTime" uib-btn-radio="true">Yes</label>
+                        <label class="btn btn-primary" ng-model="layer.configuration_options.configureTime" uib-btn-radio="false">No</label>
                     </div>
                 </div>
                 <div class="row">
@@ -108,7 +118,7 @@
 
             </wz-step>
 
-            <wz-step title="Configure time" wz-disabled="{{timeEnabled(true)}}">
+            <wz-step title="Configure Time" wz-disabled="{{!timeEnabled()}}">
                 <form name="importOptionsForm" class="form-horizontal import-options-form">
 
                     <div class="gray-container">
@@ -139,14 +149,14 @@
                 </form>
 
             </wz-step>
-            <wz-step title="Versioning" wz-disabled="{{appending(true)}}">
+            <wz-step title="Version Control" wz-disabled="{{!geogigEnabled()}}">
 
                 <div class="gray-container">
                     <img class="import-wizard-image" ng-src="{{ staticUrl }}/osgeo_importer/img/edit.png"/>
-                    <h4><strong>Enable version history?</strong></h4>
+                    <h4><strong>Enable Version Control?</strong></h4>
                     <div class="btn-group">
-                        <label class="btn btn-success"  ng-model='layer.configuration_options.editable' uib-btn-radio="true">Yes</label>
-                        <label class="btn btn-success" ng-model='layer.configuration_options.editable' uib-btn-radio="false">No</label>
+                        <label class="btn btn-primary"  ng-model='layer.configuration_options.editable' uib-btn-radio="true">Yes</label>
+                        <label class="btn btn-primary" ng-model='layer.configuration_options.editable' uib-btn-radio="false">No</label>
                     </div>  </div>
                 <div class="row">
                     <div class="col-md-6 import-wizard-button">
@@ -159,33 +169,50 @@
 
             </wz-step>
             <wz-step title="{{appending() === true ? 'Append' : 'Import'}}">
-                <div class="gray-container">
-                    <div class="step-title" ng-hide="success"><h4>Ready to Import!</h4></div>
-                    <div ng-hide="success || errors">Click the button below to begin the import of {{ layer.feature_count | number }} features from your {{ layer.file_type }}.</div>
-                    <div ng-if="layer.feature_count > 70000 && processing">It looks like your data contains quite a few features. Awesome! This import may take awhile. We'll email you when it is ready for use. Feel free to stick around but it is safe to close this modal and continue using the site.</div>
-                    <div class="step-title" ng-show="success">Congratulations! Click below to publish your new Layer.
 
-                    If you opt not to publish your layer, it will not appear when searching. You can publish the layer by going to your profile page, finding the layer in the Layer tab of your resources, and navigating to the Layer's detail page. There you can edit the metadata and set "Is Published" to be True.</div>
-                    <div ng-show="errors">We're sorry but our import service is currently unavailable.  Please try again later.</div>
-                    <div class="row" ng-show="success">
+                <div class="step-title" ng-hide="success || errors">
+                    <h3><center>Review Configuration</center></h3></div>
+                <div ng-hide="success || errors">
+                    <p>You are preparing to create a {{ layer.layer_type }} layer comprised of {{ layer.fields.length | number }} attributes and {{ layer.feature_count | number }} features from the {{ layer.file_type }} dataset.
+                        Upon successful import, the {{ layer.configuration_options.name }} layer will:
+                    <ul>
+                        <li>be available to all users</li>
+                        <li ng-if="layer.configuration_options.default_style">have the {{ layer.configuration_options.default_style }} style applied</li>
+                        <li ng-if="layer.configuration_options.configureTime">enable a temporal dimension based on the {{ layer.configuration_options.start_date }} attribute</li>
+                        <li ng-if="layer.configuration_options.editable">be added to the Spatial Version Control System</li>
+                    </ul>
+                    </p>
+                    <p>Click the button below to begin the import.</p></div>
+                <div class="step-title" ng-show="success">
+                    <h3><center>Import Complete</center></h3>
+                    <p><b>Congratulations!</b> The {{ layer.configuration_options.name }} dataset has been successfully imported. Click below to view your new Layer.</p>
+                </div>
+                <div ng-show="errors">
+                    <h3 align="center">Import Failed</h3>
+                    <p align="center">We're sorry but an unexpected error has occurred.  Please try again later.</p>
+                </div>
+                <div class="row" ng-show="success">
+                    <div align="center">
                         <a href="{{ layer.geonode_layer.url }}/publish" class="btn" target="_self">
-                            <button class="btn btn-lg btn-brand">Publish Layer</button>
+                           View Layer
                         </a>
                     </div>
-                    <div>
-                        <ul class="import-wizard-error-list" ng-show="errorMessages">
-                            <li class="clrs-red" ng-repeat="error in errorMessages">{{ error }}</li>
-                        </ul>
-                    </div>
                 </div>
-                <div class="import-wizard-button">
-                    <button class="btn btn-block" ng-show="!processing && !success && !errors" type="submit" wz-next value="Continue">Import Layer</button>
+                <div>
+                    <ul class="import-wizard-error-list" ng-show="errorMessages">
+                        <li class="clrs-red" ng-repeat="error in errorMessages">{{ error }}</li>
+                    </ul>
                 </div>
-                <div ng-show="processing">
-                    <div class="row" align="center">
-                        <a href="{{ layer.geonode_layer.url }}?showMetadata=true" class="btn" target="_self">
-                            <button class="btn btn-block" disabled><i class="fa fa-spinner fa-spin fa-1x"></i>&nbsp;Importing Layer...</button>
-                        </a>
+
+                <div class="row">
+                    <div style="margin:auto; width:50%;">
+                        <div class="col-md-12 import-wizard-button">
+                            <div class="import-wizard-button">
+                                <button class="btn btn-success btn-block" disabled ng-show="processing"><i class="fa fa-spinner fa-spin fa-1x"></i>&nbsp;Importing...</button>
+                                <button class="btn btn-success btn-block" ng-show="!processing && !success && !errors" type="submit" wz-next value="Continue">Start Import</button>
+                                <button class="btn btn-success btn-block" ng-show="!processing && errors" type="submit" wz-next value="Continue">Retry Import</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

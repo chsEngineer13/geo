@@ -39,6 +39,7 @@
       var checkStartDate = layer.configuration_options.hasOwnProperty('start_date') && layer.configuration_options.start_date != "";
       var checkEndDate = layer.configuration_options.hasOwnProperty('end_date') && layer.configuration_options.end_date != "";
       var dates = [];
+      layer.configuration_options.attributes = layer.fields;
       layer.configuration_options.convert_to_date = [];
 
       if (layer.configuration_options.always_geogig === true) {
@@ -283,12 +284,14 @@
 
           if ($scope.default_config !== null && $scope.default_config !== undefined) {
               $scope.layer.configuration_options = $scope.default_config;
-          } else {
-              $scope.layer.configuration_options = {'always_geogig': true, 'configureTime': true, 'editable': true, 'convert_to_date': [], 'index': 0 };
           }
 
           if ($scope.layer.hasOwnProperty('name') && !($scope.layer.configuration_options.hasOwnProperty('name'))) {
               $scope.layer.configuration_options.name = $scope.layer.name;
+          }
+
+          if ($scope.layer.hasOwnProperty('layer_type') && ($scope.layer.configuration_options.hasOwnProperty('editable'))) {
+              $scope.layer.configuration_options.editable = $scope.layer.layer_type !== 'raster';
           }
 
           if ($scope.layer.configuration_options.permissions == null) {
@@ -326,18 +329,28 @@
 
       $scope.setDefaults();
 
-      $scope.timeEnabled = function(asString) {
-        if ($scope.layer == null) {
-            return false;
-        }
 
-        if ($scope.layer.configuration_options.configureTime !== true) {
-         //Angular wizard 'wz-disabled' disables a wizard screen when it receives 'true' (string) as a value.
-         if (asString === true) {
-          return 'true';
-         }
-          return true;
+      $scope.geogigEnabled = function() {
+        if ($scope.layer == null || $scope.layer.layer_type == 'raster') {
+            return false;
+        } else {
+            return true;
         }
+      };
+
+      $scope.timeEnabled = function(asString) {
+          if ($scope.layer == null || $scope.layer.fields.length == 0) {
+              return false;
+          }
+
+          if ($scope.layer.configuration_options.configureTime !== true) {
+              //Angular wizard 'wz-disabled' disables a wizard screen when it receives 'true' (string) as a value.
+              if (asString === true) {
+                  return 'true';
+              }
+          }
+
+          return $scope.layer.configuration_options.configureTime;
       };
 
       $scope.ok = function () {
@@ -506,6 +519,8 @@
                   if (!layer.hasOwnProperty('index') === true) {
                       layer['index'] = 0;
                   }
+
+                  layer.configuration_options.attributes = layer.fields;
 
                   var checkStartDate = layer.configuration_options.hasOwnProperty('start_date') && layer.configuration_options.start_date != "";
                   var checkEndDate = layer.configuration_options.hasOwnProperty('end_date') && layer.configuration_options.end_date != "";
