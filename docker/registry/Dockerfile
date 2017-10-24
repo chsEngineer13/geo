@@ -9,9 +9,13 @@ RUN yum -y install boundless-vendor-libs \
                    libxslt-devel \
                    make \
                    gcc \
-                   gcc-c++
+                   gcc-c++ \
+                   python27 \
+                   python27-devel \
+                   python27-setuptools \
+                   python27-virtualenv \
+                   git
 
-RUN yum install -y python27 python27-devel python27-setuptools python27-virtualenv git
 RUN /usr/local/bin/virtualenv /env && chmod -R 755 /env
 
 EXPOSE 8001
