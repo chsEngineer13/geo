@@ -467,6 +467,10 @@ if 'osgeo_importer' in INSTALLED_APPS:
     OSGEO_DATASTORE = 'exchange_imports'
     # Tell it to use the GeoNode compatible mode
     OSGEO_IMPORTER_GEONODE_ENABLED = True
+    OSGEO_IMPORTER_UPLOAD_RASTER_TO_GEOSERVER = str2bool(os.getenv(
+        'OSGEO_IMPORTER_UPLOAD_RASTER_TO_GEOSERVER',
+        'True'
+    ))
     # Tell celery to load its tasks
     CELERY_IMPORTS += ('osgeo_importer.tasks',)
     # override GeoNode setting so importer UI can see when tasks finish
