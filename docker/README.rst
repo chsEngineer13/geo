@@ -71,13 +71,23 @@ Installation
    Or simply run the bash script ::
 
        cd ~/boundless/MapLoom
-       ./quick_setup.sh
+       ./quicksetup.sh
 
    If you run into any issues with dependencies, you may be able to fix this with a clean build ::
 
        ./clean-build
 
-5. Edit `.env` to reflect where you keep checkouts of Exchange, GeoNode, and
+
+5. Checkout the right geonode branch
+
+  ::
+
+    cd ~/boundless/geonode
+    git checkout exchange/1.3.0  
+
+
+
+6. Edit `.env` to reflect where you keep checkouts of Exchange, GeoNode, and
    MapLoom.
 
    At the root of the Exchange repo, if you are in the docker branch, you
