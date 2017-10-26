@@ -5,8 +5,8 @@
   </div>
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="resource in cart.getCart().items">
-        <span class="cart-label">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}</span>
-        <button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button>
+        <span class="cart-label cartItem" title="{{ resource.title }}"> {{ resource.title }}</span>
+        <button class="btn btn-default btn-xs pull-right cartButton" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button>
     </li>
   </ul>
 </div>
