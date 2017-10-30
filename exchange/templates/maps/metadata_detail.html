@@ -155,7 +155,7 @@
 
         <dt>{% trans "Identification Image" %}</dt>
         <dd>
-            <img src="/thumbnails/maps/{{ layer.id }}"/>
+            <img onerror="this.src='/static/geonode/img/missing_thumb.png'" src="/thumbnails/maps/{{ layer.id }}"/>
         </dd>
     </dl>
 
