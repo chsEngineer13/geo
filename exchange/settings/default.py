@@ -490,6 +490,7 @@ if 'osgeo_importer' in INSTALLED_APPS:
         'osgeo_importer.handlers.geoserver.GeoServerStyleHandler',
         'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler',
         'exchange.importer.geonode_timeextent_handler.GeoNodeTimeExtentHandler',
+        'exchange.importer.geonode_postimport_handler.GeoNodePostImportHandler',
     ]
     PROJECTION_DIRECTORY = os.path.join(
         os.path.dirname(pyproj.__file__),
