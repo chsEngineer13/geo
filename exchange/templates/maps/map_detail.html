@@ -191,7 +191,7 @@
 
         <li class="list-group-item">
             <h4 class="list-group-item-heading">{%trans "Thumbnail" %}</h4>
-            <img id="thumbnail" class="thumbnail" src="/thumbnails/maps/{{ resource.id }}"/>
+            <img id="thumbnail" class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" src="/thumbnails/maps/{{ resource.id }}"/>
         </li>
 
         {% if "change_resourcebase_permissions" in perms_list %}

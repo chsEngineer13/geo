@@ -177,6 +177,7 @@ services:
 
     # worker process which does "background" work for the django app
     worker:
+        env_file: .env
         container_name: worker
         # shares the container image with exchange to stay synced up;
         # otherwise we may get signature mismatches etc. with celery
