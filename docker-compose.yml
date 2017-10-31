@@ -107,7 +107,7 @@ services:
     exchange:
         env_file: .env
         container_name: exchange
-        image: quay.io/boundlessgeo/bex:latest
+        image: quay.io/boundlessgeo/bex:master
         # see ./Dockerfile which defines the whole setup
         build: .
 
@@ -152,7 +152,7 @@ services:
     registry:
         env_file: .env
         container_name: registry
-        image: quay.io/boundlessgeo/bex-registry:latest
+        image: quay.io/boundlessgeo/bex-registry:master
         build: ./docker/registry
         links:
             - search
@@ -180,7 +180,7 @@ services:
         container_name: worker
         # shares the container image with exchange to stay synced up;
         # otherwise we may get signature mismatches etc. with celery
-        image: quay.io/boundlessgeo/bex:latest
+        image: quay.io/boundlessgeo/bex:master
         # see ./Dockerfile
         build: .
         links:

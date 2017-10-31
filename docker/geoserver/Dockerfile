@@ -16,7 +16,7 @@ RUN apt-get update &&\
     # Edit context.xml to quiet log spam about cache size
     sed -i'' 's/<\/Context>/<Resources cacheMaxSize="35000" \/><\/Context>/' $CATALINA_HOME/conf/context.xml && \
     # quiet warning since this is not production
-    mv $CATALINA_HOME/webapps/geoserver/data/security/masterpw.info $CATALINA_HOME/webapps/geoserver/data/security/masterpw.info.bak
+    rm -f $CATALINA_HOME/webapps/geoserver/data/security/masterpw.info
 
 # Add .geogigconfig from outside container
 ADD .geogigconfig $CATALINA_HOME/webapps/geoserver/data/geogig/
