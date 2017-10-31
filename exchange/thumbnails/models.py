@@ -3,13 +3,6 @@
 #
 
 from django.db import models
-from django.db.models.signals import post_save
-
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
-
-from . import get_gs_thumbnail
-
 
 class Thumbnail(models.Model):
     object_type = models.CharField(max_length=255,
@@ -61,28 +54,3 @@ def is_automatic(objectType, objectId):
         return True
 
     return t.is_automatic
-
-
-# This is used as a post-save signal that will
-# automatically geneirate a new thumbnail if none existed
-# before it.
-def generate_thumbnail(instance, sender, **kwargs):
-    object_id = None
-    obj_type = None
-    if(instance.class_name == 'Map'):
-        object_id = instance.id
-        obj_type = 'maps'
-    elif(instance.class_name == 'Layer'):
-        object_id = instance.typename
-        obj_type = 'layers'
-
-    if(object_id is not None and is_automatic(obj_type, object_id)):
-        # have geoserver generate a preview png and return it.
-        thumb_png = get_gs_thumbnail(instance)
-
-        if(thumb_png is not None):
-            save_thumbnail(obj_type, object_id, 'image/png', thumb_png, True)
-
-# add this APIs signals for saving things.
-post_save.connect(generate_thumbnail, sender=Layer)
-post_save.connect(generate_thumbnail, sender=Map)

@@ -2,7 +2,7 @@
 # There is only one view for the Thumbnail API.
 #
 # When the view is called with a GET request it returns
-# either a blank image *or* the image stored in the database.
+# either a missing thumbnail image *or* the image stored in the database.
 #
 
 
@@ -14,13 +14,13 @@ import os
 
 from .models import Thumbnail, save_thumbnail
 
-# cache the blank gif for missing images.
+# cache the missing thumbnail for missing images.
 TEST_DIR = os.path.dirname(__file__)
-BLANK_GIF = open(os.path.join(TEST_DIR, 'static/blank.gif'), 'r').read()
+MISSING_THUMB = open(os.path.join(TEST_DIR, 'static/missing_thumb.png'), 'r').read()
 
 
 def thumbnail_view(request, objectType, objectId):
-    global BLANK_GIF, ID_PATTERN
+    global MISSING_THUMB, ID_PATTERN
 
     thumb = None
     try:
@@ -36,8 +36,8 @@ def thumbnail_view(request, objectType, objectId):
             return HttpResponse(thumb.thumbnail_img,
                                 content_type=thumb.thumbnail_mime)
 
-        # else return the blank gif.
-        return HttpResponse(BLANK_GIF, content_type='image/gif')
+        # else return the missing thumbnail.
+        return HttpResponse(MISSING_THUMB, content_type='image/png')
     elif(request.method == 'POST'):
         body_len = len(request.body)
 
