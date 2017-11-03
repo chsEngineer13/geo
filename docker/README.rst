@@ -83,7 +83,7 @@ Installation
   ::
 
     cd ~/boundless/geonode
-    git checkout exchange/1.3.0  
+    git checkout exchange/1.3.1
 
 
 
@@ -189,6 +189,20 @@ GeoServer can be browsed at
 
 If you want to log in from the GeoServer interface, you can use username
 :code:`admin` and password :code:`geoserver`.
+
+Using Registry
+--------------
+
+You can access Registry at
+
+    http://172.16.238.2/registry
+
+Prior to using Registry, you will need to create the Registry catalog. You must
+do this after the container is running in order to use Registry.
+To do this, run the following command in your terminal.
+
+    curl -XPUT http://172.16.238.2/registry/catalog/registry/csw
+
 
 
 Restarting Containers

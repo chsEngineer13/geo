@@ -24,7 +24,9 @@ export GEOGIG_DATASTORE_DIR='/scratch/geogig/data'
 export DJANGO_LOG_LEVEL=DEBUG
 
 # allow override by environment variable set in docker-compose
-export REGISTRYURL=${REGISTRYURL:-'http://registry.boundlessgeo.io'}
+export REGISTRYURL='http://172.16.238.2/registry'
+export REGISTRY_CAT='registry'
+export REGISTRY_LOCAL_URL='http://registry:8001'
 export STATIC_URL='/static/'
 export MEDIA_URL='/media/'
 export LANGUAGE_CODE='en-us'
