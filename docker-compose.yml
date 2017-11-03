@@ -31,7 +31,7 @@ services:
         # The only change from upstream is to add a section to the nginx config
         build: ./docker/nginx
         ports:
-          - "8084:80"
+          - "80:80"
           - "443:443"
         networks:
             internal:
@@ -197,5 +197,6 @@ services:
         # celery worker brought back up if it goes down.
         restart: always
         networks:
-            - internal
-            - external
+            internal:
+            external:
+                ipv4_address: 172.16.238.8
