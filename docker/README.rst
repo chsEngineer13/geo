@@ -109,8 +109,6 @@ You can use pip to install the Python dependencies for the Exchange Django app::
 
     pip install -r requirements.txt
 
-If you are using Postgres 10, you will need to update the psycopg2 dependency to 2.7.3 or higher
-
 
 Preparations
 ------------
