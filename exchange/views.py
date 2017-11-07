@@ -400,7 +400,7 @@ def unified_elastic_search(request, resourcetype='base'):
     # with overall count and any display name or icon that should be used in UI
     aggregations = overall_results.aggregations
     facet_results = {}
-    for k in aggregations:
+    for k in aggregations.to_dict():
         buckets = aggregations[k]['buckets']
         if len(buckets)>0:
             lookup = None
@@ -555,7 +555,7 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # get facets based on search criteria, add to overall facets
     aggregations = results.aggregations
-    for k in aggregations:
+    for k in aggregations.to_dict():
         buckets = aggregations[k]['buckets']
         if len(buckets)>0:
             for bucket in buckets:
