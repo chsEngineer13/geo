@@ -55,6 +55,11 @@ start_django
 wait_for_django
 wait_for_geoserver
 
+# Ensure that elastic and registry have started up and create registry catalog
+wait_for_url elastic "$ES_URL"
+wait_for_url registry "$REGISTRYURL"
+curl -XPUT "$REGISTRYURL/catalog/registry/csw"
+
 log "Exchange is ready on http://172.16.238.2"
 
 # Wait for Django process and propagate its exit status.
