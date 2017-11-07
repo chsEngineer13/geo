@@ -22,46 +22,6 @@ Docker
     e.g. by putting your user in the docker group. Other times, you will have to perform such steps yourself, according to the instructions,
     then log out and back in. In some environments, such as Arch Linux, you may need to manually start the docker service after installing Docker.
 
-Python 2.7
-~~~~~~~~~~
-
-You also need to setup a Python 2.7 development environment (Python 3 is not supported yet).
-
-You can do this by setting up a new virtual environment::
-
-  cd /path/to/exchange
-  pip install virtualenv
-  virtualenv .venv
-  source .venv/bin/activate
-
-GDAL 2
-~~~~~~
-
-Since Exchange depends on many C(++) libraries, the installation process will be platform specific.
-
-Here's how to install the GDAL dependencies on OS X::
-
-  brew tap osgeo/osgeo4mac
-  brew install gdal2
-  # be sure to add it to your path
-  echo 'export PATH="/usr/local/opt/gdal2/bin:$PATH"' >> ~/.profile
-
-Other projects
-~~~~~~~~~~~~~~
-
-Exchange requires GeoNode and MapLoom so we need to clone these projects as siblings to this ``geonode`` repo::
-
-  git clone https://github.com/boundlessgeo/geonode.git
-  git clone https://github.com/boundlessgeo/MapLoom.git
-
-You also need to ensure that branch of ``geonode`` matches the version of ``exchange``
-
-For example, if you are using the v1.3.0 release of exchange::
-
-  cd /path/to/geonode
-  git checkout exchange/1.3.0
-
-
 Installation
 -------------
 
@@ -101,13 +61,6 @@ code to start with.
 
 Using host directories like this isn't a Docker thing, just a convenience
 carried over from the Vagrant dev config.
-
-Install Exchange dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can use pip to install the Python dependencies for the Exchange Django app::
-
-    pip install -r requirements.txt
 
 
 Preparations
