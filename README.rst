@@ -1,5 +1,5 @@
 ================
-geonode-exchange
+Boundless Exchange
 ================
 
 .. image:: https://codecov.io/gh/boundlessgeo/exchange/branch/master/graph/badge.svg
@@ -8,7 +8,15 @@ geonode-exchange
 .. image:: https://travis-ci.org/boundlessgeo/exchange.svg?branch=master
     :target: https://travis-ci.org/boundlessgeo/exchange
 
-geonode-exchange is a django project built on GeoNode.
+Boundless Exchange is a Django project built on GeoNode.
+
+
+development environment setup
+#############################
+
+The development team recommends using Docker for setting up your development environment.
+See the `README.rst <docker/README.rst>`_ in ``docker`` folder for detailed instructions.
+
 
 ---------
 Run Tests
