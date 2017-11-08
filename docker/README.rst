@@ -7,105 +7,60 @@ features to reduce pains we've had working with our Vagrant config, such as
 frequent waits for a slow provisioning process.
 
 
+prerequisites
+-------------
+
+Docker
+~~~~~~
+
+`Install Docker <https://docs.docker.com/engine/installation/>`_ and
+`Docker Compose <https://docs.docker.com/compose/install/>`_ if you haven't already.
+
+    >You will need a recent version of Docker; 1.12 works.
+    The version in e.g. the Ubuntu repositories is very old and will waste your time.
+    Depending on platform, Docker's install instructions and packages sometimes set things up so that you do not have to use sudo docker,
+    e.g. by putting your user in the docker group. Other times, you will have to perform such steps yourself, according to the instructions,
+    then log out and back in. In some environments, such as Arch Linux, you may need to manually start the docker service after installing Docker.
+
 Installation
 -------------
 
-1. Install Docker.
+Build MapLoom
+~~~~~~
 
-   Follow instructions at https://docs.docker.com/engine/installation/
+MapLoom is a JavaScript application that needs to be built locally at least
+once before it can be used in Exchange development. As before, if you've
+already done this just go on to the next step.
 
-   You will need a recent version of Docker; 1.12 works. The version in
-   e.g. the Ubuntu repositories is very old and will waste your time.
+Before running this step, you'll need npm (the Node Package Manager)
+installed on your dev machine. Follow the installation instructions for your
+platform at https://nodejs.org/en/download/.
 
-   Depending on platform, Docker's install instructions and packages sometimes
-   set things up so that you do not have to use `sudo docker`, e.g. by putting
-   your user in the `docker` group. Other times, you will have to perform such
-   steps yourself, according to the instructions, then log out and back in.
-   In some environments, such as Arch Linux, you may need to manually start the
-   docker service after installing Docker.
+Next, do the following locally ::
 
-2. Install `docker-compose`.
-
-   Follow instructions at https://docs.docker.com/compose/install/
-
-   You probably need a recent version. 1.7.1 works.
-
-   If you follow the instructions, you should be fine. If you prefer to install
-   docker-compose using pip, that works well too, but don't run `sudo pip`;
-   install Python tools with `pip install --user` or use plain
-   `pip install docker-compose` in a virtualenv.
-
-3. Clone repositories.
-
-   If you already cloned these, great - just go to the next step.
-
-   If you don't already have SSH keys set up with Github, you need to do that;
-   check out https://help.github.com/categories/ssh/
-
-   If you need to check out the code and you are set up on Github, refer to the
-   following example, which assumes I keep my work repos under `~/boundless`::
-
-       cd ~/boundless
-       git clone https://github.com/boundlessgeo/geonode.git
-       git clone https://github.com/boundlessgeo/exchange.git
-       git clone https://github.com/boundlessgeo/MapLoom.git
-
-4. Build local MapLoom
-
-   MapLoom is a JavaScript application that needs to be built locally at least
-   once before it can be used in Exchange development. As before, if you've
-   already done this just go on to the next step.
-
-   Before running this step, you'll need npm (the Node Package Manager)
-   installed on your dev machine. Follow the installation instructions for your
-   platform at https://nodejs.org/en/download/.
-
-   Next, do the following locally ::
-
-       cd ~/boundless/MapLoom
-       npm install -g grunt-cli karma bower
-       npm install
-       bower install
-       grunt watch
-
-   Or simply run the bash script ::
-
-       cd ~/boundless/MapLoom
-       ./quicksetup.sh
-
-   If you run into any issues with dependencies, you may be able to fix this with a clean build ::
-
-       ./clean-build
+  cd /path/to/MapLoom
+  ./quicksetup.sh
 
 
-5. Checkout the right geonode branch
+Update `.env` file
+~~~~~~~~~~~~~~~~~~
 
-  ::
+At the root of the Exchange repo, you should find a file called ``.env``.
+Edit ``.env`` e.g. with::
 
-    cd ~/boundless/geonode
-    git checkout exchange/1.3.1
+   GEONODE_HOME=/wherever/you/keep/geonode
+   EXCHANGE_HOME=/wherever/you/keep/exchange
+   MAPLOOM_HOME=/wherever/you/keep/MapLoom
 
+Why is this necessary? ``.env`` is read by ``docker-compose`` so that it knows
+where on your computer to find the directories which will be mounted inside
+the containers as ``/mnt/exchange``, ``/mnt/geonode`` and ``/mnt/maploom``. If
+these are not set accurately, then the exchange container and the Celery
+worker container will not be able to start properly because they won't have
+code to start with.
 
-
-6. Edit `.env` to reflect where you keep checkouts of Exchange, GeoNode, and
-   MapLoom.
-
-   At the root of the Exchange repo, if you are in the docker branch, you
-   should find a file called `.env`. Edit `.env` e.g. with::
-
-       GEONODE_HOME=/wherever/you/keep/geonode
-       EXCHANGE_HOME=/wherever/you/keep/exchange
-       MAPLOOM_HOME=/wherever/you/keep/MapLoom
-
-   Why is this necessary? `.env` is read by `docker-compose` so that it knows
-   where on your computer to find the directories which will be mounted inside
-   the containers as `/mnt/exchange`, `/mnt/geonode` and `/mnt/maploom`. If
-   these are not set accurately, then the exchange container and the Celery
-   worker container will not be able to start properly because they won't have
-   code to start with.
-
-   Using host directories like this isn't a Docker thing, just a convenience
-   carried over from the Vagrant dev config.
+Using host directories like this isn't a Docker thing, just a convenience
+carried over from the Vagrant dev config.
 
 
 Preparations
@@ -113,25 +68,25 @@ Preparations
 
 Each time you want to start the app, it helps to verify that you have checked
 out the right versions of Exchange and GeoNode. Notably, Exchange depends on
-the version of GeoNode mentioned in Exchange's requirements.txt, and is liable
-to break if you have checked out GeoNode master instead.
+the version of GeoNode mentioned in Exchange's ``requirements.txt``, and is liable
+to break if you have checked out GeoNode ``master`` branch instead.
 
 Before you start containers, you need to change directory to where you have
 Exchange checked out, e.g.::
 
     cd ~/boundless/exchange
 
-If you see messages like `"WARNING: The GEONODE_HOME variable is not set"` then
+If you see messages like ``"WARNING: The GEONODE_HOME variable is not set"`` then
 you are not at the root directory of an Exchange checkout. The reason is that
-docker-compose will not read `.env` to get the paths you configured unless you
-are in the same directory as `.env`. (If this is too annoying, we can just
-eliminate `.env` and instead make everyone edit `docker-compose.yml` directly.)
+docker-compose will not read ``.env`` to get the paths you configured unless you
+are in the same directory as ``.env``. (If this is too annoying, we can just
+eliminate ``.env`` and instead make everyone edit ``docker-compose.yml`` directly.)
 
 
 Starting Containers
 -------------------
 
-If using MacOSX, run the following commands prior to starting the containers::
+If using macOS, run the following commands prior to starting the containers::
 
    sudo ifconfig lo0 alias 172.16.238.2
    sudo ifconfig lo0 alias 172.16.238.3
