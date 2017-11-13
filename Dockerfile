@@ -3,7 +3,7 @@
 # it isn't meant to be; it's for the benefit of people hacking on Exchange.
 
 # The django app is tested on CentOS 6.7 to match client production environment
-FROM centos:6.7
+FROM centos:6
 
 # Prevent yum from invalidating cache every build (default is keepcache=0).
 # Pull in initial updates, e.g. security updates
