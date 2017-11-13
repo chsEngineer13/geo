@@ -21,7 +21,7 @@ Docker
     Depending on platform, Docker's install instructions and packages sometimes set 
     things up so that you do not have to use sudo docker, e.g. by putting your user in 
     the docker group. Other times, you will have to perform such steps yourself, according 
-    to the instructions,then log out and back in. In some environments, such as Arch Linux, 
+    to the instructions, then log out and back in. In some environments, such as Arch Linux, 
     you may need to manually start the docker service after installing Docker.
 
 Other Repos
@@ -53,7 +53,7 @@ Next, do the following locally ::
 
   cd /path/to/MapLoom
 
-  #Insure you have the latest version of MapLoom
+  #Ensure you have the latest version of MapLoom
   git checkout master
   git pull origin master
 
@@ -89,8 +89,8 @@ Other Preparations
 
 Each time you want to start the app, it helps to verify that you have checked
 out the right version GeoNode. Notably, **Exchange depends on the version of 
-GeoNode mentioned in Exchange's ``requirements.txt``, and is liable to break 
-if you have checked out GeoNode's ``master`` branch instead.**
+GeoNode mentioned in Exchange's** ``requirements.txt`` **, and is liable to break 
+if you have checked out GeoNode's** ``master`` **branch instead.**
 
 Before you start containers, you need to change your directory to the directory
 you cloned Exchange into, e.g.::
