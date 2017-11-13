@@ -1,4 +1,4 @@
-FROM centos:6.7
+FROM centos:6
 
 RUN yum install -y https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm
 RUN yum update -y
