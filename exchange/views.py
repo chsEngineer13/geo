@@ -270,7 +270,7 @@ def unified_elastic_search(request, resourcetype='base'):
     categories = TopicCategory.objects.all()
     category_lookup = {}
     for c in categories:
-        if c.is_choice
+        if c.is_choice:
             category_lookup[c.identifier] = {
                 'display': c.description,
                 'icon': c.fa_class
