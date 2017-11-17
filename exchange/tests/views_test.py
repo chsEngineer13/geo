@@ -196,39 +196,6 @@ class DeveloperDocumentationPageTest(ViewTestCase):
         self.doit()
 
 
-class InsertCSWTest(ViewTestCase):
-
-    def setUp(self):
-        super(InsertCSWTest, self).setUp()
-        self.url = '/csw/new/'
-
-    def test(self):
-        self.doit()
-
-class CSWStatusTest(ViewTestCase):
-
-    def setUp(self):
-        super(CSWStatusTest, self).setUp()
-        self.url = '/csw/status/'
-
-    def test(self):
-        self.doit()
-
-    def test_json(self):
-        self.url = '/csw/status/?format=json'
-        self.doit()
-
-
-class CSWStatusTableTest(ViewTestCase):
-
-    def setUp(self):
-        super(CSWStatusTableTest, self).setUp()
-        self.url = '/csw/status_table/'
-
-    def test(self):
-        self.doit()
-
-
 @pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
                     reason="Only run if using unified search")
 class UnifiedSearchTest(ViewTestCase, UploaderMixin):
