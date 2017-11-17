@@ -65,3 +65,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../.storage/static_root')
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '../.storage/media')
 MEDIA_URL = '/media/'
+
+
+GEOQUERY_ENABLED=True
+SOCIAL_BUTTONS=True
+STORYSCAPES_ENABLED=True
+ES_UNIFIED_SEARCH=True
+ENABLE_SOCIAL_LOGIN=True

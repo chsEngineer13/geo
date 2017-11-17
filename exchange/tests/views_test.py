@@ -107,7 +107,16 @@ class HomeScreenTest(ViewTestCase):
     def test(self):
         self.doit()
 
+class AboutPageTest(ViewTestCase):
 
+    def setUp(self):
+        super(AboutPageTest, self).setUp()
+        self.expected_status = 200
+        self.url = '/about/'
+
+    def test(self):
+        self.doit()
+        
 class LayerMetadataDetailTest(ViewTestCase):
 
     def setUp(self):
