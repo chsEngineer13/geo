@@ -3,7 +3,7 @@
 set -e
 
 export REGISTRY_URL='http://172.16.238.2/registry'
-export REGISTRY_SERVER_URL='http://localhost:8001/registry/catalog/csw'
+export REGISTRY_SERVER_URL='http://localhost:8001/catalog/registry/csw'
 export REGISTRY_DEBUG=${REGISTRY_DEBUG:-'True'}
 export REGISTRY_SECRET_KEY=${REGISTRY_SECRET_KEY:-'Make sure you create a good secret key.'}
 export REGISTRY_MAPPING_PRECISION=${REGISTRY_MAPPING_PRECISION:-'500m'}
