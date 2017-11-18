@@ -116,6 +116,18 @@ class AboutPageTest(ViewTestCase):
 
     def test(self):
         self.doit()
+
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+                    reason="Only run if using unified search")
+class AutocompleteEmptyPageTest(ViewTestCase):
+
+    def setUp(self):
+        super(AutocompleteEmptyPageTest, self).setUp()
+        self.expected_status = 200
+        self.url = '/autocomplete/'
+
+    def test(self):
+        self.doit()
         
 class LayerMetadataDetailTest(ViewTestCase):
 
