@@ -322,3 +322,12 @@ h1, h2, h3, h4, h5, h6 {
 .cartButton{
   margin-top: -25px;
 }
+
+/* GeoNode Viewer Feature Removal */
+.sdk-component .ms.ms-style {
+    display: none;
+}
+
+.sdk-component.globe {
+    display: none;
+}
