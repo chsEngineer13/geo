@@ -266,14 +266,15 @@ def unified_elastic_search(request, resourcetype='base'):
 
     if additional_facets:
         facet_fields.extend(additional_facets.keys())
-    
+
     categories = TopicCategory.objects.all()
     category_lookup = {}
     for c in categories:
-        category_lookup[c.identifier] = {
-            'display': c.description,
-            'icon': c.fa_class
-        }
+        if c.is_choice:
+            category_lookup[c.identifier] = {
+                'display': c.description,
+                'icon': c.fa_class
+            }
 
     facet_lookups = {
         'category': category_lookup,
@@ -330,7 +331,7 @@ def unified_elastic_search(request, resourcetype='base'):
     nfacets = parameters.get("nfacets", 15)
 
     # Build base query
-    # The base query only includes filters relevant to what the user 
+    # The base query only includes filters relevant to what the user
     # is allowed to see and the overall types of documents to search.
     # This provides the overall counts and all fields for faceting
 
@@ -359,7 +360,7 @@ def unified_elastic_search(request, resourcetype='base'):
 
         search = search.query(q)
 
-    # Checks first if there is an [fieldname]_exact field and returns that 
+    # Checks first if there is an [fieldname]_exact field and returns that
     # otherwise checks if [fieldname] is present
     # if neither returns None
     def field_name(field, mappings):
@@ -390,7 +391,7 @@ def unified_elastic_search(request, resourcetype='base'):
                 if fn == 'type_exact': # search across both type_exact and subtype
                     fq = fq | Q({'terms': {'subtype_exact': fp}})
                 facet_filters.append(fq)
-    
+
     # run search only filtered by what a particular user is able to see
     # this makes sure to get every item that is possible in the facets
     # in order for a UI to build the choices
@@ -414,7 +415,7 @@ def unified_elastic_search(request, resourcetype='base'):
             if parameters.getlist(k): # Make sure list starts open when a filter is set
                 fsettings['open'] = True
             facet_results[k] = {'settings': fsettings, 'facets':{}}
-                
+
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
@@ -498,7 +499,7 @@ def unified_elastic_search(request, resourcetype='base'):
         er = extent_range.split(',')
         extent_start = er[0]
         extent_end = er[1]
-    
+
     # Add range filters to the search
     if date_start:
         q = Q({'range': {'date': {'gte': date_start}}})
@@ -519,7 +520,7 @@ def unified_elastic_search(request, resourcetype='base'):
                 {'range': {'temporal_extent_start': {'lte': extent_end}}}
             )
         search = search.query(q)
-        
+
 
      # Apply sort
     if sort.lower() == "-date":
@@ -550,7 +551,7 @@ def unified_elastic_search(request, resourcetype='base'):
     # Run the search using the offset and limit
     search = search[offset:offset + limit]
     results = search.execute()
-    
+
     logger.debug('search: %s, results: %s', search, results)
 
     # get facets based on search criteria, add to overall facets

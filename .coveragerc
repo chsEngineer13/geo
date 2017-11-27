@@ -1,4 +1,5 @@
 [run]
 omit = exchange/settings/*,
+       *storyscapes*,
        exchange/wsgi.py,
        */migrations/*

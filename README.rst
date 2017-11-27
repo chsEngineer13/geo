@@ -2,7 +2,7 @@
 Boundless Exchange
 ================
 
-.. image:: https://codecov.io/gh/boundlessgeo/exchange/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/boundlessgeo/exchange/graph/badge.svg
     :target: https://codecov.io/gh/boundlessgeo/exchange
 
 .. image:: https://travis-ci.org/boundlessgeo/exchange.svg?branch=master

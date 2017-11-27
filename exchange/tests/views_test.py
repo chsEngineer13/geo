@@ -107,7 +107,28 @@ class HomeScreenTest(ViewTestCase):
     def test(self):
         self.doit()
 
+class AboutPageTest(ViewTestCase):
 
+    def setUp(self):
+        super(AboutPageTest, self).setUp()
+        self.expected_status = 200
+        self.url = '/about/'
+
+    def test(self):
+        self.doit()
+
+@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+                    reason="Only run if using unified search")
+class AutocompleteEmptyPageTest(ViewTestCase):
+
+    def setUp(self):
+        super(AutocompleteEmptyPageTest, self).setUp()
+        self.expected_status = 200
+        self.url = '/autocomplete/'
+
+    def test(self):
+        self.doit()
+        
 class LayerMetadataDetailTest(ViewTestCase):
 
     def setUp(self):
@@ -191,39 +212,6 @@ class DeveloperDocumentationPageTest(ViewTestCase):
         super(DeveloperDocumentationPageTest, self).setUp()
         self.expected_status = 302
         self.url = '/developer/'
-
-    def test(self):
-        self.doit()
-
-
-class InsertCSWTest(ViewTestCase):
-
-    def setUp(self):
-        super(InsertCSWTest, self).setUp()
-        self.url = '/csw/new/'
-
-    def test(self):
-        self.doit()
-
-class CSWStatusTest(ViewTestCase):
-
-    def setUp(self):
-        super(CSWStatusTest, self).setUp()
-        self.url = '/csw/status/'
-
-    def test(self):
-        self.doit()
-
-    def test_json(self):
-        self.url = '/csw/status/?format=json'
-        self.doit()
-
-
-class CSWStatusTableTest(ViewTestCase):
-
-    def setUp(self):
-        super(CSWStatusTableTest, self).setUp()
-        self.url = '/csw/status_table/'
 
     def test(self):
         self.doit()

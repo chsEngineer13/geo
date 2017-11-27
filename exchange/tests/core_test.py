@@ -1,12 +1,6 @@
-import os
-from django.conf import settings
-from django.contrib import admin
-from django.contrib.admin.sites import AdminSite
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from exchange.core.models import ThumbnailImage
 from exchange.core.context_processors import resource_variables
-from shutil import rmtree
+from exchange import get_version
 from urlparse import urlparse
 
 class MockRequest:

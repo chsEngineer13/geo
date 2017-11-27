@@ -7,7 +7,7 @@ features to reduce pains we've had working with our Vagrant config, such as
 frequent waits for a slow provisioning process.
 
 
-prerequisites
+Prerequisites
 -------------
 
 Docker
@@ -16,17 +16,30 @@ Docker
 `Install Docker <https://docs.docker.com/engine/installation/>`_ and
 `Docker Compose <https://docs.docker.com/compose/install/>`_ if you haven't already.
 
-    >You will need a recent version of Docker; 1.12 works.
+    You will need a recent version of Docker; 1.12 works.
     The version in e.g. the Ubuntu repositories is very old and will waste your time.
-    Depending on platform, Docker's install instructions and packages sometimes set things up so that you do not have to use sudo docker,
-    e.g. by putting your user in the docker group. Other times, you will have to perform such steps yourself, according to the instructions,
-    then log out and back in. In some environments, such as Arch Linux, you may need to manually start the docker service after installing Docker.
+    Depending on platform, Docker's install instructions and packages sometimes set 
+    things up so that you do not have to use sudo docker, e.g. by putting your user in 
+    the docker group. Other times, you will have to perform such steps yourself, according 
+    to the instructions, then log out and back in. In some environments, such as Arch Linux, 
+    you may need to manually start the docker service after installing Docker.
 
-Installation
--------------
+Other Repos
+~~~~~~~~~~~
+
+In addition to the Exchange Repo you'll also need to ``git clone`` both the 
+`Geonode <https://github.com/boundlessgeo/geonode>`_ and 
+`MapLoom <https://github.com/boundlessgeo/MapLoom>`_ repositories. For convenience 
+these repos can be cloned to ``~/boundless/`` as that is the default directory 
+Exchange expects them, however steps to change the default are covered in a later 
+section, so feel free to save the files wherever is convenient.
+
+
+Installation and Configuration
+------------------------------
 
 Build MapLoom
-~~~~~~
+~~~~~~~~~~~~~
 
 MapLoom is a JavaScript application that needs to be built locally at least
 once before it can be used in Exchange development. As before, if you've
@@ -39,11 +52,20 @@ platform at https://nodejs.org/en/download/.
 Next, do the following locally ::
 
   cd /path/to/MapLoom
+
+  #Ensure you have the latest version of MapLoom
+  git checkout master
+  git pull origin master
+
+  #Build Maploom
   ./quicksetup.sh
 
+Note: If running macOS it may be necessary to run ``ln -s /usr/bin/nodejs /usr/bin/node`` 
+before the ``./quicksetup.sh`` command as macOS installs under the ``nodejs`` package name
+however bower/grunt expect things to live in the ``node`` directory.
 
-Update `.env` file
-~~~~~~~~~~~~~~~~~~
+Update ``.env`` file
+~~~~~~~~~~~~~~~~~~~~
 
 At the root of the Exchange repo, you should find a file called ``.env``.
 Edit ``.env`` e.g. with::
@@ -62,34 +84,32 @@ code to start with.
 Using host directories like this isn't a Docker thing, just a convenience
 carried over from the Vagrant dev config.
 
-
-Preparations
-------------
+Other Preparations
+~~~~~~~~~~~~~~~~~~
 
 Each time you want to start the app, it helps to verify that you have checked
-out the right versions of Exchange and GeoNode. Notably, Exchange depends on
-the version of GeoNode mentioned in Exchange's ``requirements.txt``, and is liable
-to break if you have checked out GeoNode ``master`` branch instead.
+out the right version GeoNode. Notably, **Exchange depends on the version of 
+GeoNode mentioned in Exchange's** ``requirements.txt`` **, and is liable to break 
+if you have checked out GeoNode's** ``master`` **branch instead.**
 
-Before you start containers, you need to change directory to where you have
-Exchange checked out, e.g.::
+Before you start containers, you need to change your directory to the directory
+you cloned Exchange into, e.g.::
 
     cd ~/boundless/exchange
 
 If you see messages like ``"WARNING: The GEONODE_HOME variable is not set"`` then
 you are not at the root directory of an Exchange checkout. The reason is that
 docker-compose will not read ``.env`` to get the paths you configured unless you
-are in the same directory as ``.env``. (If this is too annoying, we can just
-eliminate ``.env`` and instead make everyone edit ``docker-compose.yml`` directly.)
-
-
-Starting Containers
--------------------
+are in the same directory as the ``.env`` file.
 
 If using macOS, run the following commands prior to starting the containers::
 
    sudo ifconfig lo0 alias 172.16.238.2
    sudo ifconfig lo0 alias 172.16.238.3
+
+
+Starting Containers
+-------------------
 
 In this Docker configuration, the whole application is made up of a set of
 containers that run together.
@@ -117,7 +137,7 @@ container, because its startup script is written to monitor these events and
 give notification of them. See the "Viewing Logs" section.)
 
 If you are interested in why startup is slow, see the section of this document
-titled "Why is Startup Slow?"
+titled `Why is Startup Slow?`_
 
 
 Using Exchange
@@ -132,7 +152,8 @@ If you happen to see a 502 error, that's probably coming from proxy (nginx) and
 it probably means that proxy is waiting on Exchange to come up. The logs will
 tell the tale.
 
-You can log in with username :code:`admin` and password :code:`exchange`. A non-admin user, :code:`test`, with password :code:`exchange` is also available.
+You can log in with username: ``admin`` and password: ``exchange``. A non-admin 
+user: ``test``, with password: ``exchange`` is also available.
 
 
 Using GeoServer
@@ -142,8 +163,9 @@ GeoServer can be browsed at
 
     http://172.16.238.2/geoserver
 
-If you want to log in from the GeoServer interface, you can use username
-:code:`admin` and password :code:`geoserver`.
+If you want to log in from the GeoServer interface, you can use username:
+``admin`` and password: ``geoserver``.
+
 
 Using Registry
 --------------
@@ -151,13 +173,6 @@ Using Registry
 You can access Registry at
 
     http://172.16.238.2/registry
-
-Prior to using Registry, you will need to create the Registry catalog. You must
-do this after the container is running in order to use Registry.
-To do this, run the following command in your terminal.
-
-    curl -XPUT http://172.16.238.2/registry/catalog/registry/csw
-
 
 
 Restarting Containers
@@ -186,12 +201,12 @@ enough just to run the apps. You want to see what they are doing.
 You don't need to know log locations or dig around for logs inside the
 containers, because docker-compose will bring them right to you.
 
-To view the log of a container (e.g. the exchange container) up til now,
+To view the log of a container (e.g. the ``exchange`` container) up til now,
 then exit immediately::
 
     docker-compose logs exchange
 
-To follow the logs for all containers at once (confusing)::
+To follow the logs for all containers at once (potentially confusing)::
 
     docker-compose logs -f
 
@@ -201,7 +216,7 @@ To follow the log for a particular container::
 
 Hit Ctrl-C to bring down this log follower, but not any containers.
 
-The same trick works for multiple containers, e.g.::
+The same command works for multiple containers, e.g.::
 
     docker-compose logs -f exchange geoserver
 
@@ -228,29 +243,28 @@ When you want to bring all the containers down in parallel::
     docker-compose down
 
 
-Stupid Container Tricks
------------------------
+Container Tricks
+----------------
 
-See `docker-compose help` to see some of the many other things you can do.
+See ``docker-compose help`` to see some of the many other things you can do.
 
-You should not normally need anything like 'vagrant ssh'. But if you feel the
+You should not normally need anything like ``vagrant ssh``. But if you feel the
 need to mess up a container as quickly as possible, you can use e.g.
-`docker-compose exec exchange /bin/bash`. This tends to create weird states
+``docker-compose exec exchange /bin/bash``. This tends to create weird states
 that can take a long time to debug, so please avoid it if you can. If the
 config is broken, let's work together to fix it and share the fixes so that we
 always have working automation.
 
 If you want to see a lot of metadata about a running container, you can
-use `docker ps` to get the container id that you are interested in (suppose for
-example it is '29358') and then use `docker inspect 29358`.
+use ``docker ps`` to get the container id that you are interested in (suppose for
+example it is '29358') and then use ``docker inspect 29358``.
 
 
 Diagnostics
 -----------
 
-`172.16.238.2` is the normal web access for your Exchange instance, but that IP
-is actually an nginx reverse proxy that is named `proxy` in
-`docker-compose.yml`.
+``172.16.238.2`` is the normal web access for your Exchange instance, but that IP
+is actually an nginx reverse proxy that is named ``proxy`` in ``docker-compose.yml``.
 
 Other containers have intentionally been exposed to the host with certain fixed
 IPs for diagnostic convenience (the default and convention with Docker is not
@@ -281,9 +295,9 @@ containers do not share a filesystem by default, you will find that the various
 services used by exchange do not share a filesystem.
 
 For the purpose of allowing some state sharing to occur but also labeling the
-places where it happens better, there is defined in `docker-compose.yml` (in
-the top-level `volumes:` section) a shared named volume called `scratch`, which
-containers mount at `/scratch/`. While this directory is technically possible
+places where it happens better, there is defined in ``docker-compose.yml`` (in
+the top-level ``volumes:`` section) a shared named volume called ``scratch``, which
+containers mount at ``/scratch/``. While this directory is technically possible
 to see from the host, there is no guaranteed path and it's not recommended to
 use it.
 
