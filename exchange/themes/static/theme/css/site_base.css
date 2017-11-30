@@ -314,13 +314,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .cartItem {
-  text-overflow: ellipsis; 
-  overflow: hidden; 
-  display: block; 
-  margin-right: 25px;
+    text-overflow: ellipsis; 
+    overflow: hidden; 
+    display: block; 
+    margin-right: 25px;
 }
-.cartButton{
-  margin-top: -25px;
+.cartButton {
+    margin-top: -25px;
+}
+
+#bulk_perms_button, #open_in_map_button {
+    white-space: pre-line;
+    width: 100%;
+}
+
+#bulk_perms_button_container, #open_in_map_button_container {
+    width: 100%;
 }
 
 /* GeoNode Viewer Feature Removal */
