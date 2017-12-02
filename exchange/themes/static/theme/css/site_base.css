@@ -344,3 +344,15 @@ h1, h2, h3, h4, h5, h6 {
 #print-button {
     top: 189px;
 }
+
+/* Fix Homepage Categories */
+.home #datasets a .category {
+    margin: 0 auto;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
