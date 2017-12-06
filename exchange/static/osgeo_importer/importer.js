@@ -52,7 +52,7 @@
                         delete layer.configuration_options.geoserver_store;
                     }
                 }
-                if (layer.configuration_options.editable == false) {
+                if (layer.configuration_options.public == false) {
                     layer.configuration_options.permissions = {};
                 }
 
@@ -292,7 +292,7 @@
 
                 if ($scope.layer.configuration_options.permissions == null) {
                     $scope.layer.configuration_options.permissions = $scope.defaultPermissions;
-                    $scope.layer.configuration_options.editable = true;
+                    $scope.layer.configuration_options.public = true;
                 }
 
                 $http.get('/api/categories/').then(function(response) {
@@ -501,7 +501,7 @@
                     scope.configuring = false;
                     scope.hasError = false;
                     scope.complete = false;
-                    scope.importOptions = {configureTime: true, editable: true, version_control: true, convert_to_date: []};
+                    scope.importOptions = {configureTime: true, public: true, version_control: true, convert_to_date: []};
 
                     scope.isImported = function() {
                         return scope.status === 'SUCCESS';
