@@ -149,14 +149,35 @@
                 </form>
 
             </wz-step>
+
             <wz-step title="Version Control" wz-disabled="{{!geogigEnabled()}}">
 
                 <div class="gray-container">
                     <img class="import-wizard-image" ng-src="{{ staticUrl }}/osgeo_importer/img/edit.png"/>
                     <h4><strong>Enable Version Control?</strong></h4>
                     <div class="btn-group">
-                        <label class="btn btn-primary"  ng-model='layer.configuration_options.editable' uib-btn-radio="true">Yes</label>
-                        <label class="btn btn-primary" ng-model='layer.configuration_options.editable' uib-btn-radio="false">No</label>
+                        <label class="btn btn-primary"  ng-model='layer.configuration_options.version_control' uib-btn-radio="true">Yes</label>
+                        <label class="btn btn-primary" ng-model='layer.configuration_options.version_control' uib-btn-radio="false">No</label>
+                    </div>  </div>
+                <div class="row">
+                    <div class="col-md-6 import-wizard-button">
+                        <button class="btn btn-block" type="submit" wz-previous value="Previous Step"><i class="fa fa-arrow-circle-left"></i> Previous Step</button>
+                    </div>
+                    <div class="col-md-6 import-wizard-button">
+                        <button class="btn btn-block" type="submit" wz-next value="Next Step">Next Step <i class="fa fa-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+
+            </wz-step>
+
+            <wz-step title="Permissions">
+
+                <div class="gray-container">
+                    <img class="import-wizard-image" ng-src="{{ staticUrl }}/osgeo_importer/img/edit.png"/>
+                    <h4><strong>Who can view the layer?</strong></h4>
+                    <div class="btn-group">
+                        <label class="btn btn-primary"  ng-model='layer.configuration_options.editable' uib-btn-radio="true">Everyone</label>
+                        <label class="btn btn-primary" ng-model='layer.configuration_options.editable' uib-btn-radio="false">Just Me</label>
                     </div>  </div>
                 <div class="row">
                     <div class="col-md-6 import-wizard-button">
@@ -176,10 +197,11 @@
                     <p>You are preparing to create a {{ layer.layer_type }} layer comprised of {{ layer.fields.length | number }} attributes and {{ layer.feature_count | number }} features from the {{ layer.file_type }} dataset.
                         Upon successful import, the {{ layer.configuration_options.name }} layer will:
                     <ul>
-                        <li>be available to all users</li>
+                        <li ng-if="layer.configuration_options.editable">be available to all users</li>
+                        <li ng-if="layer.configuration_options.editable == false">only be available to you</li>
                         <li ng-if="layer.configuration_options.default_style">have the {{ layer.configuration_options.default_style }} style applied</li>
                         <li ng-if="layer.configuration_options.configureTime">enable a temporal dimension based on the {{ layer.configuration_options.start_date }} attribute</li>
-                        <li ng-if="layer.configuration_options.editable">be added to the Spatial Version Control System</li>
+                        <li ng-if="layer.configuration_options.version_control">be added to the Spatial Version Control System</li>
                     </ul>
                     </p>
                     <p>Click the button below to begin the import.</p></div>
