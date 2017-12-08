@@ -52,9 +52,8 @@
                         delete layer.configuration_options.geoserver_store;
                     }
                 }
-                if (layer.configuration_options.editable == false) {
+                if (layer.configuration_options.public == false) {
                     layer.configuration_options.permissions = {};
-                    layer.configuration_options.public = false;
                 }
 
                 if ((checkStartDate === true || checkEndDate == true)
