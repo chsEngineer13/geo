@@ -197,8 +197,8 @@
                     <p>You are preparing to create a {{ layer.layer_type }} layer comprised of {{ layer.fields.length | number }} attributes and {{ layer.feature_count | number }} features from the {{ layer.file_type }} dataset.
                         Upon successful import, the {{ layer.configuration_options.name }} layer will:
                     <ul>
-                        <li ng-if="layer.configuration_options.editable">be available to all users</li>
-                        <li ng-if="layer.configuration_options.editable == false">only be available to you</li>
+                        <li ng-if="layer.configuration_options.public">be available to all users</li>
+                        <li ng-if="layer.configuration_options.public == false">only be available to you</li>
                         <li ng-if="layer.configuration_options.default_style">have the {{ layer.configuration_options.default_style }} style applied</li>
                         <li ng-if="layer.configuration_options.configureTime">enable a temporal dimension based on the {{ layer.configuration_options.start_date }} attribute</li>
                         <li ng-if="layer.configuration_options.version_control">be added to the Spatial Version Control System</li>
