@@ -252,7 +252,7 @@ def unified_elastic_search(request, resourcetype='base'):
     mappings = es.indices.get_mapping()
 
     # Set base fields to search
-    fields = ['title', 'text', 'abstract', 'title_alternate']
+    fields = ['title', 'abstract', 'title_alternate']
 
 
 
