@@ -6,7 +6,6 @@ from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from exchange.core.models import ThumbnailImage, ThumbnailImageForm
 from exchange.version import get_version
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
@@ -15,7 +14,8 @@ from pip._vendor import pkg_resources
 from exchange.tasks import create_record, delete_record
 from django.core.urlresolvers import reverse
 from geonode.services.models import Service
-
+from oauth2_provider.models import Application
+from django.contrib.sites.shortcuts import get_current_site
 
 
 logger = logging.getLogger(__name__)
@@ -43,13 +43,30 @@ def get_pip_version(project):
         return {'version': '', 'commit': ''}
 
 
-def about_page(request, template='about.html'):
+def get_geoserver_version():
+    try:
+        ogc_server = settings.OGC_SERVER['default']
+        geoserver_url = '{}/rest/about/version.json'.format(ogc_server['LOCATION'].strip('/'))
+        resp = requests.get(geoserver_url, auth=(ogc_server['USER'], ogc_server['PASSWORD']))
+        version = resp.json()['about']['resource'][0]
+        return {'version': version['Version'], 'commit': version['Git-Revision'][:7]}
+    except:
+        return {'version': '', 'commit': ''}
+
+
+def get_exchange_version():
     exchange_version = get_pip_version('geonode-exchange')
     if not exchange_version['version'].strip():
         version = get_version()
         pkg_version = version[:-8] if version[:-8] else version[-7:]
         commit_hash = version[-7:] if version[:-8] else version[:-8]
-        exchange_version = {'version': pkg_version, 'commit': commit_hash}
+        return {'version': pkg_version, 'commit': commit_hash}
+    else:
+        return exchange_version
+
+
+def about_page(request, template='about.html'):
+    exchange_version = get_exchange_version()
     try:
         exchange_releases = requests.get(
             'https://api.github.com/repos/boundlessgeo/exchange/releases'
@@ -61,15 +78,7 @@ def about_page(request, template='about.html'):
         if release['tag_name'] == 'v{}'.format(exchange_version['version']):
             release_notes = release['body'].replace(' - ', '\n-')
 
-    try:
-        ogc_server = settings.OGC_SERVER['default']
-        geoserver_url = '{}/rest/about/version.json'.format(ogc_server['LOCATION'].strip('/'))
-        resp = requests.get(geoserver_url, auth=(ogc_server['USER'], ogc_server['PASSWORD']))
-        version = resp.json()['about']['resource'][0]
-        geoserver_version = {'version': version['Version'], 'commit': version['Git-Revision'][:7]}
-    except:
-        geoserver_version = {'version': '', 'commit': ''}
-
+    geoserver_version = get_geoserver_version()
     geonode_version = get_pip_version('GeoNode')
     maploom_version = get_pip_version('django-exchange-maploom')
     importer_version = get_pip_version('django-osgeo-importer')
@@ -121,6 +130,32 @@ def about_page(request, template='about.html'):
         'exchange_version': exchange_version['version'],
         'exchange_release': release_notes
     }))
+
+
+def capabilities(request):
+    """
+    The capabilities view is like the about page, but for consumption by code instead of humans.
+    It serves to provide information about the Exchange instance.
+    """
+    capabilities = {}
+
+    capabilities["versions"] = {
+        'exchange': get_exchange_version(),
+        'geonode': get_pip_version('GeoNode'),
+        'geoserver': get_geoserver_version(),
+    }
+
+    mobile_extension_installed = "geonode_anywhere" in settings.INSTALLED_APPS
+    capabilities["mobile"] = (
+        mobile_extension_installed and
+        # check that the OAuth application has been created
+        len(Application.objects.filter(name='Anywhere')) > 0
+    )
+
+    current_site = get_current_site(request)
+    capabilities["site_name"] = current_site.name
+
+    return JsonResponse({'capabilities':  capabilities})
 
 
 def layer_metadata_detail(request, layername,

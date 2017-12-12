@@ -50,7 +50,8 @@ urlpatterns = patterns(
 
     url(r'^services/(?P<pk>\d+)/publish$', views.publish_service, name='publish_service'),
 
-    url(r'^about/', views.about_page, name='about')
+    url(r'^about/', views.about_page, name='about'),
+    url(r'^capabilities/', views.capabilities, name='capabilities'),
 )
 
 if settings.ENABLE_SOCIAL_LOGIN is True:
