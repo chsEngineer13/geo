@@ -72,7 +72,7 @@
     });
   }
 
-  // Update facet counts 
+  // Update facet counts
   module.haystack_facets = function($http, $rootScope, $location) {
       var data = $rootScope.query_data;
       $rootScope.facets = data.meta.facets;
@@ -124,7 +124,7 @@
         $scope.results = response.data.objects;
         $scope.total_counts = response.data.meta.total_count;
         $scope.$root.query_data = response.data;
-        
+
         if ($location.search().hasOwnProperty('q')){
           $scope.text_query = $location.search()['q'].replace(/\+/g," ");
         }
@@ -183,7 +183,7 @@
         }, true);
     }
 
-    
+
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
     * and pushes/removes the value of the element from the query object
@@ -276,7 +276,7 @@
         $scope.results = response.data.objects;
         $scope.total_counts = response.data.meta.total_count;
         $scope.$root.query_data = response.data;
-        
+
         if ($location.search().hasOwnProperty('q')){
           $scope.text_query = $location.search()['q'].replace(/\+/g," ");
         }
@@ -325,7 +325,7 @@
       $scope.query['q'] = $('#text_search_input').val();
       query_api($scope.query);
     });
-    
+
     $('#text_search_input').keypress(function(e) {
       if(e.which == 13) {
         $('#text_search_btn').click();
@@ -344,7 +344,7 @@
       }
     }
 
-    
+
     $scope.feature_select = function($event){
       var element = $($event.target);
       var article = $(element.parents('article')[0]);
@@ -428,11 +428,38 @@
 
       map.then(function(map){
         /* prevent the user from wrapping around the world. */
-        map.setMaxBounds([[-180, -90], [180, 90]]);
+        // map.setMaxBounds([[-180, -90], [180, 90]]);
 
+        var skip_move_check = false;
         map.on('moveend', function(){
-          $scope.query['extent'] = map.getBounds().toBBoxString();
-          query_api($scope.query);
+          var bounds = map.getBounds();
+          var new_bounds = [];
+          var changed = false;
+
+          if (
+             (bounds.getWest() > 180 || bounds.getWest() < -180) ||
+             (bounds.getNorth() > 90 || bounds.getNorth() < -90) ||
+             (bounds.getEast() > 180 || bounds.getEast() < -180) ||
+             (bounds.getSouth() > 90 || bounds.getSouth() < -90)
+            ) {
+            changed = true;
+          }
+
+          new_bounds[0] = Math.min(180, Math.max(-180, bounds.getWest()));
+          new_bounds[1] = Math.min(90, Math.max(-90, bounds.getSouth()));
+          new_bounds[2] = Math.max(-180, Math.min(180, bounds.getEast()));
+          new_bounds[3] = Math.max(-90, Math.min(90, bounds.getNorth()));
+
+          if (!skip_move_check && changed) {
+            skip_move_check = true;
+            var sw = L.latLng({lat: new_bounds[1], lon: new_bounds[0]});
+            var ne = L.latLng({lat: new_bounds[3], lon: new_bounds[2]});
+            map.panInsideBounds(L.latLngBounds(sw, ne));
+          } else {
+            $scope.query['extent'] = map.getBounds().toBBoxString();
+            query_api($scope.query);
+            skip_move_check = false;
+          }
         });
       });
 
