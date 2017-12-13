@@ -9,7 +9,7 @@ class GeoNodePostImportHandler(ImportHandlerMixin):
     """
 
     def can_run(self, layer, layer_config, *args, **kwargs):
-        for name in [layer, layer_config['name'], layer_config['layer_name']]:
+        for name in [layer, layer_config.get('name', None), layer_config.get('layer_name', None)]:
             try:
                 self.geonode_layer = Layer.objects.get(name=name)
                 return True
