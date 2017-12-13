@@ -6,7 +6,7 @@ git+https://github.com/boundlessgeo/geonode@exchange/1.4.x#egg=geonode
 git+https://github.com/GeoNode/django-osgeo-importer@angular-1.6#egg=django-osgeo-importer
 git+https://github.com/boundlessgeo/exchange-documentation@master#egg=django-exchange-docs
 git+https://github.com/venicegeo/nearsight@master#egg=nearsight
-git+https://github.com/travislbrundage/geonode-elasticsearch@exchange#egg=geonode-elasticsearch
+git+https://github.com/boundlessgeo/geonode-elasticsearch@master#egg=geonode-elasticsearch-app
 django-jsonfield==1.0.1
 django-jsonfield-compat==0.4.4
 numpy==1.13.3

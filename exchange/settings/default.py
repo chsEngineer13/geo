@@ -331,7 +331,7 @@ ES_URL = os.getenv('ES_URL', 'http://127.0.0.1:9200/')
 
 if ES_SEARCH:
     INSTALLED_APPS = (
-        'geonode-elasticsearch',
+        'elasticsearch_app',
     ) + INSTALLED_APPS
 
 

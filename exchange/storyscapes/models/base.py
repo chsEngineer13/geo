@@ -97,7 +97,7 @@ class Story(ResourceBase):
     # elasticsearch_dsl indexing
     def indexing(self):
         if settings.ES_SEARCH:
-            from geonode_elasticsearch.search import StoryIndex
+            from elasticsearch_app.search import StoryIndex
             obj = StoryIndex(
                 meta={'id': self.id},
                 id=self.id,
