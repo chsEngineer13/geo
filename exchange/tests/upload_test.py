@@ -107,7 +107,7 @@ class UploaderMixin:
 #
 # Performs various uploads and drops of layers.
 #
-@pytest.mark.skipif(True or settings.ES_UNIFIED_SEARCH is False,
+@pytest.mark.skipif(True or settings.ES_SEARCH is False,
                     reason="Only run if using unified search")
 class UploadLayerTest(UploaderMixin, ExchangeTest):
 
@@ -231,7 +231,7 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
                                 s_geogig_bbox, s_bbox
                             ))
 
-@pytest.mark.skipif(settings.ES_UNIFIED_SEARCH is False,
+@pytest.mark.skipif(settings.ES_SEARCH is False,
                     reason="Only run if using unified search")
 class NonAdminUploadTest(UploaderMixin, ExchangeTest):
 

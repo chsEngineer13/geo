@@ -23,6 +23,11 @@ wait_for_django () {
     wait_for_url "${name}" "${SITE_URL}"
 }
 
+build_es_mappings() {
+    log "Building elasticsearch mappings"
+    /env/bin/python /mnt/exchange/manage.py rebuild_index
+}
+
 name="django"
 
 # Make a note in the log in case something fails silently in the following
@@ -59,6 +64,9 @@ wait_for_geoserver
 wait_for_url elastic "$ES_URL"
 wait_for_url registry "$REGISTRYURL"
 curl -XPUT "$REGISTRYURL/catalog/registry/csw"
+
+# Make sure the mappings are built correctly
+build_es_mappings
 
 log "Exchange is ready on http://172.16.238.2"
 

@@ -139,7 +139,7 @@
                 <div class="search">
                   <form id="search" action="{% url "search" %}" >
                     <span class="fa fa-search"></span>
-                    {% if HAYSTACK_SEARCH %}
+                    {% if ES_SEARCH or HAYSTACK_SEARCH %}
                       <input id="search_input" type="text" placeholder="Search" name="q">
                     {% else %}
                       <input id="search_input" type="text" placeholder="Search" name="title__icontains">

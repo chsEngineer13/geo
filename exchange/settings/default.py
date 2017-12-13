@@ -319,34 +319,19 @@ CATALOGUE = {
 
 '''
 unified search settings
-ES_UNIFIED_SEARCH must be set to True
+ES_SEARCH must be set to True
 Elastic Search for both Registry and GeoNode must running
 on same elasticsearch instance at ES_URL
 REGISTRY_URL must be set in order to provide links to Registry
 '''
-ES_UNIFIED_SEARCH = str2bool(os.getenv('ES_UNIFIED_SEARCH', 'False'))
+ES_SEARCH = str2bool(os.getenv('ES_SEARCH', 'False'))
 
-# haystack settings
+# elasticsearch-dsl settings
 ES_URL = os.getenv('ES_URL', 'http://127.0.0.1:9200/')
-ES_ENGINE = os.getenv(
-    'ES_ENGINE',
-    'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
-)
-HAYSTACK_SEARCH = str2bool(os.getenv('HAYSTACK_SEARCH', 'False'))
-if ES_UNIFIED_SEARCH:
-    HAYSTACK_SEARCH = True
-    HAYSTACK_FACET_COUNTS = True
-if HAYSTACK_SEARCH:
-    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': ES_ENGINE,
-            'URL': ES_URL,
-            'INDEX_NAME': 'exchange',
-        },
-    }
+
+if ES_SEARCH:
     INSTALLED_APPS = (
-        'haystack',
+        'geonode-elasticsearch',
     ) + INSTALLED_APPS
 
 

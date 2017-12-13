@@ -25,6 +25,7 @@
   $("body").attr('ng-controller', 'geonode_search_controller');
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
+  ES_SEARCH = "{{ ES_SEARCH }}".toLowerCase() === "true";
 
     var module = angular.module('search', ['geonode_main_search', 'cart']);
     module.constant('Configs', {

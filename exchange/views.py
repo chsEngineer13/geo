@@ -260,7 +260,7 @@ def gen_dict_extract(key, var):
 def key_exists(key, var):
     return any(True for _ in gen_dict_extract(key, var))
 
-def unified_elastic_search(request, resourcetype='base'):
+def elastic_search(request, resourcetype='base'):
     import requests
     import collections
     from elasticsearch import Elasticsearch
@@ -288,8 +288,6 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # Set base fields to search
     fields = ['title', 'abstract', 'title_alternate']
-
-
 
     # This configuration controls what fields will be added to faceted search
     # there is some special exception code later that combines the subtype search
@@ -350,9 +348,6 @@ def unified_elastic_search(request, resourcetype='base'):
     # Text search
     query = parameters.get('q', None)
 
-    offset = int(parameters.get('offset', '0'))
-    limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
-
     # Sort order
     sort = parameters.get("order_by", "relevance")
 
@@ -372,10 +367,10 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # only show registry, documents, layers, stories, and maps
     q = Q({"match": {"_type": "layer"}}) | Q(
-          {"match": {"type_exact": "layer"}}) | Q(
-          {"match": {"type_exact": "story"}}) | Q(
-          {"match": {"type_exact": "document"}}) | Q(
-          {"match": {"type_exact": "map"}})
+          {"match": {"type": "layer"}}) | Q(
+          {"match": {"type": "story"}}) | Q(
+          {"match": {"type": "document"}}) | Q(
+          {"match": {"type": "map"}})
     search = search.query(q)
 
     # Filter geonode layers by permissions
@@ -389,42 +384,30 @@ def unified_elastic_search(request, resourcetype='base'):
         filter_set_ids = map(str, filter_set.values_list('id', flat=True))
         # Do the query using the filterset and the query term. Facet the
         # results
+        # Always show registry layers since they lack permissions
         q = Q({"match": {"_type": "layer"}})
         if len(filter_set_ids) > 0:
-            q = Q({"terms": {"django_id": filter_set_ids}}) | q
+            q = Q({"terms": {"id": filter_set_ids}}) | q
 
         search = search.query(q)
 
-    # Checks first if there is an [fieldname]_exact field and returns that
-    # otherwise checks if [fieldname] is present
-    # if neither returns None
-    def field_name(field, mappings):
-        field_exact = '%s_exact' % field
-        if key_exists(field_exact, mappings):
-            return field_exact
-        elif key_exists(field, mappings):
-            return field
-        else:
-            return None
-
     # Add facets to search
     # add filters to facet_filters to be used *after* initial overall search
-    valid_facet_fields = [];
+    valid_facet_fields = []
     facet_filters = []
-    for f in facet_fields:
-        fn = field_name(f, mappings)
+    for fn in facet_fields:
         if fn:
-            valid_facet_fields.append(f)
-            search.aggs.bucket(f, 'terms', field=fn, order={"_count": "desc"}, size=nfacets)
+            valid_facet_fields.append(fn)
+            search.aggs.bucket(fn, 'terms', field=fn, order={"_count": "desc"}, size=nfacets)
             # if there is a filter set in the parameters for this facet
             # add to the filters
-            fp = parameters.getlist(f)
+            fp = parameters.getlist(fn)
             if not fp:
-                fp = parameters.getlist("%s__in"%(f))
+                fp = parameters.getlist("%s__in"%(fn))
             if fp:
                 fq = Q({'terms': {fn: fp}})
-                if fn == 'type_exact': # search across both type_exact and subtype
-                    fq = fq | Q({'terms': {'subtype_exact': fp}})
+                if fn == 'type': # search across both type_exact and subtype
+                    fq = fq | Q({'terms': {'subtype': fp}})
                 facet_filters.append(fq)
 
     # run search only filtered by what a particular user is able to see
@@ -462,11 +445,11 @@ def unified_elastic_search(request, resourcetype='base'):
 
     # filter by resourcetype
     if resourcetype == 'documents':
-        search = search.query("match", type_exact="document")
+        search = search.query("match", type="document")
     elif resourcetype == 'layers':
-        search = search.query("match", type_exact="layer")
+        search = search.query("match", type="layer")
     elif resourcetype == 'maps':
-        search = search.query("match", type_exact="map")
+        search = search.query("match", type="map")
 
     # Build main query to search in fields[]
     # Filter by Query Params
