@@ -27,9 +27,9 @@ class ThumbnailTest(ExchangeTest):
         #       *and* a blank image?
         self.assertEqual(r.status_code, 200)
 
-        # the blank gif has 43 characters in it.
-        self.assertEqual(len(r.content), 43,
-                         "This image does not appear to be blank")
+        # the 'no image' gif has 713 characters in it.
+        self.assertEqual(len(r.content), 713,
+                         "This image does not appear to be the no image gif")
 
     def test_basic_upload(self, img='test_thumbnail0.png'):
         test_thumb = open(self.get_file_path(img), 'r').read()
