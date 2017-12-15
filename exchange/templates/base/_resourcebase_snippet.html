@@ -69,12 +69,14 @@
           <button style="margin-top:10px;" class="btn btn-default btn-xs pull-right" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
           {% verbatim %}
           <p class="item-meta"><span class="item-category">{{ item.registry.category == '[]' ? '' : item.registry.category }}</span></p>
-          <h4>{{ item.title }}</h4><h5>{{ item.source_host }}</h5>
+          <h4> <a href="/maps/new?layer=registry:{{item.layer_identifier}}">{{ item.title }}</a></h4>
+          <h5>{{ item.source_host }}</h5>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-xs-12 item-items">
               <ul class="dataset-resources list-inline">
                 <li ng-if="item.layer_originator"><a href="#"><i class="fa fa-user"></i>{{ item.layer_originator }}</a></li>
+                <li ng-if="item.source_type=='ESRI:ArcGIS:MapServer'" data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ item.source }}"  class="label copy-button" data-format="mapserver" target="_registry">MapServer</a></li>
                 <li ng-repeat="x in item.references">
                   <a ng-if="x.scheme == 'WWW:LINK'"  href="{{ x.url }}"  class="label" target="_blank">{{ x.scheme | friendlyScheme }}</a>
                   <a ng-if="x.scheme != 'WWW:LINK'" data-toggle="tooltip" data-placement="top" tooltip title="Copy to Clipboard" ngclipboard ngclipboard-success="onCopySuccess(e);" ngclipboard-error="onCopyError(e);" data-clipboard-text="{{ x.url }}"  class="label copy-button" data-format="{{ x.scheme | friendlyScheme | lowercase }}" target="_registry">{{ x.scheme | friendlyScheme }}</a>

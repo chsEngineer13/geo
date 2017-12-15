@@ -29,7 +29,10 @@
                 var friendlyParts = text.split(':');
                 if (friendlyParts.length == 2) {
                     return mapping[friendlyParts[1]] || friendlyParts[1];
-                } else {
+                } else if (friendlyParts.length == 3) {
+		// if it's ESRI:ArcGIS:FeatureServer, just display FeatureServer		
+		    return friendlyParts[2]; 		
+		} else {
                     return text;
                 }
 
