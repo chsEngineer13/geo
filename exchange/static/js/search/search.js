@@ -20,7 +20,7 @@
         return function (text) {
 
             var mapping = {'AIMS--http-get-feature': 'FeatureServer', 'AIMS--http-get-map': 'MapServer',
-                'AIMS--http-get-image': 'ImageServer'}
+                'AIMS--http-get-image': 'ImageServer', 'ESRI:ArcGIS:FeatureServer': 'FeatureServer'}
 
             if (text === undefined) {
                 return text;
