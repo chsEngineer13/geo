@@ -20,7 +20,7 @@
         return function (text) {
 
             var mapping = {'AIMS--http-get-feature': 'FeatureServer', 'AIMS--http-get-map': 'MapServer',
-                'AIMS--http-get-image': 'ImageServer', 'ESRI:ArcGIS:FeatureServer': 'FeatureServer'}
+                'AIMS--http-get-image': 'ImageServer'}
 
             if (text === undefined) {
                 return text;
@@ -29,7 +29,9 @@
                 var friendlyParts = text.split(':');
                 if (friendlyParts.length == 2) {
                     return mapping[friendlyParts[1]] || friendlyParts[1];
-                } else {
+                } else if (friendlyParts.length == 3) {
+		    return friendlyParts[2]; 		
+		} else {
                     return text;
                 }
 
