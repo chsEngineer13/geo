@@ -62,7 +62,7 @@
     <div class="col-xs-12 item-container" ng-if="item.index=='registry'">
       <div class="col-xs-12 profile-avatar">
         <div class="col-xs-4 item-thumb">
-          <a href="{{ item.thumbnail_url }}"><img class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ item.thumbnail_url }}" /></a>
+          <a href="/maps/new?layer=registry:{{item.layer_identifier}}"><img class="thumbnail" onerror="this.src='/static/geonode/img/missing_thumb.png'" ng-src="{{ item.thumbnail_url }}" /></a>
         </div>
         <div class="col-xs-8 item-details">
           {% endverbatim %}
