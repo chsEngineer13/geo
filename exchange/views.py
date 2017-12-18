@@ -7,6 +7,7 @@ from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from exchange.version import get_version
+from geonode import get_version as get_version_geonode
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from geonode.base.models import TopicCategory
@@ -65,6 +66,17 @@ def get_exchange_version():
         return exchange_version
 
 
+def get_geonode_version():
+    geonode_version = get_pip_version('GeoNode')
+    if not geonode_version['version'].strip():
+        version = get_version_geonode().split('.')
+        pkg_version = '{0}.{1}.{2}'.format(version[0], version[1], version[2])
+        commit_hash = version[3]
+        return {'version': pkg_version, 'commit': commit_hash}
+    else:
+        return geonode_version
+
+
 def about_page(request, template='about.html'):
     exchange_version = get_exchange_version()
     try:
@@ -79,7 +91,7 @@ def about_page(request, template='about.html'):
             release_notes = release['body'].replace(' - ', '\n-')
 
     geoserver_version = get_geoserver_version()
-    geonode_version = get_pip_version('GeoNode')
+    geonode_version = get_geonode_version()
     maploom_version = get_pip_version('django-exchange-maploom')
     importer_version = get_pip_version('django-osgeo-importer')
     react_version = get_pip_version('django-geonode-client')
@@ -141,7 +153,7 @@ def capabilities(request):
 
     capabilities["versions"] = {
         'exchange': get_exchange_version(),
-        'geonode': get_pip_version('GeoNode'),
+        'geonode': get_geonode_version(),
         'geoserver': get_geoserver_version(),
     }
 
