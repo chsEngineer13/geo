@@ -6,8 +6,6 @@ maploom_static='/usr/local/lib/python2.7/site-packages/maploom/static/maploom'
 maploom_html='/usr/local/lib/python2.7/site-packages/maploom/templates/maps/maploom.html'
 manage='python /code/manage.py'
 
-pip freeze
-
 if [[ $TASK != 'worker' ]]; then
   if [[ $MAPLOOM_DEV == 1 ]]; then
     rm -rf $maploom_static
@@ -15,6 +13,8 @@ if [[ $TASK != 'worker' ]]; then
     ln -s /code/vendor/maploom/build $maploom_static
     ln -s /code/vendor/maploom/build/maploom.html $maploom_html
   fi
+  # mobile integration
+
   # let the db intialize
   sleep 15
   until $manage migrate account --noinput; do
@@ -30,8 +30,17 @@ if [[ $TASK != 'worker' ]]; then
   $manage collectstatic --noinput
   $manage loaddata default_users
   $manage loaddata base_resources
-  $manage loaddata /code/docker/exchange/docker_oauth_apps.json
-  $manage runserver 0.0.0.0:8000
+  $manage loaddata /code/docker/exchange/anywhere.json
+  pip freeze
+  if [[ -f /code/vendor/exchange-mobile-extension/setup.py ]]; then
+     pip install /code/vendor/exchange-mobile-extension
+     $manage loaddata /code/docker/exchange/anywhere.json
+     ADDITIONAL_APPS=geonode_anywhere $manage runserver 0.0.0.0:8000
+  else
+    $manage loaddata /code/docker/exchange/docker_oauth_apps.json
+    $manage runserver 0.0.0.0:8000
+  fi
 else
+  pip freeze
   C_FORCE_ROOT=1 celery worker --app=exchange.celery_app:app -B --loglevel DEBUG
 fi

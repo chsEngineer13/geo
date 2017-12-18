@@ -102,6 +102,9 @@ if settings.ES_SEARCH:
                         views.empty_page, 
                         name='autocomplete_override')]
 
+if 'geonode_anywhere' in settings.INSTALLED_APPS:
+    urlpatterns += [url(r"^anywhere/", include("geonode_anywhere.urls")),]
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls

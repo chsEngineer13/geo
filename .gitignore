@@ -90,3 +90,6 @@ exchange/settings/exchange_audit_log.json
 
 # docker
 docker/data/*
+
+# anywhere
+vendor/exchange-mobile-extension
