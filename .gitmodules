@@ -1,0 +1,6 @@
+[submodule "vendor/geonode"]
+	path = vendor/geonode
+	url = https://github.com/boundlessgeo/geonode.git
+[submodule "vendor/maploom"]
+	path = vendor/maploom
+	url = https://github.com/boundlessgeo/MapLoom.git

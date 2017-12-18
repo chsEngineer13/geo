@@ -3,8 +3,12 @@ import os
 from default import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(BASE_DIR, '../.storage/static_root')
-MEDIA_ROOT = os.path.join(BASE_DIR, '../.storage/media')
+STATIC_ROOT = os.getenv(
+    'STATIC_ROOT',
+    os.path.join(BASE_DIR, "../.storage/static_root"))
+MEDIA_ROOT = os.getenv(
+    'MEDIA_ROOT',
+    os.path.join(BASE_DIR, "../.storage/media"))
 
 # ensures tests are run on writing to file
 AUDIT_TO_FILE = True
@@ -61,9 +65,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-STATIC_ROOT = os.path.join(BASE_DIR, '../.storage/static_root')
 STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, '../.storage/media')
 MEDIA_URL = '/media/'
 
 

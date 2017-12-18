@@ -84,3 +84,9 @@ cov_html/
 
 # audit log
 exchange/settings/exchange_audit_log.json
+
+# pycharm
+.idea
+
+# docker
+docker/data/*

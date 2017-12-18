@@ -1,200 +1,134 @@
-version: '2'
-
-# It's not normally necessary to explicitly set up Docker's networks, but
-# we want to set fixed IPs for convenience, and that seems to require all this.
-networks:
-    # Explicitly-defined internal network for containers to talk to each other
-    internal:
-        ipam:
-            config:
-              - subnet: 172.16.237.0/24
-                gateway: 172.16.237.1
-    # Network for exposing IPs for access from the host, e.g. your browser
-    external:
-        ipam:
-            config:
-              - subnet: 172.16.238.0/24
-                gateway: 172.16.238.1
-
-volumes:
-    # This magic line creates a named volume for sharing across containers.
-    # It has no defined location on the host system (real location is obscure).
-    scratch:
-
+version: '2.1'
 services:
-
-    # Reverse proxy out in front of exchange and geoserver, e.g. for CORS
-    proxy:
-        container_name: proxy
-        image: quay.io/boundlessgeo/bex-nginx:latest
-        # see docker/nginx/Dockerfile
-        # The only change from upstream is to add a section to the nginx config
-        build: ./docker/nginx
-        ports:
-          - "80:80"
-          - "443:443"
-        networks:
-            internal:
-            # users need nginx visible to host on a fixed IP for convenience;
-            # otherwise constantly do a dance with `docker inspect` to get IPs
-            external:
-                ipv4_address: 172.16.238.2
-        # proxy needs hostnames which resolve to running exchange and geoserver
-        # containers, so it can proxy to them
-        links:
-            - exchange
-            - geoserver
-            - registry
-
-    # Database for use by Django, Celery and GeoServer
-    database:
-        container_name: database
-        image: quay.io/boundlessgeo/bex-postgres:latest
-        # see docker/postgres/Dockerfile
-        # adds in an initialization script for Exchange-specific requirements
-        # also bakes in the initialization to avoid doing it at boot time
-        build: ./docker/postgres
-        networks:
-            internal:
-            external:
-                ipv4_address: 172.16.238.7
-        ports:
-            - "54320:5432"
-
-    # Message queue receives tasks from django to be consumed by celery worker
-    queue:
-        container_name: queue
-        # Not customized
-        image: rabbitmq:3.6
-        networks:
-            - internal
-
-    # Search engine
-    search:
-        container_name: search
-        # Not customized
-        image: elasticsearch:2.4
-        ports:
-            - "9200"
-        networks:
-            internal:
-            external:
-                ipv4_address: 172.16.238.5
-
-    # Useful thing
-    geoserver:
-        container_name: geoserver
-        image: quay.io/boundlessgeo/bex-geoserver:latest
-        # see docker/geoserver/Dockerfile
-        # This modifies a tomcat image using JRE 8 to add and configure an
-        # instance of GeoServer from the magic WAR file Exchange needs.
-        build: ./docker/geoserver
-        ports:
-            # 8080 is the traditional HTTP port baked into server.xml
-            - "8080:8080"
-        links:
-            - database
-        volumes:
-            - scratch:/scratch
-        networks:
-            internal:
-            # Expose Geoserver on a fixed host IP for diagnostic purposes.
-            # Tomcat has /, GeoServer is under /geoserver at this IP
-            external:
-                ipv4_address: 172.16.238.4
-
-    # Django app which presents an interface and ties everything else together
-    exchange:
-        env_file: .env
-        container_name: exchange
-        image: quay.io/boundlessgeo/bex:master
-        # see ./Dockerfile which defines the whole setup
-        build: .
-
-        links:
-            - database
-            - queue
-            - geoserver
-
-        # Code in volumes shared with host, so edits are immediately visible.
-        volumes:
-            - scratch:/scratch
-
-            # Add a MapLoom home
-            - $MAPLOOM_HOME:/mnt/maploom:ro
-
-            # Ideally, all volumes shared with host are mounted read-only.
-            # But we have to pip install -e /mnt/geonode to ensure GeoNode's
-            # dependencies are all installed per its setup.py.
-            # And pip insists on writing its .egg-info to the source directory.
-            # 'python setup.py develop' might be a workaround if GeoNode's
-            # setup.py used setuptools, but it doesn't so that fails.
-            - $GEONODE_HOME:/mnt/geonode
-
-            # Exchange code that dev will presumably want to change.
-            - $EXCHANGE_HOME:/mnt/exchange:rw
-
-            # Example of how to mount something else from here.
-            # - $HOME/stuff/django-osgeo-importer:/mnt/django-osgeo-importer:ro
-
-        networks:
-            internal:
-            external:
-                ipv4_address: 172.16.238.3
-
-        ports:
-            # Django at /
-            - "8000:80"
-
-    # Container running registry
-    registry:
-        env_file: .env
-        container_name: registry
-        image: quay.io/boundlessgeo/bex-registry:master
-        build: ./docker/registry
-        links:
-            - search
-        ports:
-            - "8001"
-        volumes:
-            - scratch:/scratch
-
-            # For local dev'ing, uncomment the below
-            #  If using the line below verbatim,
-            #  registry must be cloned to ~/boundless/registry
-            # - ~/boundless/registry:/opt/registry:ro
-
-        networks:
-            internal:
-            # Expose on a fixed host IP for diagnostic purposes.
-            external:
-                ipv4_address: 172.16.238.6
-        environment:
-            # Setup registry to use included search
-            - REGISTRY_SEARCH_URL=http://search:9200
-
-    # worker process which does "background" work for the django app
-    worker:
-        env_file: .env
-        container_name: worker
-        # shares the container image with exchange to stay synced up;
-        # otherwise we may get signature mismatches etc. with celery
-        image: quay.io/boundlessgeo/bex:master
-        # see ./Dockerfile
-        build: .
-        links:
-            - queue
-            - database
-            - geoserver
-            - search
-
-        # Inherit volume specifications from the exchange container
-        volumes_from:
-            - exchange
-        command: /root/worker.sh
-        # celery worker brought back up if it goes down.
-        restart: always
-        networks:
-            internal:
-            external:
-                ipv4_address: 172.16.238.8
+  nginx:
+    container_name: nginx
+    image: bex/nginx:latest
+    build: ./docker/nginx
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k --silent --fail https://localhost"]
+      interval: 60s
+      timeout: 15s
+      retries: 10
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - exchange
+  exchange:
+    container_name: exchange
+    env_file: .env
+    image: bex/exchange:latest
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:8000 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - registry
+      - search
+      - worker
+    volumes:
+      - $PWD:/code:rw # needed for running tests and coverage
+      - django_media:/app/data/media
+  worker:
+    container_name: worker
+    env_file: .env
+    image: bex/exchange:latest
+    build:
+      context: .
+      args:
+        dev: $DEV
+    environment:
+      TASK: 'worker'
+    healthcheck:
+      test: ["CMD-SHELL", "cd /code/exchange && celery inspect ping -A exchange.celery_app || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      - task_queue
+    volumes:
+      - django_media:/app/data/media
+  registry:
+    container_name: registry
+    env_file: .env
+    image: bex/registry:latest
+    build: ./docker/registry
+    depends_on:
+      - search
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:8001 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8001:8001
+  geoserver:
+    container_name: geoserver
+    build: ./docker/geoserver
+    image: bex/geoserver:latest
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:8080/geoserver/web/ || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    volumes:
+      - geoserver_data:/usr/local/tomcat/webapps/geoserver/data:rw
+  db:
+    container_name: db
+    build: ./docker/postgis
+    image: bex/postgis:latest
+    mem_limit: 1024m
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    environment:
+      ALLOW_IP_RANGE: '0.0.0.0/0'
+      POSTGRES_USER: 'root'
+      DB_USER: 'exchange'
+      DB_PASS: 'boundless'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  task_queue:
+    container_name: task_queue
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672 # rabbitmq management plugin
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - search_data:/var/lib/rabbitmq
+  search:
+    container_name: search
+    image: elasticsearch:2.4
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - queue_data:/usr/share/elasticsearch/data/elasticsearch
+volumes: # volumes with no displayed path/relationship to the host
+  django_media:
+  geoserver_data:
+  db_data:
+  search_data:
+  queue_data:
