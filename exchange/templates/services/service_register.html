@@ -65,6 +65,18 @@
             }
         }
 
+        function checkSupportedEsriType(){
+            var url = $("#id_url").val().toLowerCase();
+            if(url.indexOf('rest/services') >= 0 && url.indexOf('featureserver') >=0) {
+                $("#warning").html("Please enter a valid MapServer or ImageServer service url.").show();
+                $("#submit_button").prop("disabled",false);
+                return false;
+            }else{
+                $("#warning").hide();
+                return true;
+            }
+        }
+
         $("#service_register_form").submit(function(e) {
             if(checkName() && checkSupportedEsriType()) {
                 $("#info").html("<img src='/static/geonode/img/loading.gif'/>&nbsp; Importing service, please wait...").show();
