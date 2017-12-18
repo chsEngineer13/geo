@@ -18,11 +18,11 @@
     <div id="warning" class="alert alert-warning" style="display:none;"></div>
     <div id="success" class="alert alert-success" style="display:none;"> {%  trans "Service has been imported successfully!" %}</div>
     <div id="error" class="alert alert-danger" style="display:none;"></div>
-<form method="POST" id="service_register_form">
-    {% csrf_token %}
-    {{ create_service_form|as_bootstrap }}
-    <input type="submit" class="btn btn-primary pull-left" id="submit_button" value="{% trans "Submit" %}" />
-</form>
+    <form method="POST" id="service_register_form">
+        {% csrf_token %}
+        {{ create_service_form|as_bootstrap }}
+        <input type="submit" class="btn btn-primary pull-left" id="submit_button" value="{% trans "Submit" %}" />
+    </form>
 </div>
 <br/>
 <div class="container">
@@ -31,7 +31,7 @@
     </div>
 
     <div id="tableDiv" style="display:none;">
-        <p>{%  trans "The following layers can be registered" %}</p>
+        <p>{%  trans "The following layers can be published:" %}</p>
         <table id="dataTable" class="table"></table>
     </div>
 </div>
@@ -40,6 +40,7 @@
 {{ block.super }}
 <script type="text/javascript">
     $( document ).ready(function() {
+        var intervalID;
         function checkName(){
             var service_name_regexp = new RegExp('^[a-zA-Z]+[a-zA-Z0-9-_\.]*$');
             if(!service_name_regexp.test($("#id_name").val())) {
@@ -52,12 +53,26 @@
             }
         }
 
+        function checkSupportedEsriType(){
+            var url = $("#id_url").val().toLowerCase();
+            if(url.indexOf('rest/services') >= 0 && url.indexOf('featureserver') >=0) {
+                $("#warning").html("Please enter a valid MapServer or ImageServer service url.").show();
+                $("#submit_button").prop("disabled",false);
+                return false;
+            }else{
+                $("#warning").hide();
+                return true;
+            }
+        }
+
         $("#service_register_form").submit(function(e) {
-            if(checkName()) {
+            if(checkName() && checkSupportedEsriType()) {
                 $("#info").html("<img src='/static/geonode/img/loading.gif'/>&nbsp; Importing service, please wait...").show();
                 $(".result").remove();
                 $("#tableDiv").hide();
+                $("#warning").hide();
                 $("#dataTable").html("");
+                $("#success").hide();
                 $("#error").hide();
                 $("#submit_button").prop("disabled", true);
                 e.preventDefault();
@@ -76,30 +91,62 @@
                         }
                     },
                     success: function (data) {
-                        $("#submit_button").prop("disabled", false);
                         $("#responseDiv").html("");
-                        $("#info").hide();
-                        $("#success").show();
-                        for (var item in data) {
-                            if (data[item].service_id) {
-                                setTimeout(function(){ window.location = "/services/" + data[item].service_id; }, 1000);
-                            }
-                            else {
-                                var msg = data[item].msg || data[item][0].msg;
-                                $('<h4>').attr("class", "result").text(msg).appendTo("#responseDiv");
 
+                        if (data.job_id){
+                            intervalID = setInterval(function() {
+                                $.get('/services/registration/'+ data.job_id + '/status', function(data) {
+                                    if(data.status === 'completed'){
+                                        clearInterval(intervalID);
+                                        $("#info").hide();
+                                        $("#submit_button").prop("disabled", false);
+                                        var hasSuccess = false;
+                                        var error_count = 0;
+                                        var layer_count = 0;
+                                        for (var item in data.result) {
+                                            if (data.result[item].service_id) {
+                                                hasSuccess = true;
 
-                                if (data[item].available_layers) {
-                                    $.each(data[item].available_layers, function (i, row) {
-                                        $('<tr>').attr('id', i).
-                                                append($('<td>').text(row[0])).
-                                                append($('<td>').text(row[1])).appendTo('#dataTable');
-                                    });
-                                    $("#tableDiv").show();
-                                }
+                                                if (data.result[item].available_layers) {
+                                                    layer_count += data.result[item].available_layers.length;
+                                                }
 
-                                $("#responseDiv").show();
-                            }
+                                            } else {
+                                                error_count++;
+                                                $('<div>').attr("class", "result").text(data.result[item].msg).appendTo("#responseDiv");
+                                            }
+
+                                            $("#responseDiv").show();
+                                        }
+
+                                        if (error_count == 0){
+                                            if (data.result.length == 1){
+                                                $('#success').show();
+                                                setTimeout(function(){ window.location = "/services/" + data.result[item].service_id; }, 1000);
+                                            } else {
+                                                $("#success").html('Successfully imported ' + layer_count + ' layers from ' + data.result.length +' services.');
+                                                $('#success').show();
+                                                setTimeout(function(){ window.location = "/services/"; }, 1000);
+                                            }
+
+                                        } else if (error_count < data.result.length) {
+                                            $("#warning").html(layer_count + ' layers successfully importered, however, there were ' + error_count +' errors encountered while processing ' + data.result.length +' services. Please see below for details.');
+                                            $("#warning").show();
+                                        }
+                                    } else  if(data.status === 'failed') {
+                                        clearInterval(intervalID);
+                                        $("#error").html('An unexpected error has occurred, please try again later.');
+                                        $("#error").show();
+                                        $("#info").hide();
+                                        $("#responseDiv").html("");
+                                    }
+                                } );
+                            }, 1000);
+                        }
+                        else{
+                            $("#warning").html('Unable to resolve any layers from the service type. Please check the Service Url and Service Type.');
+                            $("#warning").show();
+                            $("#submit_button").prop("disabled", false);
                         }
                     },
                     error: function (data) {
