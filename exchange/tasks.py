@@ -89,7 +89,7 @@ def create_record(self, id):
         for record in service.servicelayer_set.all():
             item = Record({
                 'uuid': record.uuid,
-                'title': record.title.encode('ascii', 'xmlcharrefreplace'),
+                'title': record.name.encode('ascii', 'xmlcharrefreplace'),
                 'creator': service.owner.username,
                 'record_type': get_types(service.type),
                 'modified': datetime.datetime.now(),
@@ -117,7 +117,7 @@ def create_record(self, id):
     else:
         item = Record({
                 'uuid': service.uuid,
-                'title': service.title.encode('ascii', 'xmlcharrefreplace'),
+                'title': service.name.encode('ascii', 'xmlcharrefreplace'),
                 'creator': service.owner.username,
                 'record_type': get_types(service.type),
                 'modified': datetime.datetime.now(),
