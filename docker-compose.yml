@@ -1,3 +1,4 @@
+---
 version: '2.1'
 services:
   nginx:
@@ -31,7 +32,7 @@ services:
       - search
       - worker
     volumes:
-      - $PWD:/code:rw # needed for running tests and coverage
+      - $PWD:/code:rw  # needed for running tests and coverage
       - django_media:/app/data/media
   worker:
     container_name: worker
@@ -106,7 +107,7 @@ services:
     image: rabbitmq:3.6-management-alpine
     ports:
       - 5672:5672
-      - 15672:15672 # rabbitmq management plugin
+      - 15672:15672  # rabbitmq management plugin
     healthcheck:
       test: ["CMD-SHELL", "rabbitmqctl status || exit 1"]
       interval: 15s
@@ -126,7 +127,7 @@ services:
       retries: 5
     volumes:
       - queue_data:/usr/share/elasticsearch/data/elasticsearch
-volumes: # volumes with no displayed path/relationship to the host
+volumes:  # volumes with no displayed path/relationship to the host
   django_media:
   geoserver_data:
   db_data:
