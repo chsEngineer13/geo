@@ -5,7 +5,7 @@
 - Docker API 1.25+ (`docker version`)
 - Git
 
-Note: You will also need to append nginx to your 127.0.0.1 entry in `/etc/localhosts`.
+Note: You will also need to append nginx to your 127.0.0.1 entry in `/etc/hosts`.
 
 ```bash
 ##
@@ -35,8 +35,6 @@ Run the following command to clone all repositories
 git clone --recursive -j8 git://github.com/boundlessgeo/exchange.git
 cd exchange
 ```
-
-Run the following command to clone all repositories
 
 #### Update Repo
 ```bash
