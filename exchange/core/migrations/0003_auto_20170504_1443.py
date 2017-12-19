@@ -28,16 +28,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='cswrecord',
             name='creator',
-            field=models.CharField(max_length=328, verbose_name=b'Agency', blank=True),
+            field=models.CharField(
+                max_length=328, verbose_name=b'Agency', blank=True),
         ),
         migrations.AlterField(
             model_name='cswrecord',
             name='source',
-            field=models.URLField(max_length=512, verbose_name=b'Service Endpoint'),
+            field=models.URLField(
+                max_length=512, verbose_name=b'Service Endpoint'),
         ),
         migrations.AlterField(
             model_name='thumbnailimage',
             name='thumbnail_image',
-            field=models.ImageField(upload_to=b'/vagrant/.storage/media/thumbs'),
+            field=models.ImageField(
+                upload_to=b'/vagrant/.storage/media/thumbs'),
         ),
     ]

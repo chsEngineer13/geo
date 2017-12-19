@@ -29,7 +29,7 @@ def _boxes_get(req, mapid):
         'playbackRate',
         'intervalRate',
         'zoom',
-        ]
+    ]
     box = Frame.objects.filter(map=mapid)
     box = box.order_by('start_time', 'end_time', 'title')
     if bool(req.GET.get('in_map', False)):
@@ -131,8 +131,8 @@ def _boxes_post(req, mapid):
         form_mode = 'csv'
         content_type = 'text/html'
         get_props = lambda r: r
-        ids = list(Frame.objects.filter(map=mapobj).values_list('id',
-                                                                   flat=True))
+        ids = list(
+            Frame.objects.filter(map=mapobj).values_list('id', flat=True))
         # delete existing, we overwrite
         finish = lambda: Frame.objects.filter(id__in=ids).delete()
         overwrite = True
@@ -160,7 +160,7 @@ def _boxes_post(req, mapid):
         mapobj,
         overwrite,
         form_mode,
-        )
+    )
 
     if errors:
         transaction.rollback()
@@ -183,20 +183,20 @@ def _write_boxes(data, get_props, id_collector, mapobj, overwrite, form_mode):
     for i, r in enumerate(data):
         props = get_props(r)
         props['map'] = mapobj.id
-        #props['object_id'] = mapobj.id
-        #props['content_type'] = ContentType.objects.get(id=mapobj.id).id
+        # props['object_id'] = mapobj.id
+        # props['content_type'] = ContentType.objects.get(id=mapobj.id).id
         box = None
         id = r.get('id', None)
         if id and not overwrite:
             box = Frame.objects.get(map=mapobj, pk=id)
-            #box = Frame.objects.get(pk=id)
+            # box = Frame.objects.get(pk=id)
 
         # form expects everything in the props, copy geometry in
         if 'geometry' in r:
             props['geometry'] = r['geometry']
         props.pop('id', None)
         form = FrameForm(props, instance=box, form_mode=form_mode)
-        #form.content_type = ContentType.objects.get_for_model(Map)
+        # form.content_type = ContentType.objects.get_for_model(Map)
         if not form.is_valid():
             errors.append((i, form.errors))
         else:

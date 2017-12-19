@@ -65,7 +65,8 @@ def facets(context):
             documents = documents.filter(id__in=authorized)
 
         counts = documents.values('doc_type').annotate(count=Count('doc_type'))
-        facets = dict([(count['doc_type'], count['count']) for count in counts])
+        facets = dict(
+            [(count['doc_type'], count['count']) for count in counts])
 
         return facets
 
@@ -80,7 +81,8 @@ def facets(context):
             layers = layers.filter(id__in=authorized)
 
         counts = layers.values('storeType').annotate(count=Count('storeType'))
-        count_dict = dict([(count['storeType'], count['count']) for count in counts])
+        count_dict = dict(
+            [(count['storeType'], count['count']) for count in counts])
 
         facets = {
             'raster': count_dict.get('coverageStore', 0),
@@ -108,7 +110,6 @@ def facets(context):
             if not settings.SKIP_PERMS_FILTER:
                 stories = stories.filter(id__in=authorized)
             facets['story'] = stories.count()
-
 
         if facet_type == 'home':
             facets['user'] = get_user_model().objects.exclude(

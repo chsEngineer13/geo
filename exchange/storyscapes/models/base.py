@@ -39,7 +39,7 @@ class Story(ResourceBase):
                 chapter_obj = StoryChapter.objects.get(map_id=chapter_id)
                 self.chapters.get(storychapter=chapter_obj).delete()
 
-        #self.keywords.add(*conf['map'].get('keywords', []))
+        # self.keywords.add(*conf['map'].get('keywords', []))
         self.save()
 
     def viewer_json(self, user):
@@ -54,7 +54,8 @@ class Story(ResourceBase):
         config = {
             'id': self.id,
             'about': about,
-            'chapters': [chapter.map.viewer_json(user, None) for chapter in self.chapters.all()],
+            'chapters': [chapter.map.viewer_json(
+                user, None) for chapter in self.chapters.all()],
             'thumbnail_url': '/static/geonode/img/missing_thumb.png'
         }
 
@@ -73,10 +74,10 @@ class Story(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
-
     distribution_url_help_text = _(
-        'information about on-line sources from which the dataset, specification, or '
-        'community profile name and extended metadata elements can be obtained')
+        'information about on-line sources from which the dataset, '
+        'specification, or community profile name and extended '
+        'metadata elements can be obtained')
     distribution_description_help_text = _(
         'detailed text description of what the online resource is/does')
     distribution_url = db.models.TextField(
@@ -103,7 +104,7 @@ class Story(ResourceBase):
                 meta={'id': self.id},
                 id=self.id,
                 abstract=self.abstract,
-                category__gn_description=self.prepare_category_gn_description(),
+                category__gn_description=self.prepare_category_gn_description(),  # noqa
                 distribution_description=self.distribution_description,
                 distribution_url=self.distribution_url,
                 owner__username=self.prepare_owner(),
@@ -219,10 +220,12 @@ class Story(ResourceBase):
 class StoryChapter(db.models.Model):
     story = db.models.ForeignKey(Story, blank=True, null=True)
     map = db.models.ForeignKey(Map, blank=True, null=True)
-    chapter_index = db.models.IntegerField(_('chapter index'), null=True, blank=True)
-    viewer_playbackmode = db.models.CharField(_('Viewer Playback'), max_length=32, blank=True, null=True)
+    chapter_index = db.models.IntegerField(
+        _('chapter index'), null=True, blank=True)
+    viewer_playbackmode = db.models.CharField(
+        _('Viewer Playback'), max_length=32, blank=True, null=True)
 
-    #This needs review
+    # This needs review
 
     def update_from_viewer(self, conf):
 
@@ -236,13 +239,6 @@ class StoryChapter(db.models.Model):
         story_obj = Story.objects.get(id=story_id)
         self.story = story_obj
         self.save()
-
-    #def viewer_json(self, user, access_token=None, *added_layers): access_token, *added_
-    #    base_config = super(Map, self).viewer_json(user,layers)
-    #    base_config['viewer_playbackmode'] = self.viewer_playbackmode
-    #    base_config['tools'] = [{'outputConfig': {'playbackMode': self.viewer_playbackmode}, 'ptype': 'gxp_playback'}]
-
-    #    return base_config
 
     class Meta(ResourceBase.Meta):
         verbose_name_plural = 'Chapters'

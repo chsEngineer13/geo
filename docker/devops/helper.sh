@@ -3,9 +3,9 @@
 # Linter
 function lint {
     echo "-------> exchange pycodestyle"
-    pycodestyle --first --select E,W exchange/ --format=default
+    pycodestyle exchange --ignore=E722,E731
     echo "-------> docker-compose yamllint"
-    yamllint -d relaxed docker-compose.yml
+    yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}}}" docker-compose.yml
 }
 
 # Jenkins Specific function for builds on master branch, requires sonar auth token

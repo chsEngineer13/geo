@@ -30,7 +30,7 @@ class AuditAdminTest(ExchangeTest):
     def test_model_admin(self):
         r = self.client.get('/admin/audit/auditevent/')
 
-        self.assertEqual(r.status_code, 200,
-                         'Did not get admin audit event list (status: %d)' % (
-                           r.status_code
-                         ))
+        self.assertEqual(
+            r.status_code, 200,
+            'Did not get admin audit event list (status: %d)' % (
+                r.status_code))

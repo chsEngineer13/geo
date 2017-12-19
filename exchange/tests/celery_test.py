@@ -7,6 +7,7 @@ from unittest import TestCase
 
 from celery import Celery
 
+
 class TestCelery(TestCase):
 
     def test_celery(self):

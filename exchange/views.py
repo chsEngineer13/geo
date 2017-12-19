@@ -1,8 +1,10 @@
 import re
 import requests
 import logging
-
 from django.conf import settings
+from django.contrib.auth.models import Group
+from django.db.models.signals import pre_delete, post_save
+from django.dispatch import receiver
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -11,6 +13,7 @@ from geonode import get_version as get_version_geonode
 from geonode.maps.views import _resolve_map
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_METADATA
 from geonode.base.models import TopicCategory
+from guardian.shortcuts import assign_perm
 from pip._vendor import pkg_resources
 from exchange.tasks import create_record, delete_record
 from django.core.urlresolvers import reverse
@@ -47,11 +50,14 @@ def get_pip_version(project):
 def get_geoserver_version():
     try:
         ogc_server = settings.OGC_SERVER['default']
-        geoserver_url = '{}/rest/about/version.json'.format(ogc_server['LOCATION'].strip('/'))
-        resp = requests.get(geoserver_url, auth=(ogc_server['USER'], ogc_server['PASSWORD']))
+        geoserver_url = '{}/rest/about/version.json'.format(
+            ogc_server['LOCATION'].strip('/'))
+        resp = requests.get(
+            geoserver_url, auth=(ogc_server['USER'], ogc_server['PASSWORD']))
         version = resp.json()['about']['resource'][0]
-        return {'version': version['Version'], 'commit': version['Git-Revision'][:7]}
-    except:
+        return {'version': version['Version'],
+                'commit': version['Git-Revision'][:7]}
+    except:  # noqa
         return {'version': '', 'commit': ''}
 
 
@@ -120,8 +126,8 @@ def about_page(request, template='about.html'):
         'name': 'MapLoom',
         'website': 'http://prominentedge.com/projects/maploom.html',
         'repo': 'https://github.com/ROGUE-JCTD/MapLoom',
-        'boundless_repo': 'https://github.com/boundlessgeo/'
-                          + 'django-exchange-maploom',
+        'boundless_repo': ('https://github.com/boundlessgeo/'
+                           'django-exchange-maploom'),
         'version': maploom_version['version'],
         'commit': maploom_version['commit']
     }, {
@@ -146,8 +152,9 @@ def about_page(request, template='about.html'):
 
 def capabilities(request):
     """
-    The capabilities view is like the about page, but for consumption by code instead of humans.
-    It serves to provide information about the Exchange instance.
+    The capabilities view is like the about page, but for consumption
+    by code instead of humans. It serves to provide information about
+    the Exchange instance.
     """
     capabilities = {}
 
@@ -167,7 +174,7 @@ def capabilities(request):
     current_site = get_current_site(request)
     capabilities["site_name"] = current_site.name
 
-    return JsonResponse({'capabilities':  capabilities})
+    return JsonResponse({'capabilities': capabilities})
 
 
 def layer_metadata_detail(request, layername,
@@ -254,9 +261,10 @@ def get_unified_search_result_objects(hits):
 
     return objects
 
+
 # Function returns a generator searching recursively for a key in a dict
 def gen_dict_extract(key, var):
-    if hasattr(var,'iteritems'):
+    if hasattr(var, 'iteritems'):
         for k, v in var.iteritems():
             if k == key:
                 yield v
@@ -268,9 +276,11 @@ def gen_dict_extract(key, var):
                     for result in gen_dict_extract(key, d):
                         yield result
 
+
 # Checks if key is present in dictionary
 def key_exists(key, var):
     return any(True for _ in gen_dict_extract(key, var))
+
 
 def elastic_search(request, resourcetype='base'):
     import requests
@@ -302,12 +312,12 @@ def elastic_search(request, resourcetype='base'):
     fields = ['title', 'abstract', 'title_alternate']
 
     # This configuration controls what fields will be added to faceted search
-    # there is some special exception code later that combines the subtype search
-    # and facet with type
+    # there is some special exception code later that combines the subtype
+    # search and facet with type
     additional_facets = getattr(settings, 'ADDITIONAL_FACETS', {})
 
     facet_fields = ['type', 'subtype',
-              'owner__username', 'keywords', 'category', 'source_host']
+                    'owner__username', 'keywords', 'category', 'source_host']
 
     if additional_facets:
         facet_fields.extend(additional_facets.keys())
@@ -356,7 +366,6 @@ def elastic_search(request, resourcetype='base'):
     offset = int(parameters.get('offset', '0'))
     limit = int(parameters.get('limit', settings.API_LIMIT_PER_PAGE))
 
-
     # Text search
     query = parameters.get('q', None)
 
@@ -379,10 +388,10 @@ def elastic_search(request, resourcetype='base'):
 
     # only show registry, documents, layers, stories, and maps
     q = Q({"match": {"_type": "layer"}}) | Q(
-          {"match": {"type": "layer"}}) | Q(
-          {"match": {"type": "story"}}) | Q(
-          {"match": {"type": "document"}}) | Q(
-          {"match": {"type": "map"}})
+        {"match": {"type": "layer"}}) | Q(
+        {"match": {"type": "story"}}) | Q(
+        {"match": {"type": "document"}}) | Q(
+        {"match": {"type": "map"}})
     search = search.query(q)
 
     # Filter geonode layers by permissions
@@ -410,15 +419,16 @@ def elastic_search(request, resourcetype='base'):
     for fn in facet_fields:
         if fn:
             valid_facet_fields.append(fn)
-            search.aggs.bucket(fn, 'terms', field=fn, order={"_count": "desc"}, size=nfacets)
+            search.aggs.bucket(
+                fn, 'terms', field=fn, order={"_count": "desc"}, size=nfacets)
             # if there is a filter set in the parameters for this facet
             # add to the filters
             fp = parameters.getlist(fn)
             if not fp:
-                fp = parameters.getlist("%s__in"%(fn))
+                fp = parameters.getlist("%s__in" % (fn))
             if fp:
                 fq = Q({'terms': {fn: fp}})
-                if fn == 'type': # search across both type_exact and subtype
+                if fn == 'type':  # search across both type_exact and subtype
                     fq = fq | Q({'terms': {'subtype': fp}})
                 facet_filters.append(fq)
 
@@ -433,7 +443,7 @@ def elastic_search(request, resourcetype='base'):
     facet_results = {}
     for k in aggregations.to_dict():
         buckets = aggregations[k]['buckets']
-        if len(buckets)>0:
+        if len(buckets) > 0:
             lookup = None
             if k in facet_lookups:
                 lookup = facet_lookups[k]
@@ -442,14 +452,16 @@ def elastic_search(request, resourcetype='base'):
             # Default display to the id of the facet in case none is set
             if k in facet_settings:
                 fsettings.update(facet_settings[k])
-            if parameters.getlist(k): # Make sure list starts open when a filter is set
+            if parameters.getlist(k):
+                # Make sure list starts open when a filter is set
                 fsettings['open'] = True
-            facet_results[k] = {'settings': fsettings, 'facets':{}}
+            facet_results[k] = {'settings': fsettings, 'facets': {}}
 
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
-                bucket_dict = {'global_count': bucket_count, 'count': 0, 'display': bucket.key}
+                bucket_dict = {'global_count': bucket_count,
+                               'count': 0, 'display': bucket.key}
                 if lookup:
                     if bucket_key in lookup:
                         bucket_dict.update(lookup[bucket_key])
@@ -470,7 +482,8 @@ def elastic_search(request, resourcetype='base'):
             # Match exact phrase
             phrase = query.replace('"', '')
             search = search.query(
-                "multi_match", type='phrase_prefix', query=phrase, fields=fields)
+                "multi_match", type='phrase_prefix',
+                query=phrase, fields=fields)
         else:
             words = [
                 w for w in re.split(
@@ -480,18 +493,20 @@ def elastic_search(request, resourcetype='base'):
             for i, search_word in enumerate(words):
                 if i == 0:
                     word_query = Q(
-                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix',
+                        query=search_word, fields=fields)
                 elif search_word.upper() in ["AND", "OR"]:
                     pass
                 elif words[i - 1].upper() == "OR":
                     word_query = word_query | Q(
-                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix',
+                        query=search_word, fields=fields)
                 else:  # previous word AND this word
                     word_query = word_query & Q(
-                        "multi_match", type='phrase_prefix', query=search_word, fields=fields)
+                        "multi_match", type='phrase_prefix',
+                        query=search_word, fields=fields)
             # logger.debug('******* WORD_QUERY %s', word_query.to_dict())
             search = search.query(word_query)
-
 
     # Add the facet queries to the main search
     for fq in facet_filters:
@@ -499,7 +514,7 @@ def elastic_search(request, resourcetype='base'):
 
     # Add in has_time filter if set
     if has_time and has_time == 'true':
-        search = search.query(Q({'match':{'has_time': True}}))
+        search = search.query(Q({'match': {'has_time': True}}))
 
     # Add in Bounding Box filter
     if bbox:
@@ -541,18 +556,15 @@ def elastic_search(request, resourcetype='base'):
 
     if extent_start:
         q = Q(
-                {'range': {'temporal_extent_end': {'gte': extent_start}}}
-            )
+            {'range': {'temporal_extent_end': {'gte': extent_start}}})
         search = search.query(q)
 
     if extent_end:
         q = Q(
-                {'range': {'temporal_extent_start': {'lte': extent_end}}}
-            )
+            {'range': {'temporal_extent_start': {'lte': extent_end}}})
         search = search.query(q)
 
-
-     # Apply sort
+    # Apply sort
     if sort.lower() == "-date":
         search = search.sort({"date":
                               {"order": "desc",
@@ -588,19 +600,21 @@ def elastic_search(request, resourcetype='base'):
     aggregations = results.aggregations
     for k in aggregations.to_dict():
         buckets = aggregations[k]['buckets']
-        if len(buckets)>0:
+        if len(buckets) > 0:
             for bucket in buckets:
                 bucket_key = bucket.key
                 bucket_count = bucket.doc_count
                 try:
                     if bucket_count > 0:
-                        facet_results[k]['facets'][bucket_key]['count'] = bucket_count
+                        (facet_results[k]['facets'][bucket_key]
+                         ['count']) = bucket_count
                 except Exception as e:
                     facet_results['errors'] = "%s %s %s" % (k, bucket_key, e)
 
     # combine buckets for type and subtype and get rid of subtype bucket
     if 'subtype' in facet_results:
-        facet_results['type']['facets'].update(facet_results['subtype']['facets'])
+        facet_results['type']['facets'].update(
+            facet_results['subtype']['facets'])
         del facet_results['subtype']
 
     # Remove Empty Facets
@@ -642,10 +656,8 @@ def publish_service(request, pk):
     return redirect('services')
 
 
-from django.db.models.signals import pre_delete, post_save
-from django.dispatch import receiver
-
-@receiver(pre_delete, sender=Service, dispatch_uid='remove_record_from_registry')
+@receiver(pre_delete, sender=Service,
+          dispatch_uid='remove_record_from_registry')
 def remove_record_from_csw(sender, instance, using, **kwargs):
     """
     Delete all csw records associated with the service. We only
@@ -658,15 +670,12 @@ def remove_record_from_csw(sender, instance, using, **kwargs):
         delete_record(instance.uuid)
 
 
-from django.contrib.auth.models import Group
-from guardian.shortcuts import assign_perm
-
 @receiver(post_save, sender=Service)
 def service_post_save(sender, **kwargs):
     """
-    Assign CSW Manager permissions for all newly created Service instances. We only
-    run on service creation to avoid having to check for existence on each call
-    to Service.save.
+    Assign CSW Manager permissions for all newly created Service instances.
+    We only run on service creation to avoid having to check for existence
+    on each call to Service.save.
     """
     service, created = kwargs["instance"], kwargs["created"]
     if created:

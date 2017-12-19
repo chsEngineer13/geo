@@ -15,8 +15,10 @@ class GeoAxisOAuth2(BaseOAuth2):
     CLIENT_KEY = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_KEY', '')
     CLIENT_SECRET = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_SECRET', '')
     ID_KEY = 'user_id'
-    AUTHORIZATION_URL = 'https://' + HOST + '/ms_oauth/oauth2/endpoints/oauthservice/authorize'
-    ACCESS_TOKEN_URL = 'https://' + HOST + '/ms_oauth/oauth2/endpoints/oauthservice/tokens'
+    AUTHORIZATION_URL = 'https://{0}/ms_oauth/oauth2/endpoints/' \
+                        'oauthservice/authorize'.format(HOST)
+    ACCESS_TOKEN_URL = 'https://{0}/ms_oauth/oauth2/endpoints/' \
+                       'oauthservice/tokens'.format(HOST)
     DEFAULT_SCOPE = getattr(settings, 'SOCIAL_AUTH_GEOAXIS_SCOPE', '')
     REDIRECT_STATE = False
     ACCESS_TOKEN_METHOD = 'POST'
@@ -27,20 +29,21 @@ class GeoAxisOAuth2(BaseOAuth2):
         ('DN', 'DN'),
         ('uri', 'uri')
     ]
-    
+
     def auth_headers(self):
-        b64Val = base64.b64encode('{}:{}'.format(self.CLIENT_KEY, self.CLIENT_SECRET))
-        return {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                'Authorization': "Basic %s" % b64Val}
-    
+        b64Val = base64.b64encode('{}:{}'.format(
+            self.CLIENT_KEY, self.CLIENT_SECRET))
+        return {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            'Authorization': "Basic %s" % b64Val}
+
     def get_user_id(self, details, response):
         return details['uid']
 
     def get_user_details(self, response):
         """Return user details from GeoAxis account"""
-        fullname, first_name, last_name = self.get_user_names('',
-                                                              response.get('firstname'),
-                                                              response.get('lastname'))
+        fullname, first_name, last_name = self.get_user_names(
+            '', response.get('firstname'), response.get('lastname'))
         return {'username': response.get('username').lower(),
                 'email': response.get('email').lower(),
                 'fullname': fullname,
@@ -67,9 +70,11 @@ class GeoAxisOAuth2(BaseOAuth2):
             "personatypecode": "AAA",
             "uri": "\/ms_oauth\/resources\/userprofile\/me\/testuser"
         }
-        
-        
+
+
         """
-        response = self.get_json('https://' + self.HOST + '/ms_oauth/resources/userprofile/me',
-                                 params={'access_token': access_token}, headers={'Authorization': access_token})
+        response = self.get_json(
+            'https://' + self.HOST + '/ms_oauth/resources/userprofile/me',
+            params={'access_token': access_token},
+            headers={'Authorization': access_token})
         return response

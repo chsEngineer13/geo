@@ -120,6 +120,16 @@ Output will be in 2 files:
 1. `docker/data/pytest-results.xml` - pytest results
 2. `docker/data/coverage.xml` - coverage results
 
+To run pycodestyle and yamllint run the following command:
+
+```bash
+docker run -v $PWD:/code \
+           -w /code quay.io/boundlessgeo/sonar-maven-py3-alpine bash \
+           -e -c 'ls -las && . docker/devops/helper.sh && lint'
+```
+
+**Note:** `$PWD` is `exchange` root directory
+
 #### Questions
 If you have any questions feel free to reach out in the following `Boundless` slack channels:
 

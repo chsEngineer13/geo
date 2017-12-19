@@ -56,7 +56,8 @@ class GeonodeElasticsearchTest(ExchangeTest):
         es = Elasticsearch(settings.ES_URL)
         mappings = es.indices.get_mapping()
 
-        profile_mappings = mappings['profile-index']['mappings']['profile_index']['properties']
+        profile_mappings = mappings[
+            'profile-index']['mappings']['profile_index']['properties']
         profile_properties = {
             u'first_name': {
                 u'type': u'string',
@@ -94,7 +95,8 @@ class GeonodeElasticsearchTest(ExchangeTest):
         print profile_properties
         self.assertDictEqual(profile_mappings, profile_properties)
 
-        group_mappings = mappings['group-index']['mappings']['group_index']['properties']
+        group_mappings = mappings[
+            'group-index']['mappings']['group_index']['properties']
         group_properties = {
             'description': {
                 'type': 'string',
@@ -120,7 +122,8 @@ class GeonodeElasticsearchTest(ExchangeTest):
         }
         self.assertDictEqual(group_mappings, group_properties)
 
-        document_mappings = mappings['document-index']['mappings']['document_index']['properties']
+        document_mappings = mappings[
+            'document-index']['mappings']['document_index']['properties']
         document_properties = {
             'abstract': {
                 'type': 'string',
@@ -230,7 +233,8 @@ class GeonodeElasticsearchTest(ExchangeTest):
         }
         self.assertDictEqual(document_mappings, document_properties)
 
-        layer_mappings = mappings['layer-index']['mappings']['layer_index']['properties']
+        layer_mappings = mappings[
+            'layer-index']['mappings']['layer_index']['properties']
         layer_properties = {
             'abstract': {
                 'type': 'string',
@@ -369,7 +373,8 @@ class GeonodeElasticsearchTest(ExchangeTest):
         }
         self.assertDictEqual(layer_mappings, layer_properties)
 
-        map_mappings = mappings['map-index']['mappings']['map_index']['properties']
+        map_mappings = mappings[
+            'map-index']['mappings']['map_index']['properties']
         map_properties = {
             'abstract': {
                 'type': 'string',
@@ -479,7 +484,8 @@ class GeonodeElasticsearchTest(ExchangeTest):
         }
         self.assertDictEqual(map_mappings, map_properties)
 
-        story_mappings = mappings['story-index']['mappings']['story_index']['properties']
+        story_mappings = mappings[
+            'story-index']['mappings']['story_index']['properties']
         story_properties = {
             'abstract': {
                 'type': 'string',

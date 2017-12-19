@@ -17,18 +17,16 @@ class StoryAdmin(admin.ModelAdmin):
 
 class FrameAdmin(admin.ModelAdmin):
     list_display = ('id', 'title')
-    #list_filter = ('map',)
+    # list_filter = ('map',)
     search_fields = ('title', 'description',)
 
 
 class MarkerAdmin(admin.ModelAdmin):
     list_display = ('id', 'title')
-    #list_filter = ('map',)
+    # list_filter = ('map',)
     search_fields = ('title', 'description',)
 
 
 admin.site.register(Marker, MarkerAdmin)
 admin.site.register(Frame, FrameAdmin)
 admin.site.register(Story, StoryAdmin)
-
-

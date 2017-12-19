@@ -33,11 +33,13 @@ def parse_bbox_from_html(html):
         return [float(x) for x in bboxes[0]]
     return None
 
+
 class TestBBOXParser(ExchangeTest):
 
     def test_invalid_bbox(self):
-        self.assertIsNone(parse_bbox_from_html(''), 
+        self.assertIsNone(parse_bbox_from_html(''),
                           'BBOX parser failed to fail properly')
+
 
 class UploaderMixin:
     # Upload a shapefile and create a new layer.
@@ -97,7 +99,7 @@ class UploaderMixin:
     # @param uri       Uri to the layer info, appends 'remove' to the end.
     #
     def drop_layer(self, uri=None):
-        working_uri = uri+'/remove'
+        working_uri = uri + '/remove'
         drop_r = self.client.post(working_uri, follow=False)
         self.assertEqual(drop_r.status_code, 302,
                          "Did not return expected forwaring code!")
@@ -128,13 +130,13 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
     #
     def test_geogig_upload(self):
         data_path = './test_point.'
-        shapefile = [data_path+x for x in ['prj', 'shp', 'shx', 'dbf']]
+        shapefile = [data_path + x for x in ['prj', 'shp', 'shx', 'dbf']]
 
         shapefile = {
-            'base_file': data_path+'shp',
-            'dbf_file': data_path+'dbf',
-            'shx_file': data_path+'shx',
-            'prj_file': data_path+'prj'
+            'base_file': data_path + 'shp',
+            'dbf_file': data_path + 'dbf',
+            'shx_file': data_path + 'shx',
+            'prj_file': data_path + 'prj'
         }
 
         params = {
@@ -170,10 +172,10 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
         data_path = './bbox.'
 
         shapefile = {
-            'base_file': data_path+'shp',
-            'dbf_file': data_path+'dbf',
-            'shx_file': data_path+'shx',
-            'prj_file': data_path+'prj'
+            'base_file': data_path + 'shp',
+            'dbf_file': data_path + 'dbf',
+            'shx_file': data_path + 'shx',
+            'prj_file': data_path + 'prj'
         }
 
         params = {
@@ -231,6 +233,7 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
                                 s_geogig_bbox, s_bbox
                             ))
 
+
 @pytest.mark.skipif(settings.ES_SEARCH is False,
                     reason="Only run if using unified search")
 class NonAdminUploadTest(UploaderMixin, ExchangeTest):
@@ -253,13 +256,13 @@ class NonAdminUploadTest(UploaderMixin, ExchangeTest):
     #
     def test_geogig_upload(self):
         data_path = './test_point.'
-        shapefile = [data_path+x for x in ['prj', 'shp', 'shx', 'dbf']]
+        shapefile = [data_path + x for x in ['prj', 'shp', 'shx', 'dbf']]
 
         shapefile = {
-            'base_file': data_path+'shp',
-            'dbf_file': data_path+'dbf',
-            'shx_file': data_path+'shx',
-            'prj_file': data_path+'prj'
+            'base_file': data_path + 'shp',
+            'dbf_file': data_path + 'dbf',
+            'shx_file': data_path + 'shx',
+            'prj_file': data_path + 'prj'
         }
 
         params = {

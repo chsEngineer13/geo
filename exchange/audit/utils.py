@@ -82,9 +82,9 @@ def get_resource(instance):
         instance = instance.resource
     # create resource dict
     resource = {
-       "uuid": instance.uuid,
-       "title": instance.title,
-       "type": resource_type
+        "uuid": instance.uuid,
+        "title": instance.title,
+        "type": resource_type
     }
     return resource
 

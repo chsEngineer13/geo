@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from exchange.storyscapes.models.marker import Marker
-from exchange.storyscapes.utils import datetime_to_seconds, make_point, parse_date_time
+from exchange.storyscapes.utils import (
+    datetime_to_seconds, make_point, parse_date_time)
 
 import json
 
@@ -33,7 +34,8 @@ class MarkerForm(forms.ModelForm):
             elif isinstance(geom, dict):
                 geom = json.dumps(geom)
             else:
-                self._my_errors['geometry'] = 'geometry should be string or dict'
+                self._my_errors[
+                    'geometry'] = 'geometry should be string or dict'
             self.data['the_geom'] = geom
         lat, lon = self.parse_float('lat'), self.parse_float('lon')
         if all([lat, lon]):
@@ -63,7 +65,8 @@ class MarkerForm(forms.ModelForm):
             except ValueError, e:
                 err = str(e)
             if val is not None and parsed is None:
-                err = 'Unable to read as date : %s, please format as yyyy-mm-dd' % val
+                err = ('Unable to read as date : {0}, please format '
+                       'as yyyy-mm-dd').format(val)
             if err:
                 self._my_errors[key] = err
             if parsed:

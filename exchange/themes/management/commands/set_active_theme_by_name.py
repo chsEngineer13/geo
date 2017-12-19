@@ -7,13 +7,13 @@ from optparse import make_option
 class Command(BaseCommand):
     help = 'Set a specific Theme by name as the active Theme.'
     option_list = BaseCommand.option_list + (
-        make_option('--t',
+        make_option(
+            '--t',
             '--theme_name',
             action='store',
             dest='theme_name',
             type='string'),
-        )
-
+    )
 
     def handle(self, *args, **options):
         theme_name = options['theme_name']
@@ -23,7 +23,8 @@ class Command(BaseCommand):
             try:
                 theme = Theme.objects.get(name=theme_name)
             except Theme.DoesNotExist:
-                raise CommandError('Theme name "%s" does not exist' % theme_name)
+                raise CommandError(
+                    'Theme name "%s" does not exist' % theme_name)
 
             theme.active_theme = True
             theme.save()

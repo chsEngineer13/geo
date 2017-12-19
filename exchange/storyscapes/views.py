@@ -13,7 +13,8 @@ from django.template import RequestContext
 
 from geonode.utils import resolve_object
 
-from geonode.layers.views import _PERMISSION_MSG_GENERIC, _PERMISSION_MSG_VIEW, _PERMISSION_MSG_DELETE
+from geonode.layers.views import (
+    _PERMISSION_MSG_GENERIC, _PERMISSION_MSG_VIEW, _PERMISSION_MSG_DELETE)
 
 _PERMISSION_MSG_LOGIN = 'You must be logged in to save this story'
 _PERMISSION_MSG_SAVE = 'You are not permitted to save or edit this story'
@@ -22,17 +23,18 @@ _PERMISSION_MSG_SAVE = 'You are not permitted to save or edit this story'
 def save_story(request, storyid):
     if not request.user.is_authenticated():
         return HttpResponse(
-                _PERMISSION_MSG_LOGIN,
-                status=401,
-                content_type="text/plain"
+            _PERMISSION_MSG_LOGIN,
+            status=401,
+            content_type="text/plain"
         )
 
     story_obj = Story.objects.get(id=storyid)
-    if not request.user.has_perm('change_resourcebase', story_obj.get_self_resource()):
+    if not request.user.has_perm(
+            'change_resourcebase', story_obj.get_self_resource()):
         return HttpResponse(
-                _PERMISSION_MSG_SAVE,
-                status=401,
-                content_type="text/plain"
+            _PERMISSION_MSG_SAVE,
+            status=401,
+            content_type="text/plain"
         )
 
     try:
@@ -40,9 +42,9 @@ def save_story(request, storyid):
         return HttpResponse(json.dumps(story_obj.viewer_json(request.user)))
     except ValueError as e:
         return HttpResponse(
-                "The server could not understand the request." + str(e),
-                content_type="text/plain",
-                status=400
+            "The server could not understand the request." + str(e),
+            content_type="text/plain",
+            status=400
         )
 
 
@@ -69,7 +71,8 @@ def new_chapter_json(request):
         map_obj.set_default_permissions()
 
         # If the body has been read already, use an empty string.
-        # See https://github.com/django/django/commit/58d555caf527d6f1bdfeab14527484e4cca68648
+        # See https://github.com/django/django/commit/
+        # 58d555caf527d6f1bdfeab14527484e4cca68648
         # for a better exception to catch when we move to Django 1.7.
         try:
             body = request.body
@@ -108,7 +111,8 @@ def new_chapter_json(request):
 
 def draft_view(request, story_id, template='composer/editor.html'):
 
-    story_obj = _resolve_story(request, story_id, 'base.change_resourcebase', _PERMISSION_MSG_SAVE)
+    story_obj = _resolve_story(
+        request, story_id, 'base.change_resourcebase', _PERMISSION_MSG_SAVE)
 
     config = story_obj.viewer_json(request.user)
 
@@ -117,13 +121,14 @@ def draft_view(request, story_id, template='composer/editor.html'):
         'story': story_obj
     }))
 
+
 @login_required
 def story_draft(request, storyid, template):
     return draft_view(request, storyid, template)
 
 
 def _resolve_story(request, id, permission='base.change_resourcebase',
-                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
+                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the Map by the provided typename and check the optional permission.
     '''
@@ -138,9 +143,9 @@ def _resolve_story(request, id, permission='base.change_resourcebase',
 def new_story_json(request):
     if not request.user.is_authenticated():
         return HttpResponse(
-                'You must be logged in to save new maps',
-                content_type="text/plain",
-                status=401
+            'You must be logged in to save new maps',
+            content_type="text/plain",
+            status=401
         )
     story_obj = Story(owner=request.user)
     story_obj.thumbnail_url = '/static/geonode/img/missing_thumb.png'
@@ -158,19 +163,22 @@ def new_story_json(request):
         return HttpResponse(str(e), status=400)
     else:
         return HttpResponse(
-                json.dumps({'id': story_obj.id}),
-                status=200,
-                content_type='application/json'
+            json.dumps({'id': story_obj.id}),
+            status=200,
+            content_type='application/json'
         )
 
 
-def story_view(request, storyid, snapshot=None, template='viewer/story_viewer.html'):
+def story_view(
+        request, storyid, snapshot=None,
+        template='viewer/story_viewer.html'):
     """
     The view that returns the map viewer opened to
     the story with the given ID.
     """
 
-    story_obj = _resolve_story(request, storyid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    story_obj = _resolve_story(
+        request, storyid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     if snapshot is None:
         config = story_obj.viewer_json(request.user)
@@ -180,17 +188,20 @@ def story_view(request, storyid, snapshot=None, template='viewer/story_viewer.ht
     }))
 
 
-def story_detail(request, story_id, snapshot=None, template='viewer/story_detail.html'):
+def story_detail(
+        request, story_id, snapshot=None, template='viewer/story_detail.html'):
     '''
     The view that show details of each map
     '''
 
-    story_obj = _resolve_story(request, story_id, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    story_obj = _resolve_story(
+        request, story_id, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     if request.user != story_obj.owner and not request.user.is_superuser:
-        Story.objects.filter(id=story_obj.id).update(popular_count=F('popular_count') + 1)
+        Story.objects.filter(
+            id=story_obj.id).update(popular_count=F('popular_count') + 1)
 
     config = story_obj.viewer_json(request.user)
 
@@ -207,13 +218,12 @@ def story_detail(request, story_id, snapshot=None, template='viewer/story_detail
         'resource': story_obj,
         'layers': layers,
         'keywords': keywords,
-        #'permissions_json': _perms_info_json(map_obj),
-        #'documents': get_related_documents(map_obj),
-        #'keywords_form': keywords_form,
-        #'published_form': published_form,
-        #'thumbnail': map_thumbnail,
-        #'thumb_form': map_thumb_form
+        # 'permissions_json': _perms_info_json(map_obj),
+        # 'documents': get_related_documents(map_obj),
+        # 'keywords_form': keywords_form,
+        # 'published_form': published_form,
+        # 'thumbnail': map_thumbnail,
+        # 'thumb_form': map_thumb_form
     }
 
     return render_to_response(template, RequestContext(request, context_dict))
-

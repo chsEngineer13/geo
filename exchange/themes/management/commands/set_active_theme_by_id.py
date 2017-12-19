@@ -7,13 +7,13 @@ from optparse import make_option
 class Command(BaseCommand):
     help = 'Set a specific Theme by id as the active Theme.'
     option_list = BaseCommand.option_list + (
-        make_option('--t',
+        make_option(
+            '--t',
             '--theme_id',
             action='store',
             dest='theme_id',
             type='int'),
-        )
-
+    )
 
     def handle(self, *args, **options):
         theme_id = options['theme_id']

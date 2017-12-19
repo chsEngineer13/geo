@@ -1,4 +1,5 @@
-from tastypie.authentication import BasicAuthentication, SessionAuthentication, MultiAuthentication
+from tastypie.authentication import (
+    BasicAuthentication, SessionAuthentication, MultiAuthentication)
 from tastypie.authorization import Authorization
 from tastypie.exceptions import BadRequest
 from tastypie.http import HttpNotFound
@@ -104,27 +105,36 @@ class FileItemResource(Resource):
         # full_hydrate does the heavy lifting mapping the
         # POST-ed payload key/values to object attribute/values
         bundle = self.full_hydrate(bundle)
-        filename_name, file_extension = os.path.splitext(bundle.data[u'file'].name)
+        filename_name, file_extension = os.path.splitext(
+            bundle.data[u'file'].name)
 
-        # -- only allow uploading of files of types specified in FILESERVICE_CONFIG.types_allowed
+        # -- only allow uploading of files of types specified
+        # in FILESERVICE_CONFIG.types_allowed
         types_allowed = helpers.get_fileservice_whitelist()
-        if '*' not in types_allowed and file_extension.lower() not in types_allowed:
-            raise BadRequest('file type is not whitelisted in FILESERVICE_CONFIG.types_allowed')
+        if '*' not in types_allowed and file_extension.lower() \
+                not in types_allowed:
+            raise BadRequest(
+                'file type is not whitelisted in '
+                'FILESERVICE_CONFIG.types_allowed')
 
         file_data = bundle.data[u'file'].read()
         # TODO: support optional unique name generation from sha1 and uuid.
-        #  file_sha1 = hashlib.sha1(file_data).hexdigest() # is file_data only the bytes without filename etc?
+        #  file_sha1 = hashlib.sha1(file_data).hexdigest()
+        #  is file_data only the bytes without filename etc?
         #  if file_extension:
         #    filename_name = '{}{}'.format(file_sha1, file_extension)
         #  else:
         #    filename_name = file_sha1
 
-        # TODO: if the filename uploaded is not a valid sha1, warn that it should at least be unique.
+        # TODO: if the filename uploaded is not a valid sha1,
+        # warn that it should at least be unique.
         bundle.obj.name = bundle.data[u'file'].name
-        with open(helpers.get_filename_absolute(bundle.data[u'file'].name), 'wb+') as destination_file:
+        with open(helpers.get_filename_absolute(
+                bundle.data[u'file'].name), 'wb+') as destination_file:
             destination_file.write(file_data)
 
-        # remove the file object passed in so that the response is more concise about what this file will be referred to
+        # remove the file object passed in so that the response is
+        #  more concise about what this file will be referred to
         bundle.data.pop(u'file', None)
         return bundle
 
@@ -152,22 +162,26 @@ class FileItemResource(Resource):
             # --- view
             url(r"^(?P<resource_name>%s)/view/(?P<name>[\w\d_.-]+)%s$" %
                 (self._meta.resource_name, trailing_slash()),
-                self.wrap_view(view_action), name='api_fileitem_{}'.format(view_action)),
+                self.wrap_view(view_action), name='api_fileitem_{}'.format(
+                    view_action)),
 
             url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/view%s$" %
                 (self._meta.resource_name, trailing_slash()),
-                self.wrap_view(view_action), name='api_fileitem_{}'.format(view_action)),
+                self.wrap_view(view_action), name='api_fileitem_{}'.format(
+                    view_action)),
 
             url(r"^(?P<resource_name>%s)/(?P<name>[\w\d_.-]+)/view%s$" %
                 (self._meta.resource_name, trailing_slash()),
-                self.wrap_view(view_action), name='api_fileitem_{}'.format(view_action)),
+                self.wrap_view(view_action), name='api_fileitem_{}'.format(
+                    view_action)),
 
             # --- dispatch
             url(r"^(?P<resource_name>%s)/(?P<name>[\w\d_.-]+)/$" %
                 self._meta.resource_name, self.wrap_view('dispatch_detail'),
                 name="api_dispatch_detail_name"),
 
-            url(r"^(?P<resource_name>%s)/(?P<id>[\d]+)/$" % self._meta.resource_name,
+            url(r"^(?P<resource_name>%s)/(?P<id>[\d]+)/$"
+                % self._meta.resource_name,
                 self.wrap_view('dispatch_detail'),
                 name="api_dispatch_detail"),
         ]
@@ -189,30 +203,40 @@ class FileItemResource(Resource):
         if file_item_name:
             filename_absolute = helpers.get_filename_absolute(file_item_name)
             if os.path.isfile(filename_absolute):
-                response = serve(request, os.path.basename(filename_absolute), os.path.dirname(filename_absolute))
-                response['Content-Disposition'] = 'attachment; filename="{}"'.format(
+                response = serve(
+                    request, os.path.basename(
+                        filename_absolute), os.path.dirname(filename_absolute))
+                response['Content-Disposition'] = 'attachment; ' \
+                                                  'filename="{}"'.format(
                     os.path.basename(filename_absolute))
 
         if not response:
-            response = self.create_response(request=request, data={}, response_class=HttpNotFound)
+            response = self.create_response(
+                request=request, data={}, response_class=HttpNotFound)
 
         return response
 
     def view(self, request, **kwargs):
         '''
-        allow a file to be viewed as opposed to download. This is particularly needed when a video file is stored
-        in the fileservice and user wants to be able to use a view the video as opposed to having to download it
-        first. It passes the serving of the file to nginx/apache which will return all the proper headers allowing,
-        say, html5's video viewer's 'seek' indicator/knob to work. Otherwise the video is only played sequentially
+        allow a file to be viewed as opposed to download. This is particularly
+        needed when a video file is stored
+        in the fileservice and user wants to be able to use a view the
+        video as opposed to having to download it
+        first. It passes the serving of the file to nginx/apache which will
+        return all the proper headers allowing,
+        say, html5's video viewer's 'seek' indicator/knob to work. Otherwise
+         the video is only played sequentially
 
-        Note that nginx/apache need to be configured accordingly. nginx for example:
+        Note that nginx/apache need to be configured accordingly. nginx
+        for example:
         location /var/lib/geoserver_data/file-service-store/ {
            # forces requests to be authorized
            internal;
            alias   /var/lib/geoserver_data/file-service-store/;
         }
 
-        for apache, need to install xsendfile module, enable it, set the path and then
+        for apache, need to install xsendfile module, enable it, set
+        the path and then
         XSendFile on
         XSendFilePath /var/lib/geoserver_data/file-service-store
 
@@ -221,7 +245,8 @@ class FileItemResource(Resource):
         or
         /fileservice/med.mp4/view
 
-        Note that media players tend to require the route to end with the filename like /fileservice/view/med.mp4
+        Note that media players tend to require the route to end with the
+        filename like /fileservice/view/med.mp4
         '''
 
         # method check to avoid bad requests
@@ -234,7 +259,8 @@ class FileItemResource(Resource):
         mime = MimeTypes()
         mime_type = mime.guess_type(url)
         response = HttpResponse(content_type=mime_type[0])
-        file_with_route = smart_str('{}{}'.format(helpers.get_fileservice_dir(), file_item_name))
+        file_with_route = smart_str('{}{}'.format(
+            helpers.get_fileservice_dir(), file_item_name))
         # apache header
         response['X-Sendfile'] = file_with_route
         # nginx header

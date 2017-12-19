@@ -11,4 +11,5 @@ class ThemeAdmin(admin.ModelAdmin):
             return ['background_logo', 'primary_logo', 'banner_logo']
         return []
 
+
 admin.site.register(Theme, ThemeAdmin)
