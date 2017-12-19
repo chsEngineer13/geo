@@ -4,8 +4,6 @@
 function lint {
     echo "-------> exchange pycodestyle"
     pycodestyle --show-source --show-pep8 exchange
-    echo "-------> geonode pycodestyle"
-    pycodestyle --show-source --show-pep8 vendor/geonode
     echo "-------> docker-compose yamllint"
     yamllint -d relaxed docker-compose.yml
 }
