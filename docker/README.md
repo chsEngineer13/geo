@@ -125,7 +125,7 @@ To run pycodestyle and yamllint run the following command:
 ```bash
 docker run -v $PWD:/code \
            -w /code quay.io/boundlessgeo/sonar-maven-py3-alpine bash \
-           -e -c 'ls -las && . docker/devops/helper.sh && lint'
+           -e -c '. docker/devops/helper.sh && lint'
 ```
 
 **Note:** `$PWD` is `exchange` root directory

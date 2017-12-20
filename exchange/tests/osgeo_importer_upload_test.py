@@ -55,12 +55,13 @@ class UploaderMixin:
                 data = stream.read()
             upload = SimpleUploadedFile(filename, data)
             outfiles.append(upload)
-            # Check if filename has been configured and apply default 
+            # Check if filename has been configured and apply default
             # configuration if not
             if buildconfigs:
-                configs.append({'upload_file_name': filename, 'config':{'index': idx}})
+                configs.append(
+                    {'upload_file_name': filename, 'config': {'index': idx}})
             idx = idx + 1
-            
+
         response = self.client.post(
             reverse('uploads-new-json'),
             {'file': outfiles,
@@ -69,7 +70,7 @@ class UploaderMixin:
         content = json.loads(response.content)
         logger.debug('UPLOAD RESPONSE -------- %s', content)
         self.assertEqual(response.status_code, 200)
-        
+
         upload_id = content['id']
         upload_layers = UploadLayer.objects.filter(upload_id=upload_id)
         self.upload_layers = upload_layers
@@ -77,8 +78,8 @@ class UploaderMixin:
         retval = []
 
         response = self.client.get('/importer-api/data-layers',
-                                   content_type='application/json' )
-        
+                                   content_type='application/json')
+
         for upload_layer in upload_layers:
             for cfg in configs:
                 logger.debug('CFG: %s', cfg)
@@ -91,24 +92,25 @@ class UploaderMixin:
         logger.debug('Upload Files result: %s', retval)
         return retval
 
-    # Used for backwards compatibility with tests created using geonode importer
+    # Used for backwards compatibility with tests created using geonode
+    # importer
     def upload_shapefile(self, shapefiles, uploaderParams={}):
-        files=[]
+        files = []
         for f in shapefiles:
             files.append(shapefiles[f])
-        configs=[
+        configs = [
             {
                 'upload_file_name': shapefiles['base_file'],
-                'config': {'index':0}
+                'config': {'index': 0}
             }
         ]
         configs[0]['config'].update(uploaderParams)
         return self.upload_files(files, configs)[0]
 
     def drop_layer(self, uri=None):
-        #working_uri = uri+'/remove'
-        #drop_r = self.client.post(working_uri, follow=False)
-        #self.assertEqual(drop_r.status_code, 302,
+        # working_uri = uri+'/remove'
+        # drop_r = self.client.post(working_uri, follow=False)
+        # self.assertEqual(drop_r.status_code, 302,
         #                "Did not return expected forwaring code!")
         # This is a remnant for tests from the old "one layer" uploader
         # Just get rid of all uploads from this session
@@ -116,11 +118,12 @@ class UploaderMixin:
 
     def layer_uri(self, uploadlayer):
         return '/layers/%s' % uploadlayer.layer_name
-    
+
     def drop_layers(self):
         for ul in self.upload_layers:
             resp = self.client.delete('/importer-api/data/%s' % ul.id)
             self.assertEqual(resp.status_code, 301)
+
 
 class UploadLayerTest(UploaderMixin, ExchangeTest):
 
@@ -144,7 +147,7 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
         configs = [
             {
                 'upload_file_name': 'boxes_with_end_date.shp',
-                'config': 
+                'config':
                     {
                         'index': 0,
                         'convert_to_date': ['date', 'enddate'],

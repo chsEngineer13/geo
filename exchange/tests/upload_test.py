@@ -62,8 +62,8 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
         self.drop_layers()
 
     # Test an upload to geogig of a basic single-point shapefile.
-    #    
-    @pytest.mark.skip(reason="Geogig not quite working with configured Geoserver")
+    @pytest.mark.skip(
+        reason="Geogig not quite working with configured Geoserver")
     def test_geogig_upload(self):
         data_path = './test_point.'
 
@@ -81,7 +81,6 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
 
         self._test_meta(shapefile, uploaderParams=params)
 
-
     # Test uploading a basic geojson file.
     # 20 March 2017: Test being skipped as not all uploaders
     #                support GeoJson
@@ -95,7 +94,8 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
     #  against when it has not been uploaded to GeoGig.
     #
     # Refs: NODE-804
-    @pytest.mark.skip(reason="Geogig not quite working with configured Geoserver")
+    @pytest.mark.skip(
+        reason="Geogig not quite working with configured Geoserver")
     def test_bbox_issues(self):
         data_path = './test_point.'
 
@@ -178,7 +178,8 @@ class NonAdminUploadTest(UploaderMixin, ExchangeTest):
 
     # Test an upload to geogig of a basic single-point shapefile.
     #
-    @pytest.mark.skip(reason="Geogig not quite working with configured Geoserver")
+    @pytest.mark.skip(
+        reason="Geogig not quite working with configured Geoserver")
     def test_geogig_upload(self):
         data_path = './test_point.'
         shapefile = [data_path + x for x in ['prj', 'shp', 'shx', 'dbf']]

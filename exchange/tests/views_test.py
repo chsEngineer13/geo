@@ -71,6 +71,7 @@ class AboutPageTest(ViewTestCase):
     def test(self):
         self.doit()
 
+
 class AutocompleteEmptyPageTest(ViewTestCase):
 
     def setUp(self):
@@ -186,8 +187,11 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         # Layer
         # TODO: Upload fails sometimes especially with raster
         files = ['./relief_san_andres.tif', './boxes_with_end_date.zip']
-        configs = [{'config':{'index': 0}, 'upload_file_name': 'relief_san_andres.tif'},
-                   {'config':{'index': 0}, 'upload_file_name': 'boxes_with_end_date.shp'}]
+        configs = [
+            {'config': {'index': 0},
+             'upload_file_name': 'relief_san_andres.tif'},
+            {'config': {'index': 0},
+             'upload_file_name': 'boxes_with_end_date.shp'}]
         # Upload the layer
         upload_layers = self.upload_files(files, configs)
         for upload_layer in upload_layers:
@@ -195,7 +199,7 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
                 test_layer = Layer.objects.get(name=upload_layer.layer_name)
             if upload_layer.upload_file.name == 'boxes_with_end_date.shp':
                 test_layer2 = Layer.objects.get(name=upload_layer.layer_name)
-       
+
         # test_layers should hold test layer objects
         # abstracts
         test_layer.abstract = 'hello world'
@@ -219,8 +223,7 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         # make sure test_layer date is before test_layer2
         test_layer.date = datetime.datetime.now()
         test_layer2.date = test_layer.date + datetime.timedelta(hours=1)
-        
-        
+
         # save
         test_layer.save()
         test_layer2.save()
@@ -496,8 +499,9 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         self.assertEqual(
             search_results['objects'][1]['id'], self.test_map.id)
         # test_layer comes last
-        self.assertEqual(search_results['objects'][2]['id'], self.test_layer.id)
-    
+        self.assertEqual(
+            search_results['objects'][2]['id'], self.test_layer.id)
+
     @pytest.mark.skip(reason='title bug for raster layers including full path')
     def test_titlesortd(self):
         # reverse alphabetical order
@@ -553,7 +557,9 @@ class UnifiedSearchTest(ViewTestCase, UploaderMixin):
         self.doit()
         search_results = json.loads(self.response.content)
         self.assertEqual(search_results['meta']['total_count'], 2)
-        self.assertEqual(search_results['meta']['facets']['type']['facets']['layer']['count'], 1)
+        self.assertEqual(
+            search_results[
+                'meta']['facets']['type']['facets']['layer']['count'], 1)
         self.assertEqual(len(search_results['objects']), 2)
 
     @pytest.mark.skip(reason='Need to add temporal extent to test layers/map')

@@ -29,6 +29,7 @@ if [[ $TASK != 'worker' ]]; then
   $manage loaddata default_users
   $manage loaddata base_resources
   $manage loaddata /code/docker/exchange/docker_oauth_apps.json
+  $manage rebuild_index
   pip freeze
   # anywhere integration
   if [[ -f /code/vendor/exchange-mobile-extension/setup.py ]]; then
