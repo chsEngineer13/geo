@@ -14,7 +14,7 @@ class GeonodeElasticsearchTest(ExchangeTest):
     def setUp(self):
         super(GeonodeElasticsearchTest, self).setUp()
         self.login()
-
+        call_command('rebuild_index')
         # connect to the ES instance
         connections.create_connection(hosts=[settings.ES_URL])
 
