@@ -25,6 +25,7 @@ node {
         // ensure docker volumes are cleared, build, wait for startup
         sh """
           docker-compose down
+          docker rm -f \$(docker ps -aq) || echo "no containers to remove"
           docker system prune -f
           docker-compose up --build --force-recreate -d
           echo "Waiting for exchange to finish loading"
