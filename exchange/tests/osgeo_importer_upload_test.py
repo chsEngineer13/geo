@@ -44,12 +44,23 @@ class UploaderMixin:
         from geonode.layers.models import Layer
         from osgeo_importer.models import UploadLayer
         outfiles = []
+        buildconfigs = False
+        if configs is None:
+            buildconfigs = True
+            configs = []
         for filename in filenames:
+            idx = 0
             path = self.get_file_path(filename)
             with open(path) as stream:
                 data = stream.read()
             upload = SimpleUploadedFile(filename, data)
             outfiles.append(upload)
+            # Check if filename has been configured and apply default 
+            # configuration if not
+            if buildconfigs:
+                configs.append({'upload_file_name': filename, 'config':{'index': idx}})
+            idx = idx + 1
+            
         response = self.client.post(
             reverse('uploads-new-json'),
             {'file': outfiles,
@@ -58,44 +69,58 @@ class UploaderMixin:
         content = json.loads(response.content)
         logger.debug('UPLOAD RESPONSE -------- %s', content)
         self.assertEqual(response.status_code, 200)
-        uls = UploadLayer.objects.all()
-        logger.debug(
-            'There are -------------- %s ------------------- Upload Layers',
-            uls.count())
-        for testul in uls:
-            logger.debug(
-                'UploadLayer %s %s %s',
-                testul.id, testul.task_id, testul.import_status)
-        # Configure Uploaded Files
+        
         upload_id = content['id']
         upload_layers = UploadLayer.objects.filter(upload_id=upload_id)
+        self.upload_layers = upload_layers
 
         retval = []
 
         response = self.client.get('/importer-api/data-layers',
-                                   content_type='application/json')
-        logger.debug('UPLOAD LAYERS %s', response.content)
-        for testul in uls:
-            logger.debug(
-                'UploadLayer %s %s %s', testul.id, testul.task_id,
-                testul.import_status)
-
+                                   content_type='application/json' )
+        
         for upload_layer in upload_layers:
             for cfg in configs:
                 logger.debug('CFG: %s', cfg)
-                config = cfg['config']
-                config['upload_layer_id'] = upload_layer.id
-                logger.debug('CONFIG: %s', config)
-                import_object(upload_layer.upload_file.id, config)
-                retval.append(upload_layer)
+                if cfg['upload_file_name'] == upload_layer.upload_file.name:
+                    config = cfg['config']
+                    config['upload_layer_id'] = upload_layer.id
+                    logger.debug('CONFIG: %s', config)
+                    import_object(upload_layer.upload_file.id, config)
+                    retval.append(upload_layer)
+        logger.debug('Upload Files result: %s', retval)
         return retval
 
-    def drop_layer(self, uri=None):
-        working_uri = uri + '/remove'
-        drop_r = self.client.post(working_uri, follow=False)
-        self.assertEqual(drop_r.status_code, 302,
-                         "Did not return expected forwaring code!")
+    # Used for backwards compatibility with tests created using geonode importer
+    def upload_shapefile(self, shapefiles, uploaderParams={}):
+        files=[]
+        for f in shapefiles:
+            files.append(shapefiles[f])
+        configs=[
+            {
+                'upload_file_name': shapefiles['base_file'],
+                'config': {'index':0}
+            }
+        ]
+        configs[0]['config'].update(uploaderParams)
+        return self.upload_files(files, configs)[0]
 
+    def drop_layer(self, uri=None):
+        #working_uri = uri+'/remove'
+        #drop_r = self.client.post(working_uri, follow=False)
+        #self.assertEqual(drop_r.status_code, 302,
+        #                "Did not return expected forwaring code!")
+        # This is a remnant for tests from the old "one layer" uploader
+        # Just get rid of all uploads from this session
+        self.drop_layers()
+
+    def layer_uri(self, uploadlayer):
+        return '/layers/%s' % uploadlayer.layer_name
+    
+    def drop_layers(self):
+        for ul in self.upload_layers:
+            resp = self.client.delete('/importer-api/data/%s' % ul.id)
+            self.assertEqual(resp.status_code, 301)
 
 class UploadLayerTest(UploaderMixin, ExchangeTest):
 
@@ -118,8 +143,8 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
         files = ['./boxes_with_end_date.zip']
         configs = [
             {
-                'upload_file_name': 'boxes_with_end_date.zip',
-                'config':
+                'upload_file_name': 'boxes_with_end_date.shp',
+                'config': 
                     {
                         'index': 0,
                         'convert_to_date': ['date', 'enddate'],
@@ -133,6 +158,9 @@ class UploadLayerTest(UploaderMixin, ExchangeTest):
         upload_layers = self.upload_files(files, configs)
         logger.debug('Upload %s', upload_layers)
         layername = upload_layers[0].layer_name
+        logger.debug('Layer Name %s', layername)
+        for l in Layer.objects.all():
+            logger.debug('Layer %s', l)
 
         layer = Layer.objects.get(name=layername)
         self.assertEqual(layer.temporal_extent_start,
