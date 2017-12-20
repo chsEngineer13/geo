@@ -21,14 +21,30 @@ node {
           """
       }
 
-      stage('Unit-Tests'){
-        // ensure docker volumes are cleared, build, wait for startup and test + cleanup volumes
+      stage('Set-Up'){
+        // ensure docker volumes are cleared, build, wait for startup
         sh """
           docker-compose down
           docker system prune -f
-          docker-compose up --build --force-recreate
+          docker-compose up --build --force-recreate -d
+          echo "Waiting for exchange to finish loading"
+          echo "..."
+          curl http://ron-swanson-quotes.herokuapp.com/v2/quotes || echo "API is down"
+          echo "..."
           sleep 120
-          docker-compose exec exchange /bin/bash -c /code/docker/exchange/run_tests.sh
+          """
+      }
+
+      stage('Unit-Tests'){
+         // test
+        sh """
+          docker exec exchange /bin/bash -c /code/docker/exchange/run_tests.sh
+          """
+      }
+
+      stage('Tear-Down'){
+        // cleanup volumes
+        sh """
           docker-compose down
           docker system prune -f
           """

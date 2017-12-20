@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Linter
+# Code style checks
 function lint {
     echo "-------> exchange pycodestyle"
     pycodestyle exchange --ignore=E722,E731
@@ -8,7 +8,7 @@ function lint {
     yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}}}" docker-compose.yml
 }
 
-# Jenkins Specific function for builds on master branch, requires sonar auth token
+# Jenkins specific function for builds on master branch, requires sonar auth token
 function sonar-scan {
     for f in `find . -type f -name "setup.py"`  ; do (pushd `dirname $f` \
        && NAME=`grep name setup.py | cut -f2 -d'=' | sed "s|[',]||g"` \

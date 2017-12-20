@@ -45,7 +45,7 @@ services:
     environment:
       TASK: 'worker'
     healthcheck:
-      test: ["CMD-SHELL", "cd /code/exchange && celery inspect ping -A exchange.celery_app || exit 1"]
+      test: ["CMD-SHELL", "cd /code && celery inspect ping -A exchange.celery_app || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 10
