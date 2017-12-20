@@ -4,6 +4,7 @@
 
 from django.db import models
 
+
 class Thumbnail(models.Model):
     object_type = models.CharField(max_length=255,
                                    blank=False)
@@ -25,7 +26,8 @@ class Thumbnail(models.Model):
 def save_thumbnail(objectType, objectId, mime, img, automatic=False):
     thumb = None
     try:
-        thumb = Thumbnail.objects.get(object_type=objectType, object_id=objectId)
+        thumb = Thumbnail.objects.get(
+            object_type=objectType, object_id=objectId)
     except Thumbnail.DoesNotExist:
         thumb = Thumbnail(object_type=objectType, object_id=objectId)
 
@@ -36,7 +38,7 @@ def save_thumbnail(objectType, objectId, mime, img, automatic=False):
 
     # save the thumbnail
     thumb.save()
-        
+
 
 # Check to see if this is an 'automatic' type
 # of thumbnail.
@@ -48,7 +50,8 @@ def save_thumbnail(objectType, objectId, mime, img, automatic=False):
 #
 def is_automatic(objectType, objectId):
     try:
-        t = Thumbnail.objects.get(object_type=objectType, object_id=objectId)
+        t = Thumbnail.objects.get(
+            object_type=objectType, object_id=objectId)
     # when no legend exists, then one should be generated automatically.
     except Thumbnail.DoesNotExist:
         return True

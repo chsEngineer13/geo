@@ -12,6 +12,7 @@ from .models import save_thumbnail
 
 logger = logging.getLogger(__name__)
 
+
 # Get a thumbnail image generated from GeoServer
 #
 # This is based on the function in GeoNode but gets
@@ -49,18 +50,23 @@ def get_gs_thumbnail(instance):
     thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-
     tries = 0
     max_tries = 30
     while tries < max_tries:
-        logger.debug('Thumbnail: Requesting thumbnail from GeoServer. Attempt %d of %d', tries + 1, max_tries)
+        logger.debug(
+            'Thumbnail: Requesting thumbnail from GeoServer. '
+            'Attempt %d of %d',
+            tries + 1, max_tries)
         resp, image = http_client.request(thumbnail_create_url)
         if 200 <= resp.status <= 299:
             if 'ServiceException' not in image:
                 return image
         else:
             # Unexpected Error Code, Stop Trying
-            logger.debug('Thumbnail: Encountered unexpected status code: %d.  Aborting.', resp.status)
+            logger.debug(
+                'Thumbnail: Encountered unexpected status code: %d.  '
+                'Aborting.',
+                resp.status)
             logger.debug(resp)
             break
 
@@ -69,6 +75,7 @@ def get_gs_thumbnail(instance):
         time.sleep(1)
 
     return None
+
 
 @task(
     max_retries=1,
@@ -81,7 +88,10 @@ def generate_thumbnail_task(instance_id, class_name):
             obj_type = 'layers'
         except Layer.DoesNotExist:
             # Instance not saved yet, nothing more we can do
-            logger.debug('Thumbnail: Layer \'%s\' does not yet exist, cannot generate thumbnail.', instance_id)
+            logger.debug(
+                'Thumbnail: Layer \'%s\' does not yet exist, cannot '
+                'generate thumbnail.',
+                instance_id)
             return
     elif class_name == 'Map':
         try:
@@ -89,22 +99,34 @@ def generate_thumbnail_task(instance_id, class_name):
             obj_type = 'maps'
         except Map.DoesNotExist:
             # Instance not saved yet, nothing more we can do
-            logger.debug('Thumbnail: Map \'%s\' does not yet exist, cannot generate thumbnail.', instance_id)
+            logger.debug(
+                'Thumbnail: Map \'%s\' does not yet exist, cannot '
+                'generate thumbnail.',
+                instance_id)
             return
     else:
-        logger.debug('Thumbnail: Unsupported class: %s. Aborting.', class_name)
+        logger.debug(
+            'Thumbnail: Unsupported class: %s. Aborting.', class_name)
         return
 
-    logger.debug('Thumbnail: Generating thumbnail for \'%s\' of type %s.', instance_id, class_name)
+    logger.debug(
+        'Thumbnail: Generating thumbnail for \'%s\' of type %s.',
+        instance_id, class_name)
     if(instance_id is not None and is_automatic(obj_type, instance_id)):
         # have geoserver generate a preview png and return it.
         thumb_png = get_gs_thumbnail(instance)
 
         if(thumb_png is not None):
-            logger.debug('Thumbnail: Thumbnail successfully generated for \'%s\'.', instance_id)
+            logger.debug(
+                'Thumbnail: Thumbnail successfully generated for \'%s\'.',
+                instance_id)
             save_thumbnail(obj_type, instance_id, 'image/png', thumb_png, True)
         else:
-            logger.debug('Thumbnail: Unable to get thumbnail image from GeoServer for \'%s\'.', instance_id)
+            logger.debug(
+                'Thumbnail: Unable to get thumbnail image from '
+                'GeoServer for \'%s\'.',
+                instance_id)
+
 
 # This is used as a post-save signal that will
 # automatically geneirate a new thumbnail if none existed
@@ -121,12 +143,22 @@ def generate_thumbnail(instance, sender, **kwargs):
 
     if instance_id is not None:
         if instance.is_published:
-            logger.debug('Thumbnail: Issuing generate thumbnail task for \'%s\'.', instance_id)
-            generate_thumbnail_task.delay(instance_id=instance_id, class_name=instance.class_name)
+            logger.debug(
+                'Thumbnail: Issuing generate thumbnail task for \'%s\'.',
+                instance_id)
+            generate_thumbnail_task.delay(
+                instance_id=instance_id, class_name=instance.class_name)
         else:
-            logger.debug('Thumbnail: Instance \'%s\' is not published, skipping generation.', instance_id)
+            logger.debug(
+                'Thumbnail: Instance \'%s\' is not published, skipping '
+                'generation.',
+                instance_id)
     else:
-        logger.debug('Thumbnail: Unsupported class: \'%s\'. Unable to generate thumbnail.', instance.class_name)
+        logger.debug(
+            'Thumbnail: Unsupported class: \'%s\'. Unable to generate '
+            'thumbnail.',
+            instance.class_name)
+
 
 def register_post_save_functions():
     # Disconnect first in case this function is called twice
@@ -135,5 +167,6 @@ def register_post_save_functions():
     post_save.connect(generate_thumbnail, sender=Layer, weak=False)
     post_save.disconnect(generate_thumbnail, sender=Map)
     post_save.connect(generate_thumbnail, sender=Map, weak=False)
+
 
 register_post_save_functions()

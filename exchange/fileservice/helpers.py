@@ -1,6 +1,7 @@
 from django.conf import settings
 import os
 
+
 def get_streaming_supported():
     """
     example settings file
@@ -20,7 +21,8 @@ def get_fileservice_dir():
     }
     """
     conf = getattr(settings, 'FILESERVICE_CONFIG', {})
-    dir = conf.get('store_dir', os.path.join(settings.MEDIA_ROOT, 'fileservice'))
+    dir = conf.get(
+        'store_dir', os.path.join(settings.MEDIA_ROOT, 'fileservice'))
     return os.path.normpath(dir) + os.sep
 
 
@@ -39,4 +41,3 @@ def get_fileservice_files():
 
 def get_filename_absolute(filename):
     return '{}/{}'.format(get_fileservice_dir(), filename)
-

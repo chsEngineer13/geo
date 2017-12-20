@@ -48,7 +48,8 @@ urlpatterns = patterns(
     url(r'^help/$', views.documentation_page, name='help'),
     url(r'^developer/$', views.documentation_page, name='developer'),
 
-    url(r'^services/(?P<pk>\d+)/publish$', views.publish_service, name='publish_service'),
+    url(r'^services/(?P<pk>\d+)/publish$',
+        views.publish_service, name='publish_service'),
 
     url(r'^about/', views.about_page, name='about'),
     url(r'^capabilities/', views.capabilities, name='capabilities'),
@@ -98,9 +99,12 @@ if settings.ES_SEARCH:
     urlpatterns += [url(r'^api/(?P<resourcetype>registry)/search/$',
                         views.elastic_search,
                         name='elastic_search')]
-    urlpatterns += [url(r'^autocomplete', 
-                        views.empty_page, 
+    urlpatterns += [url(r'^autocomplete',
+                        views.empty_page,
                         name='autocomplete_override')]
+
+if 'geonode_anywhere' in settings.INSTALLED_APPS:
+    urlpatterns += [url(r"^anywhere/", include("geonode_anywhere.urls")), ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls

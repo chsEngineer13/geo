@@ -6,7 +6,7 @@ from osgeo_importer.handlers import ensure_can_run
 from osgeo_importer.models import UploadLayer
 from osgeo_importer.utils import quote_ident
 from geonode.layers.models import Layer
-from osgeo_importer.handlers.geonode.backward_compatibility import set_attributes
+from osgeo_importer.handlers.geonode.backward_compatibility import set_attributes  # noqa
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -27,10 +27,16 @@ class GeoNodeTimeExtentHandler(ImportHandlerMixin):
         if layer_config['raster']:
             return False
 
-        self.has_start = 'start_date' in layer_config and layer_config['start_date'] != None
-        self.has_end = 'end_date' in layer_config and layer_config['end_date'] != None
-        logger.debug('Can run for Configuring time extent for %s. has_start=%s, has_end=%s',
-                     layer, self.has_start, self.has_end)
+        self.has_start = 'start_date' \
+                         in layer_config \
+                         and layer_config['start_date'] is not None
+        self.has_end = 'end_date' \
+                       in layer_config \
+                       and layer_config['end_date'] is not None
+        logger.debug(
+            'Can run for Configuring time extent for %s. '
+            'has_start=%s, has_end=%s',
+            layer, self.has_start, self.has_end)
         self.geonode_layer = Layer.objects.get(name=layer)
 
         return (self.geonode_layer and (self.has_start or self.has_end))
@@ -45,13 +51,16 @@ class GeoNodeTimeExtentHandler(ImportHandlerMixin):
         # Configure time extent
 
         if self.has_start:
-            logger.debug('Configuring Start Date Range for column %s', layer_config['start_date'])
+            logger.debug(
+                'Configuring Start Date Range for column %s',
+                layer_config['start_date'])
             start_date_col = quote_ident(layer_config['start_date'])
 
         if self.has_end:
-            logger.debug('Configuring End Date Range for column %s', layer_config['end_date'])
+            logger.debug(
+                'Configuring End Date Range for column %s',
+                layer_config['end_date'])
             end_date_col = quote_ident(layer_config['end_date'])
-
 
         conn = db.connections[settings.OSGEO_DATASTORE]
         cursor = conn.cursor()
@@ -62,20 +71,16 @@ class GeoNodeTimeExtentHandler(ImportHandlerMixin):
         maxt = None
 
         if self.has_start and self.has_end:
-            query = 'SELECT min(%s), max(%s) FROM %s;' % (start_date_col,
-                                                            end_date_col,
-                                                            scrub_layer_name)
+            query = 'SELECT min(%s), max(%s) FROM %s;' % (
+                start_date_col, end_date_col, scrub_layer_name)
         elif self.has_start:
-            query = 'SELECT min(%s), max(%s) FROM %s;' % (start_date_col,
-                                                            start_date_col,
-                                                            scrub_layer_name)
+            query = 'SELECT min(%s), max(%s) FROM %s;' % (
+                start_date_col, start_date_col, scrub_layer_name)
         elif self.has_end:
-            query = 'SELECT min(%s), max(%s) FROM %s;' % (end_date_col,
-                                                            end_date_col,
-                                                            scrub_layer_name)
+            query = 'SELECT min(%s), max(%s) FROM %s;' % (
+                end_date_col, end_date_col, scrub_layer_name)
         cursor.execute(query)
         mint, maxt = cursor.fetchone()
-
 
         logger.debug('mint %s maxt %s', mint, maxt)
 
@@ -83,5 +88,4 @@ class GeoNodeTimeExtentHandler(ImportHandlerMixin):
         self.geonode_layer.temporal_extent_end = maxt
         self.geonode_layer.save()
 
-        
         return 'Temporal Extent Configured'

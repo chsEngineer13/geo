@@ -1,6 +1,6 @@
-================
+==================
 Boundless Exchange
-================
+==================
 
 .. image:: https://codecov.io/gh/boundlessgeo/exchange/graph/badge.svg
     :target: https://codecov.io/gh/boundlessgeo/exchange
@@ -8,54 +8,29 @@ Boundless Exchange
 .. image:: https://travis-ci.org/boundlessgeo/exchange.svg?branch=master
     :target: https://travis-ci.org/boundlessgeo/exchange
 
-Boundless Exchange is a Django project built on GeoNode.
+**The Open Platform for Collaboration**
+
+Boundless Exchange is the open web-based geospatial CMS (Content Management System) for all your GIS needs.
+Its intuitive user interface enables non-developers to easily facilitate collaboration across the organization
+using a powerful, web-enabled versioning engine featuring connected or offline editing and basemaps from leading
+resource providers.
+
+**Create -** In-house or crowdsourced mapping content functionality
+
+**Manage -** Intuitive user interface for greater project management
+
+**Share -** Fast, easy, and version-controlled
+
+`Documentation <https://connect.boundlessgeo.com/docs/exchange/latest/>`_
 
 
-development environment setup
-#############################
+`Get Boundless Exchange <http://boundlessgeo.com/buy-boundless-exchange/>`_
 
-The development team recommends using Docker for setting up your development environment.
-See the `README.rst <docker/README.rst>`_ in ``docker`` folder for detailed instructions.
+------------
 
+**Development Environment Setup**
 
----------
-Run Tests
----------
-Steps to run tests locally:
+The development team recommends using **Docker Engine 1.12.0+** (docker-compose) for setting up your development
+environment. See the `README`_ in the docker directory for detailed instructions.
 
-.. code-block:: bash
-
-   pip install pytest-cov
-   export DJANGO_SETTINGS_MODULE='exchange.settings'
-
-   # see __init__.py and test_settings.py in exchange/settings/
-   export PYTEST=1
-   python manage.py migrate
-   python manage.py collectstatic --noinput
-   py.test --ignore=tests/ \
-           --cov-report html:cov_html \
-           --cov=exchange exchange/tests/
-
-Steps to run tests in docker environment:
-
-.. code-block:: bash
-
-   # enter docker container environment
-   sudo docker-compose exec exchange /bin/bash
-
-   source /env/bin/activate
-   cd /mnt/exchange
-   ./dev/run_tests.sh
-
-
-----------------------
-Settings Configuration
-----------------------
-
-**AUDITING**
-
-NOTE: All setting are configurable as environment variables
-
-- AUDIT_ENABLED - Boolean (default is True)
-- AUDIT_TO_FILE - Boolean (default is False)
-- AUDIT_LOGFILE_LOCATION - Full path with filename (default is setting directory filename exchange_audit_log.json)
+.. _README: docker/README.md

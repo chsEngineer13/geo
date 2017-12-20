@@ -1,7 +1,9 @@
-FROM nginx
-RUN mkdir -p /etc/nginx/ssl
-ADD ./ssl/nginx.crt /etc/nginx/ssl/
-ADD ./ssl/nginx.key /etc/nginx/ssl/
-RUN chmod 600 /etc/nginx/ssl/*
-ADD exchange.conf /etc/nginx/conf.d/default.conf
-ADD 502.html /usr/share/nginx/html/
+FROM nginx:alpine
+LABEL maintainer="Daniel Berry <dberry@boundlessgeo.com>"
+
+RUN apk update &&\
+    apk add --no-cache ca-certificates curl
+
+COPY ./ssl/* /etc/nginx/ssl/
+RUN chmod 400 /etc/nginx/ssl/*
+COPY nginx.conf /etc/nginx/nginx.conf

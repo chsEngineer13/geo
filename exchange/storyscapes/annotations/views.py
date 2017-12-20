@@ -12,8 +12,11 @@ import json
 
 
 def _annotations_get(req, mapid):
-    mapobj = resolve_object(req, Map, {'id': mapid}, permission='base.view_resourcebase')
-    cols = ['title', 'content', 'media', 'start_time', 'end_time', 'in_map', 'in_timeline', 'appearance', 'auto_show', 'pause_playback']
+    mapobj = resolve_object(
+        req, Map, {'id': mapid}, permission='base.view_resourcebase')
+    cols = [
+        'title', 'content', 'media', 'start_time', 'end_time',
+        'in_map', 'in_timeline', 'appearance', 'auto_show', 'pause_playback']
     ann = Marker.objects.filter(map=mapid)
     ann = ann.order_by('start_time', 'end_time', 'title')
     if bool(req.GET.get('in_map', False)):
@@ -29,15 +32,18 @@ def _annotations_get(req, mapid):
 
     if 'csv' in req.GET:
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=map-%s-annotations.csv' % mapobj.id
+        response['Content-Disposition'] = (
+            'attachment; filename=map-{0}-annotations.csv').format(mapobj.id)
         response['Content-Encoding'] = 'utf-8'
         writer = csv.writer(response)
         writer.writerow(cols)
         sidx = cols.index('start_time')
         eidx = cols.index('end_time')
         # default csv writer chokes on unicode
-        encode = lambda v: v.encode('utf-8') if isinstance(v, basestring) else str(v)
-        get_value = lambda a, c: getattr(a, c) if c not in ('start_time', 'end_time') else ''
+        encode = lambda v: v.encode(
+            'utf-8') if isinstance(v, basestring) else str(v)
+        get_value = lambda a, c: getattr(
+            a, c) if c not in ('start_time', 'end_time') else ''
         for a in ann:
             vals = [encode(get_value(a, c)) for c in cols]
             vals[sidx] = a.start_time_str
@@ -51,7 +57,7 @@ def _annotations_get(req, mapid):
     def encode(query_set):
         results = []
         for res in query_set:
-            feature = { 'id' : res.id}
+            feature = {'id': res.id}
             if res.the_geom:
                 feature['geometry'] = res.the_geom
 
@@ -63,11 +69,13 @@ def _annotations_get(req, mapid):
             results.append(feature)
         return results
 
-    return json_response({'type':'FeatureCollection','features':encode(ann)})
+    return json_response(
+        {'type': 'FeatureCollection', 'features': encode(ann)})
 
 
 def _annotations_post(req, mapid):
-    mapobj = resolve_object(req, Map, {'id':mapid}, permission='base.change_resourcebase')
+    mapobj = resolve_object(
+        req, Map, {'id': mapid}, permission='base.change_resourcebase')
 
     # default action
     action = 'upsert'
@@ -101,7 +109,8 @@ def _annotations_post(req, mapid):
         form_mode = 'csv'
         content_type = 'text/html'
         get_props = lambda r: r
-        ids = list(Marker.objects.filter(map=mapobj).values_list('id', flat=True))
+        ids = list(Marker.objects.filter(
+            map=mapobj).values_list('id', flat=True))
         # delete existing, we overwrite
         finish = lambda: Marker.objects.filter(id__in=ids).delete()
         overwrite = True
@@ -112,7 +121,8 @@ def _annotations_post(req, mapid):
                 row = re[0] + 1
                 for e in re[1]:
                     response.append('[%s] %s : %s' % (row, e, re[1][e]))
-            return 'The following rows had problems:<ul><li>' + '</li><li>'.join(response) + "</li></ul>"
+            return 'The following rows had problems:<ul><li>' + \
+                   '</li><li>'.join(response) + "</li></ul>"
 
     if action == 'delete':
         Marker.objects.filter(pk__in=data['ids'], map=mapobj).delete()
@@ -121,7 +131,8 @@ def _annotations_post(req, mapid):
     if action != 'upsert':
         return HttpResponse('%s not supported' % action, status=400)
 
-    errors = _write_annotations(data, get_props, id_collector, mapobj, overwrite, form_mode)
+    errors = _write_annotations(
+        data, get_props, id_collector, mapobj, overwrite, form_mode)
 
     if errors:
         transaction.rollback()
@@ -138,7 +149,8 @@ def _annotations_post(req, mapid):
     return json_response(body=body, errors=errors, content_type=content_type)
 
 
-def _write_annotations(data, get_props, id_collector, mapobj, overwrite, form_mode):
+def _write_annotations(
+        data, get_props, id_collector, mapobj, overwrite, form_mode):
     i = None
     errors = []
     for i, r in enumerate(data):
@@ -173,7 +185,3 @@ def annotations(req, mapid):
         return _annotations_post(req, mapid)
 
     return HttpResponse(status=400)
-
-
-
-

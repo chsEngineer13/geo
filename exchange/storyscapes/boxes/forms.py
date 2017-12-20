@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from exchange.storyscapes.models.frame import Frame
-from exchange.storyscapes.utils import datetime_to_seconds, make_point, parse_date_time
+from exchange.storyscapes.utils import (
+    datetime_to_seconds, make_point, parse_date_time)
 
 import json
 

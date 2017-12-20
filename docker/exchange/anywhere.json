@@ -1,0 +1,16 @@
+[
+  {
+    "model": "oauth2_provider.application",
+    "pk": 1002,
+    "fields": {
+      "authorization_grant_type": "password",
+      "client_id": "anywhere",
+      "client_secret": "",
+      "client_type": "public",
+      "name": "Anywhere",
+      "redirect_uris": "",
+      "skip_authorization": true,
+      "user": 1
+    }
+  }
+]

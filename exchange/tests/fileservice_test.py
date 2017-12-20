@@ -9,13 +9,16 @@ import mock
 
 from . import ExchangeTest
 
+
 class FileItemResourceTest(ResourceTestCaseMixin, ExchangeTest):
 
     def setUp(self):
         super(FileItemResourceTest, self).setUp()
 
-        # turn on streaming_support so that test_view can test the view endpoint
-        # without streaming_supported set to True, view endpoint will behave exactly like download
+        # turn on streaming_support so that test_view can test the
+        # view endpoint
+        # without streaming_supported set to True, view endpoint
+        # will behave exactly like download
         settings.FILESERVICE_CONFIG['streaming_supported'] = True
 
         self.image_filename = 'image.jpg'
@@ -33,7 +36,8 @@ class FileItemResourceTest(ResourceTestCaseMixin, ExchangeTest):
     @mock.patch('exchange.fileservice.api.open', mock_open())
     def test_upload(self):
         self.login()
-        resp = self.client.post(self.upload_url, {'file': self.image_file}, follow=True)
+        resp = self.client.post(
+            self.upload_url, {'file': self.image_file}, follow=True)
         self.assertHttpCreated(resp)
 
     @mock.patch('exchange.fileservice.api.serve')
@@ -42,31 +46,44 @@ class FileItemResourceTest(ResourceTestCaseMixin, ExchangeTest):
         isfile_mock.return_value = True
         serve_mock.return_value = HttpResponse('Empty Response')
         self.login()
-        resp = self.client.get(self.download_url_template.format(self.image_filename), follow=True)
-        self.assertEquals(resp.get('Content-Disposition'), 'attachment; filename="{}"'.format(self.image_filename))
+        resp = self.client.get(
+            self.download_url_template.format(
+                self.image_filename), follow=True)
+        self.assertEquals(
+            resp.get('Content-Disposition'),
+            'attachment; filename="{}"'.format(self.image_filename))
 
     @mock.patch('exchange.fileservice.api.os.path.isfile')
     def test_download_not_found(self, isfile_mock):
         isfile_mock.return_value = False
         self.login()
-        resp = self.client.get(self.download_url_template.format(self.image_filename), follow=True)
+        resp = self.client.get(
+            self.download_url_template.format(
+                self.image_filename), follow=True)
         self.assertHttpNotFound(resp)
 
     def test_view(self):
         self.login()
-        resp = self.client.get(self.view_url_template.format(self.image_filename), follow=True)
+        resp = self.client.get(
+            self.view_url_template.format(
+                self.image_filename), follow=True)
         '''
-        the view end point is meant for playing back video with random access which means the progress indicator can be
-        dragged around. FO the random access to work properly, instead of django serving up the video, nginx or apache
-        have to serve it up and the fileservice adds the 'X-Sendfile' and the equivalent 'X-Accel-Redirect' so that
-        they take it from there. Even if that happens, at least one of the headers should technically be present.
+        the view end point is meant for playing back video with random access
+         which means the progress indicator can be dragged around. FO the
+         random access to work properly, instead of django serving up the
+         video, nginx or apache have to serve it up and the fileservice adds
+         the 'X-Sendfile' and the equivalent 'X-Accel-Redirect' so that
+        they take it from there. Even if that happens, at least one of the
+        headers should technically be present.
         '''
-        self.assertTrue(resp.get('X-Sendfile') or resp.get('X-Accel-Redirect'))
+        self.assertTrue(
+            resp.get('X-Sendfile') or resp.get('X-Accel-Redirect'))
 
     def test_upload_whitelist(self):
         settings.FILESERVICE_CONFIG['types_allowed'] = ['.txt']
         self.login()
-        resp = self.client.post(self.upload_url, {'file': self.image_file}, follow=True)
+        resp = self.client.post(
+            self.upload_url, {'file': self.image_file}, follow=True)
         self.assertHttpBadRequest(resp)
 
     @mock.patch('exchange.fileservice.helpers.get_fileservice_files')

@@ -35,10 +35,10 @@ class AuthZeroOAuth2(BaseOAuth2):
         """Return user details from Auth0 account"""
         user_metadata = response.get('user_metadata')
         app_metadata = response.get('app_metadata')
-        fullname, first_name, last_name = self.get_user_names(user_metadata.get('name'),
-                                                              user_metadata.get('firstName'),
-                                                              user_metadata.get('lastName'))
-
+        fullname, first_name, last_name = self.get_user_names(
+            user_metadata.get('name'),
+            user_metadata.get('firstName'),
+            user_metadata.get('lastName'))
         user_roles = app_metadata.get('SiteRole').split(',')
         superuser = False
         staff = False
@@ -70,5 +70,7 @@ class AuthZeroOAuth2(BaseOAuth2):
 
     def user_data(self, access_token, *args, **kwargs):
         """Grab user profile information from Auth0."""
-        response = self.get_json(self.USER_INFO_URL.format(domain=self.HOST, access_token=access_token))
+        response = self.get_json(
+            self.USER_INFO_URL.format(
+                domain=self.HOST, access_token=access_token))
         return response

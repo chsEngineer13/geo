@@ -47,9 +47,9 @@ class Frame(SpatioTemporalMixin):
                      ('weeks', 'Weeks'), ('months', 'Months'),
                      ('years', 'Years'),)
 
-    #content_type = models.ForeignKey(ContentType)
-    #object_id = models.PositiveIntegerField()
-    #content_object = fields.GenericForeignKey('content_type', 'object_id')
+    # content_type = models.ForeignKey(ContentType)
+    # object_id = models.PositiveIntegerField()
+    # content_object = fields.GenericForeignKey('content_type', 'object_id')
 
     map = models.ForeignKey(Map)
 

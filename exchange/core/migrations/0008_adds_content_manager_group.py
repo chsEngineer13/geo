@@ -18,8 +18,10 @@ class Migration(migrations.Migration):
         # Create the group
         AuthGroup(name='csw_manager').save()
         group = AuthGroup.objects.get(name='csw_manager')
-        content_type = ContentType.objects.get(app_label='services', model='service')
-        permissions = Permission.objects.filter(content_type=content_type)
+        content_type = ContentType.objects.get(
+            app_label='services', model='service')
+        permissions = Permission.objects.filter(
+            content_type=content_type)
 
         # Assign the permissions
         for perm in permissions:

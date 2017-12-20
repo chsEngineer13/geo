@@ -47,6 +47,7 @@ def isValid(v):
     else:
         return False
 
+
 SITENAME = os.getenv('SITENAME', 'exchange')
 WSGI_APPLICATION = "exchange.wsgi.application"
 ROOT_URLCONF = 'exchange.urls'
@@ -86,28 +87,36 @@ EXTENT_FILTER_ENABLED = str2bool(os.getenv('EXTENT_FILTER_ENABLED', 'True'))
 LOGIN_WARNING_ENABLED = str2bool(os.getenv('LOGIN_WARNING_ENABLED', 'False'))
 
 if LOGIN_WARNING_ENABLED:
-    LOGIN_WARNING_TEXT = os.getenv('LOGIN_WARNING_TEXT', '''<p>You are accessing a U.S. Government (USG)
-        Information System (IS) that is provided
-        for USG-authorized use only.  By using this IS (which includes any device attached to this IS), you
-        consent to the following conditions:</p><ul><li>The USG routinely intercepts, and monitors
-        communications on this IS for purposes including, but not limited to, penetration testing,
-        COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement
-        (LE), and counterintelligence (CI) investigations.</li><li>At any time, the USG may inspect
-        and seize data stored on this IS.</li><li>Communications using, or data stored on,
-        this IS are not private, are subject to routine monitoring, interception, and search,
-        and may be disclosed or used for any USG-authorized purpose.</li></ul><p>This IS includes security measures
-        (e.g., authentication and access controls) to protect USG interests -- not for your personal
-        benefit or privacy.  Notwithstanding the above, using this IS does not constitute consent to
-        PM, LE, or CI investigative searching or monitoring of the content of privileged communications,
-        or work product, related to personal representation or services by attorneys, psychotherapists,
-        or clergy, and their assistants.  Such communications and work product are private and
-        confidential.  See User Agreement for details.</p>''')
+    LOGIN_WARNING_TEXT = os.getenv(
+        'LOGIN_WARNING_TEXT',
+        '''<p>You are accessing a U.S. Government (USG) Information System
+         (IS) that is provided for USG-authorized use only.  By using this
+         IS (which includes any device attached to this IS), you consent to
+         the following conditions:</p><ul><li>The USG routinely intercepts,
+         and monitors communications on this IS for purposes including, but
+         not limited to, penetration testing, COMSEC monitoring, network
+         operations and defense, personnel misconduct (PM), law enforcement
+         (LE), and counterintelligence (CI) investigations.</li><li>At any
+         time, the USG may inspect and seize data stored on this IS.</li>
+         <li>Communications using, or data stored on, this IS are not
+         private, are subject to routine monitoring, interception, and search,
+         and may be disclosed or used for any USG-authorized purpose.</li>
+         </ul><p>This IS includes security measures (e.g., authentication and
+         access controls) to protect USG interests -- not for your personal
+         benefit or privacy.  Notwithstanding the above, using this IS does
+         not constitute consent to PM, LE, or CI investigative searching or
+         monitoring of the content of privileged communications, or work
+         product, related to personal representation or services by attorneys,
+         psychotherapists, or clergy, and their assistants. Such
+         communications and work product are private and confidential.
+         See User Agreement for details.</p>''')
 
 # registration
 EMAIL_HOST = os.getenv('EMAIL_HOST', None)
 EMAIL_PORT = le(os.getenv('EMAIL_PORT', '25'))
 EMAIL_USE_TLS = str2bool(os.getenv('EMAIL_USE_TLS', 'False'))
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = os.getenv(
+    'EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', None)
@@ -205,7 +214,6 @@ else:
 if GEONODE_CLIENT_ENABLED:
     INSTALLED_APPS = ('geonode-client',) + INSTALLED_APPS
     LAYER_PREVIEW_LIBRARY = 'react'
-         
 
 # authorized exempt urls
 ADDITIONAL_AUTH_EXEMPT_URLS = os.getenv(
@@ -214,9 +222,13 @@ ADDITIONAL_AUTH_EXEMPT_URLS = os.getenv(
 )
 
 if isinstance(ADDITIONAL_AUTH_EXEMPT_URLS, str):
-    ADDITIONAL_AUTH_EXEMPT_URLS = tuple(map(str.strip, ADDITIONAL_AUTH_EXEMPT_URLS.split(',')))
+    ADDITIONAL_AUTH_EXEMPT_URLS = tuple(map(
+        str.strip, ADDITIONAL_AUTH_EXEMPT_URLS.split(',')))
 
-AUTH_EXEMPT_URLS = ('/capabilities', '/complete/*', '/login/*', '/api/o/*', '/api/roles', '/api/adminRole', '/api/users', '/o/token/*', '/o/authorize/*',) + ADDITIONAL_AUTH_EXEMPT_URLS
+AUTH_EXEMPT_URLS = ('/capabilities', '/complete/*', '/login/*',
+                    '/api/o/*', '/api/roles', '/api/adminRole',
+                    '/api/users', '/o/token/*', '/o/authorize/*',
+                    ) + ADDITIONAL_AUTH_EXEMPT_URLS
 
 # geoserver settings
 GEOSERVER_URL = os.getenv(
@@ -279,9 +291,10 @@ GEOSERVER_BASE_URL = OGC_SERVER['default']['PUBLIC_LOCATION'] + 'wms'
 GEOGIG_DATASTORE_NAME = 'geogig-repo'
 
 GEOFENCE = {
-    'url': os.getenv('GEOFENCE_URL', "{}/geofence".format(GEOSERVER_LOCAL_URL.strip('/'))),
+    'url': os.getenv(
+        'GEOFENCE_URL', "{}/geofence".format(GEOSERVER_LOCAL_URL.strip('/'))),
     'username': os.getenv('GEOFENCE_USERNAME', GEOSERVER_USER),
-    'password':os.getenv('GEOFENCE_PASSWORD', GEOSERVER_PASSWORD)
+    'password': os.getenv('GEOFENCE_PASSWORD', GEOSERVER_PASSWORD)
 }
 
 MAP_BASELAYERS[0]['source']['url'] = (OGC_SERVER['default']
@@ -295,7 +308,8 @@ DATABASES['exchange_imports'] = dj_database_url.parse(
     POSTGIS_URL,
     conn_max_age=600
 )
-DATABASES['exchange_imports']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+DATABASES[
+    'exchange_imports']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 WGS84_MAP_CRS = str2bool(os.getenv('WGS84_MAP_CRS', 'False'))
 if WGS84_MAP_CRS:
@@ -312,7 +326,7 @@ CATALOGUE = {
     'default': {
         'ENGINE': 'geonode.catalogue.backends.pycsw_http',
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': REGISTRY_LOCAL_URL + '/catalog/'+ REGISTRY_CAT +'/csw',
+        'URL': REGISTRY_LOCAL_URL + '/catalog/' + REGISTRY_CAT + '/csw',
     }
 }
 
@@ -416,18 +430,20 @@ if GEOAXIS_ENABLED:
     ) + AUTHENTICATION_BACKENDS
     for i, middleware in enumerate(MIDDLEWARE_CLASSES):
         # Put custom middleware class after AuthenticationMiddleware
-        if middleware == 'django.contrib.auth.middleware.AuthenticationMiddleware':
+        if middleware == 'django.contrib.auth.middleware.AuthenticationMiddleware':  # noqa
             MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
-            MIDDLEWARE_CLASSES.insert(i+1, 'exchange.auth.middleware.GeoAxisMiddleware')
-
+            MIDDLEWARE_CLASSES.insert(
+                i + 1, 'exchange.auth.middleware.GeoAxisMiddleware')
 
 # NearSight Options, adding NEARSIGHT_ENABLED to env will enable nearsight.
 NEARSIGHT_ENABLED = str2bool(os.getenv('NEARSIGHT_ENABLED', 'False'))
 if NEARSIGHT_ENABLED:
-    NEARSIGHT_UPLOAD_PATH = os.getenv('NEARSIGHT_UPLOAD_PATH', '/opt/nearsight/store')
+    NEARSIGHT_UPLOAD_PATH = os.getenv(
+        'NEARSIGHT_UPLOAD_PATH', '/opt/nearsight/store')
     NEARSIGHT_LAYER_PREFIX = os.getenv('NEARSIGHT_LAYER_PREFIX', 'nearsight')
     NEARSIGHT_CATEGORY_NAME = os.getenv('NEARSIGHT_CATEGORY_NAME', 'NearSight')
-    NEARSIGHT_GEONODE_RESTRICTIONS = os.getenv('NEARSIGHT_GEONODE_RESTRICTIONS', 'NearSight Data')
+    NEARSIGHT_GEONODE_RESTRICTIONS = os.getenv(
+        'NEARSIGHT_GEONODE_RESTRICTIONS', 'NearSight Data')
     DATABASES['nearsight'] = DATABASES['exchange_imports']
     CACHES = locals().get('CACHES', {})
     CACHES['nearsight'] = CACHES.get('nearsight', {
@@ -435,7 +451,8 @@ if NEARSIGHT_ENABLED:
         'LOCATION': NEARSIGHT_UPLOAD_PATH,
     })
     CACHES['default'] = CACHES.get('default', CACHES.get('nearsight'))
-    NEARSIGHT_SERVICE_UPDATE_INTERVAL = le(os.getenv('NEARSIGHT_SERVICE_UPDATE_INTERVAL', '5'))
+    NEARSIGHT_SERVICE_UPDATE_INTERVAL = le(os.getenv(
+        'NEARSIGHT_SERVICE_UPDATE_INTERVAL', '5'))
     SSL_VERIFY = str2bool(os.getenv('SSL_VERIFY', 'False'))
     INSTALLED_APPS += ('nearsight',)
 
@@ -468,8 +485,8 @@ if 'osgeo_importer' in INSTALLED_APPS:
         'osgeo_importer.handlers.geonode.GeoNodePublishHandler',
         'osgeo_importer.handlers.geoserver.GeoServerStyleHandler',
         'osgeo_importer.handlers.geonode.GeoNodeMetadataHandler',
-        'exchange.importer.geonode_timeextent_handler.GeoNodeTimeExtentHandler',
-        'exchange.importer.geonode_postimport_handler.GeoNodePostImportHandler',
+        'exchange.importer.geonode_timeextent_handler.GeoNodeTimeExtentHandler',  # noqa
+        'exchange.importer.geonode_postimport_handler.GeoNodePostImportHandler',  # noqa
     ]
     PROJECTION_DIRECTORY = os.path.join(
         os.path.dirname(pyproj.__file__),
@@ -477,7 +494,8 @@ if 'osgeo_importer' in INSTALLED_APPS:
     )
 
 FILESERVICE_CONFIG = {
-    'store_dir': os.getenv('FILESERVICE_MEDIA_ROOT', os.path.join(MEDIA_ROOT, 'fileservice')),
+    'store_dir': os.getenv(
+        'FILESERVICE_MEDIA_ROOT', os.path.join(MEDIA_ROOT, 'fileservice')),
     'types_allowed': ['.jpg', '.jpeg', '.png'],
     'streaming_supported': False
 }
@@ -498,8 +516,10 @@ SESSION_COOKIE_AGE = 60 * 60 * 24
 
 # Set default access to layers to all, user will need to deselect the checkbox
 # manually
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = str2bool(os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True'))
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = str2bool(os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True'))
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = str2bool(
+    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True'))
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = str2bool(
+    os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True'))
 
 ENABLE_SOCIAL_LOGIN = str2bool(os.getenv('ENABLE_SOCIAL_LOGIN', 'False'))
 
@@ -540,25 +560,28 @@ if ENABLE_SOCIAL_LOGIN:
     ENABLE_AUTH0_LOGIN = isValid(SOCIAL_AUTH_AUTH0_KEY)
     AUTH0_APP_NAME = os.getenv('AUTH0_APP_NAME', 'Connect')
     OAUTH_AUTH0_ADMIN_ROLES = os.getenv(
-        'OAUTH_AUTH0_ADMIN_ROLES', 
+        'OAUTH_AUTH0_ADMIN_ROLES',
         ""
     )
     OAUTH_AUTH0_ALLOWED_ROLES = os.getenv(
-        'OAUTH_AUTH0_ALLOWED_ROLES', 
+        'OAUTH_AUTH0_ALLOWED_ROLES',
         ""
     )
 
     if OAUTH_AUTH0_ADMIN_ROLES.strip():
         AUTH0_ADMIN_ROLES = map(str.strip, OAUTH_AUTH0_ADMIN_ROLES.split(','))
     if OAUTH_AUTH0_ALLOWED_ROLES.strip():
-        AUTH0_ALLOWED_ROLES = map(str.strip, OAUTH_AUTH0_ALLOWED_ROLES.split(','))
+        AUTH0_ALLOWED_ROLES = map(
+            str.strip, OAUTH_AUTH0_ALLOWED_ROLES.split(','))
 
     SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('OAUTH_FACEBOOK_KEY', None)
     SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('OAUTH_FACEBOOK_SECRET', None)
     OAUTH_FACEBOOK_SCOPES = os.getenv('OAUTH_FACEBOOK_SCOPES', 'email')
-    SOCIAL_AUTH_FACEBOOK_SCOPE = map(str.strip, OAUTH_FACEBOOK_SCOPES.split(','))
+    SOCIAL_AUTH_FACEBOOK_SCOPE = map(
+        str.strip, OAUTH_FACEBOOK_SCOPES.split(','))
     SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-        'fields': os.getenv('OAUTH_FACEBOOK_PROFILE_EXTRA_PARAMS', 'id,name,email'),
+        'fields': os.getenv(
+            'OAUTH_FACEBOOK_PROFILE_EXTRA_PARAMS', 'id,name,email'),
     }
     ENABLE_FACEBOOK_LOGIN = isValid(SOCIAL_AUTH_FACEBOOK_KEY)
 
@@ -569,14 +592,17 @@ if ENABLE_SOCIAL_LOGIN:
     SOCIAL_AUTH_GEOAXIS_KEY = os.getenv('OAUTH_GEOAXIS_KEY', None)
     SOCIAL_AUTH_GEOAXIS_SECRET = os.getenv('OAUTH_GEOAXIS_SECRET', None)
     SOCIAL_AUTH_GEOAXIS_HOST = os.getenv('OAUTH_GEOAXIS_HOST', None)
-    OAUTH_GEOAXIS_USER_FIELDS = os.getenv('OAUTH_GEOAXIS_USER_FIELDS', 'username, email, last_name, first_name')
-    SOCIAL_AUTH_GEOAXIS_USER_FIELDS = map(str.strip, OAUTH_GEOAXIS_USER_FIELDS.split(','))
+    OAUTH_GEOAXIS_USER_FIELDS = os.getenv(
+        'OAUTH_GEOAXIS_USER_FIELDS', 'username, email, last_name, first_name')
+    SOCIAL_AUTH_GEOAXIS_USER_FIELDS = map(
+        str.strip, OAUTH_GEOAXIS_USER_FIELDS.split(','))
     OAUTH_GEOAXIS_SCOPES = os.getenv('OAUTH_GEOAXIS_SCOPES', 'UserProfile.me')
     SOCIAL_AUTH_GEOAXIS_SCOPE = map(str.strip, OAUTH_GEOAXIS_SCOPES.split(','))
     ENABLE_GEOAXIS_LOGIN = isValid(SOCIAL_AUTH_GEOAXIS_KEY)
     if SITEURL.startswith('https'):
         SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
-    # GeoAxisOAuth2 will cause all login attempt to fail if SOCIAL_AUTH_GEOAXIS_HOST is None
+    # GeoAxisOAuth2 will cause all login attempt to fail if
+    # SOCIAL_AUTH_GEOAXIS_HOST is None
     if ENABLE_GEOAXIS_LOGIN:
         AUTHENTICATION_BACKENDS += (
             'exchange.auth.backends.geoaxis.GeoAxisOAuth2',

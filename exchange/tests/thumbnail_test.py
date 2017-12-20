@@ -92,7 +92,8 @@ class ThumbnailTest(ExchangeTest):
     # base 64 encoded string.  This tests that capability.
     #
     def test_base64_pngs(self):
-        thumbpng = open(self.get_file_path('test_thumbnail0.png'), 'rb').read()
+        thumbpng = open(
+            self.get_file_path('test_thumbnail0.png'), 'rb').read()
 
         header = 'data:image/png;base64,'
 
@@ -102,7 +103,7 @@ class ThumbnailTest(ExchangeTest):
                              base64_png,
                              content_type='image/png')
 
-        self.assertEqual(r.status_code, 201, 'Error: '+r.content)
+        self.assertEqual(r.status_code, 201, 'Error: ' + r.content)
 
         # then test the correct image came back.
         r = self.client.get('/thumbnails/maps/0')
@@ -119,7 +120,6 @@ class ThumbnailTest(ExchangeTest):
         self.client.post('/thumbnails/layers/layer1', png1,
                          content_type='image/png')
 
-
         self.client.post('/thumbnails/layers/layer2', png2,
                          content_type='image/png')
 
@@ -133,4 +133,3 @@ class ThumbnailTest(ExchangeTest):
 
         self.assertEqual(data1, png1, 'Mismatch in thumbnail 1')
         self.assertEqual(data2, png2, 'Mismatch in thumbnail 2')
-

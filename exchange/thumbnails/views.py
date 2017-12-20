@@ -16,7 +16,8 @@ from .models import Thumbnail, save_thumbnail
 
 # cache the missing thumbnail for missing images.
 TEST_DIR = os.path.dirname(__file__)
-MISSING_THUMB = open(os.path.join(TEST_DIR, 'static/missing_thumb.png'), 'r').read()
+MISSING_THUMB = open(
+    os.path.join(TEST_DIR, 'static/missing_thumb.png'), 'r').read()
 
 
 def thumbnail_view(request, objectType, objectId):
@@ -59,7 +60,8 @@ def thumbnail_view(request, objectType, objectId):
             return HttpResponse(status=400, content='Bad thumbnail format.')
 
         # if the thumbnail does not exist, create a new one.
-        save_thumbnail(objectType, objectId, 'image/'+image_type, image_bytes, False)
+        save_thumbnail(
+            objectType, objectId, 'image/' + image_type, image_bytes, False)
 
         # return a success message.
         return HttpResponse(status=201)

@@ -36,5 +36,5 @@ class ColorPickerWidget(forms.TextInput):
 
     def render(self, name, value, attrs=None):
         rendered = super(ColorPickerWidget, self).render(name, value, attrs)
-        return rendered + mark_safe(COLORFIELD_HTML_WIDGET % {
-                            'color': value, 'name': name})
+        return rendered + mark_safe(
+            COLORFIELD_HTML_WIDGET % {'color': value, 'name': name})

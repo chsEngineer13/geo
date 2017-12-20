@@ -1,39 +1,15 @@
-FROM centos:6
-
-RUN yum install -y https://s3.amazonaws.com/exchange-development-yum/exchange-development-repo-1.0.0.noarch.rpm
-RUN yum update -y
-
-RUN yum -y install boundless-vendor-libs \
-                   libtiff-devel \
-                   libxml2-devel \
-                   libxslt-devel \
-                   make \
-                   gcc \
-                   gcc-c++ \
-                   python27 \
-                   python27-devel \
-                   python27-setuptools \
-                   python27-virtualenv \
-                   git
-
-RUN /usr/local/bin/virtualenv /env && chmod -R 755 /env
+FROM quay.io/boundlessgeo/gdal-py-alpine
 
 EXPOSE 8001
 
-RUN git clone https://github.com/boundlessgeo/registry/ /opt/registry/
+RUN git clone https://github.com/boundlessgeo/registry/ /code/vendor/registry/
 
-ADD registry-settings.sh /etc/profile.d/
+WORKDIR /code/vendor/registry/
 
+RUN pip install -r requirements.txt
 
-ADD setupdb.sh /root/
-ADD run.sh /root/
-ADD registry_mappings_overrides.json /root/
+RUN echo "placemark"
+COPY entrypoint.sh /app/entrypoint.sh
+COPY registry_mappings_overrides.json /app/registry_mappings_overrides.json
 
-# globally install what registry needs.
-WORKDIR /opt/registry/
-RUN source /env/bin/activate && pip install -r requirements.txt
-
-# inititalize
-RUN /root/setupdb.sh
-
-CMD /root/run.sh
+CMD ["/app/entrypoint.sh"]

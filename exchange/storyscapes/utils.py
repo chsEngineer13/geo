@@ -26,8 +26,10 @@ def datetime_to_seconds(dt):
     delta = dt - _epoch
     # @todo replace with 2.7 call to total_seconds
     # return delta.total_seconds()
-    return ((delta.days * 86400 + delta.seconds) * 10**6
-            + delta.microseconds) / 1e6
+    return (
+        (
+            delta.days * 86400 + delta.seconds
+        ) * 10**6 + delta.microseconds) / 1e6
 
 
 def parse_date_time(val):

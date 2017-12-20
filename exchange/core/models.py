@@ -35,7 +35,6 @@ from geonode.base.enumerations import UPDATE_FREQUENCIES
 from django.conf import settings
 
 
-
 class ThumbnailImage(SingletonModel):
     thumbnail_image = models.ImageField(
         upload_to=os.path.join(settings.MEDIA_ROOT, 'thumbs'),
@@ -71,7 +70,8 @@ class ThumbnailImageForm(forms.Form):
 
 
 def get_classifications():
-        return [(x, str(x)) for x in getattr(settings, 'CLASSIFICATION_LEVELS', [])]
+        return [(x, str(x)) for x in getattr(
+            settings, 'CLASSIFICATION_LEVELS', [])]
 
 
 def get_caveats():
@@ -79,24 +79,30 @@ def get_caveats():
 
 
 def get_provenances():
-        default = [('Commodity', 'Commodity'), ('Crowd-sourced data', 'Crowd-sourced data'),
-                   ('Derived by trusted agents ', 'Derived by trusted agents '),
-                   ('Open Source', 'Open Source'), ('Structured Observations (SOM)',
-                                                    'Structured Observations (SOM)'), ('Unknown', 'Unknown')]
+        default = [('Commodity', 'Commodity'),
+                   ('Crowd-sourced data', 'Crowd-sourced data'),
+                   ('Derived by trusted agents ',
+                    'Derived by trusted agents '),
+                   ('Open Source', 'Open Source'),
+                   ('Structured Observations (SOM)',
+                    'Structured Observations (SOM)'),
+                   ('Unknown', 'Unknown')]
 
-        provenance_choices = [(x, str(x)) for x in getattr(settings, 'REGISTRY_PROVENANCE_CHOICES', [])]
+        provenance_choices = [(x, str(x)) for x in getattr(
+            settings, 'REGISTRY_PROVENANCE_CHOICES', [])]
 
         return provenance_choices + default
 
 
 class CSWRecord(models.Model):
     # Registry requires a UUID for all new records
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=128, default='Unknown')
     user = models.ForeignKey(
-          settings.AUTH_USER_MODEL,
-          null=True,
-          related_name="csw_records_created")
+        settings.AUTH_USER_MODEL,
+        null=True,
+        related_name="csw_records_created")
 
     category_choices = (
         ('Air', 'Air (Aero)'),
@@ -115,19 +121,23 @@ class CSWRecord(models.Model):
         ('Weather', 'Weather')
     )
 
-    classification = models.CharField(max_length=128, blank=True, choices=get_classifications())
-    releasability = models.CharField(max_length=128, blank=True, choices=get_caveats())
+    classification = models.CharField(
+        max_length=128, blank=True, choices=get_classifications())
+    releasability = models.CharField(
+        max_length=128, blank=True, choices=get_caveats())
     title = models.CharField(max_length=328, blank=False)
     short_name = models.CharField(max_length=328, blank=True)
     modified = models.DateField(default=datetime.date.today, blank=False)
     created = models.DateField(default=datetime.date.today, blank=False)
     registered = models.DateField(default=datetime.date.today, blank=False)
     # 'creator' is assumed to be distinct from logged-in User here
-    creator = models.CharField(max_length=328, blank=True, verbose_name='Agency')
+    creator = models.CharField(
+        max_length=328, blank=True, verbose_name='Agency')
     record_type = models.CharField(max_length=128, blank=True)
     alternative = models.CharField(max_length=128, blank=True)
     abstract = models.TextField(blank=True)
-    source = models.URLField(max_length=512, blank=False, verbose_name='Service Endpoint')
+    source = models.URLField(
+        max_length=512, blank=False, verbose_name='Service Endpoint')
     relation = models.CharField(max_length=128, blank=True)
     record_format = models.CharField(max_length=128, blank=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
@@ -140,32 +150,40 @@ class CSWRecord(models.Model):
     contact_email = models.CharField(max_length=128, blank=True)
     contact_phone = models.CharField(max_length=128, blank=True)
     contact_position = models.CharField(max_length=128, blank=True)
-    contact_address_type = models.CharField(max_length=128, blank=True, choices=(('Physical', 'Physical'), ('Postal', 'Postal')))
+    contact_address_type = models.CharField(
+        max_length=128, blank=True, choices=(
+            ('Physical', 'Physical'), ('Postal', 'Postal')))
     contact_address = models.CharField(max_length=128, blank=True)
     contact_city = models.CharField(max_length=128, blank=True)
     contact_state = models.CharField(max_length=2, blank=True)
     contact_country = models.CharField(max_length=128, blank=True)
     contact_zip = models.CharField(max_length=128, blank=True)
-    provenance = models.CharField(max_length=100, blank=True, choices=get_provenances())
+    provenance = models.CharField(
+        max_length=100, blank=True, choices=get_provenances())
     gold = models.BooleanField(max_length=128, default=False, blank=True)
     category = models.CharField(max_length=128, choices=category_choices,
                                 blank=True)
-    maintenance_frequency = models.CharField('maintenance frequency', max_length=255, choices=UPDATE_FREQUENCIES,
-                                             blank=True, null=True, help_text='Frequency with which modifications and deletions are made to the data after '
-                                        'it is first produced')
+    maintenance_frequency = models.CharField(
+        'maintenance frequency', max_length=255, choices=UPDATE_FREQUENCIES,
+        blank=True, null=True,
+        help_text='Frequency with which modifications and deletions are made '
+                  'to the data after it is first produced')
     license = models.ForeignKey(License, null=True, blank=True,
                                 verbose_name='License',
                                 help_text='License of the dataset')
     keywords = models.CharField(max_length=128, blank=True)
 
     fees = models.CharField(max_length=1000, null=True, blank=True)
-    topic_category = models.ForeignKey(TopicCategory, null=True, blank=True, limit_choices_to=Q(is_choice=True))
+    topic_category = models.ForeignKey(
+        TopicCategory, null=True, blank=True, limit_choices_to=Q(
+            is_choice=True))
     status_message = models.TextField(blank=True)
 
     @property
     def contact_information(self):
         """Returns formatted contact information."""
-        return "Email: {}\nPhone: {}".format(self.contact_email, self.contact_phone)
+        return "Email: {}\nPhone: {}".format(
+            self.contact_email, self.contact_phone)
 
     class Meta(object):
         verbose_name = 'CSW Record'
@@ -188,5 +206,6 @@ class CSWRecordReference(models.Model):
                       ('OGC:WMS', 'WMS'),
                       ('OGC:WPS', 'WPS'))
     record = models.ForeignKey(CSWRecord, related_name="references")
-    scheme = models.CharField(verbose_name='Service Type', choices=scheme_choices, max_length=100)
+    scheme = models.CharField(
+        verbose_name='Service Type', choices=scheme_choices, max_length=100)
     url = models.URLField(max_length=512, blank=False)

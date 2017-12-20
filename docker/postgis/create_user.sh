@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+POSTGRES="psql --username ${POSTGRES_USER}"
+
+$POSTGRES <<-EOSQL
+CREATE USER ${DB_USER} WITH CREATEDB PASSWORD '${DB_PASS}';
+EOSQL

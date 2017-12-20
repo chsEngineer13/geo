@@ -7,4 +7,3 @@ urlpatterns = patterns(
     '',
     url(r'^api/', include(fileitem_resource.urls)),
 )
-
