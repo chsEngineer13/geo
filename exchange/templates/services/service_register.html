@@ -115,34 +115,45 @@
                                         var hasSuccess = false;
                                         var error_count = 0;
                                         var layer_count = 0;
-                                        for (var item in data.result) {
-                                            if (data.result[item].service_id) {
-                                                hasSuccess = true;
 
-                                                if (data.result[item].available_layers) {
-                                                    layer_count += data.result[item].available_layers.length;
+                                        if (data.result) {
+
+                                            for (var item in data.result) {
+                                                if (data.result[item].service_id) {
+                                                    hasSuccess = true;
+
+                                                    if (data.result[item].available_layers) {
+                                                        layer_count += data.result[item].available_layers.length;
+                                                    }
+
+                                                } else {
+                                                    error_count++;
+                                                    $('<div>').attr("class", "result").text(data.result[item].msg).appendTo("#responseDiv");
                                                 }
 
-                                            } else {
-                                                error_count++;
-                                                $('<div>').attr("class", "result").text(data.result[item].msg).appendTo("#responseDiv");
+                                                $("#responseDiv").show();
                                             }
 
-                                            $("#responseDiv").show();
-                                        }
+                                            if (error_count == 0) {
+                                                if (data.result.length == 1) {
+                                                    $('#success').show();
+                                                    setTimeout(function () {
+                                                        window.location = "/services/" + data.result[item].service_id;
+                                                    }, 1000);
+                                                } else {
+                                                    $("#success").html('Successfully imported ' + layer_count + ' layers from ' + data.result.length + ' services.');
+                                                    $('#success').show();
+                                                    setTimeout(function () {
+                                                        window.location = "/services/";
+                                                    }, 1000);
+                                                }
 
-                                        if (error_count == 0){
-                                            if (data.result.length == 1){
-                                                $('#success').show();
-                                                setTimeout(function(){ window.location = "/services/" + data.result[item].service_id; }, 1000);
-                                            } else {
-                                                $("#success").html('Successfully imported ' + layer_count + ' layers from ' + data.result.length +' services.');
-                                                $('#success').show();
-                                                setTimeout(function(){ window.location = "/services/"; }, 1000);
+                                            } else if (error_count < data.result.length) {
+                                                $("#warning").html(layer_count + ' layers successfully imported, however, there were ' + error_count + ' errors encountered while processing ' + data.result.length + ' services. Please see below for details.');
+                                                $("#warning").show();
                                             }
-
-                                        } else if (error_count < data.result.length) {
-                                            $("#warning").html(layer_count + ' layers successfully importered, however, there were ' + error_count +' errors encountered while processing ' + data.result.length +' services. Please see below for details.');
+                                        }else{
+                                            $("#warning").html('Unable to resolve any layers from the service type. Please check the Service Url and Service Type.');
                                             $("#warning").show();
                                         }
                                     } else  if(data.status === 'failed') {
