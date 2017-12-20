@@ -28,9 +28,7 @@ node {
           docker system prune -f
           docker-compose up --build --force-recreate -d
           echo "Waiting for exchange to finish loading"
-          echo "..."
           curl http://ron-swanson-quotes.herokuapp.com/v2/quotes || echo "API is down"
-          echo "..."
           sleep 120
           """
       }

@@ -31,4 +31,6 @@ resource providers.
 **Development Environment Setup**
 
 The development team recommends using **Docker Engine 1.12.0+** (docker-compose) for setting up your development
-environment. See the README in the docker directory for detailed instructions.
+environment. See the `README`_ in the docker directory for detailed instructions.
+
+.. _README: docker/README.md
