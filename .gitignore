@@ -93,3 +93,6 @@ docker/data/*
 
 # anywhere
 vendor/exchange-mobile-extension
+
+# sonar
+.scannerwork/
