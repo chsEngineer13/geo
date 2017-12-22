@@ -31,7 +31,7 @@ def home_screen(request):
 
 
 def documentation_page(request):
-    return HttpResponseRedirect('/static/docs/index.html')
+    return HttpResponseRedirect('/static/docs/html/index.html')
 
 
 def get_pip_version(project):

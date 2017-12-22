@@ -44,7 +44,7 @@ class ThemeTestCase(ExchangeTest):
             pb_text="Test Powered By Text",
             pb_link="http://boundlessgeo.com/",
             docs_text="Documentation",
-            docs_link="/static/docs/index.html",
+            docs_link="/static/docs/html/index.html",
             background_logo="theme/img/default-background.png",
             primary_logo="theme/img/default-primary-logo.png",
             banner_logo="theme/img/default-banner-logo.png"

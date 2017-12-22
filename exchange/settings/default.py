@@ -194,7 +194,6 @@ INSTALLED_APPS = (
     'django_classification_banner',
     'maploom',
     'solo',
-    'exchange-docs',
     'exchange.storyscapes',
     'composer',
     'social_django',

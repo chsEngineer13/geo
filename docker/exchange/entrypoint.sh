@@ -5,6 +5,7 @@ set -e
 maploom_static='/usr/local/lib/python2.7/site-packages/maploom/static/maploom'
 maploom_html='/usr/local/lib/python2.7/site-packages/maploom/templates/maps/maploom.html'
 manage='python /code/manage.py'
+setup='python /code/setup.py'
 
 if [[ $TASK != 'worker' ]]; then
   if [[ $MAPLOOM_DEV == 1 ]]; then
@@ -24,6 +25,7 @@ if [[ $TASK != 'worker' ]]; then
     >&2 echo "registry is unavailable - sleeping"
     sleep 5
   done
+  $setup build_sphinx
   $manage migrate --noinput
   $manage collectstatic --noinput
   $manage loaddata default_users
