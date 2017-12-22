@@ -31,14 +31,19 @@ if [[ $TASK != 'worker' ]]; then
   $manage loaddata /code/docker/exchange/docker_oauth_apps.json
   $manage rebuild_index
   pip freeze
+  # app integration
+  plugins=()
   # anywhere integration
   if [[ -f /code/vendor/exchange-mobile-extension/setup.py ]]; then
      pip install /code/vendor/exchange-mobile-extension
      $manage loaddata /code/docker/exchange/anywhere.json
-     ADDITIONAL_APPS=geonode_anywhere $manage runserver 0.0.0.0:8000
-  else
-    $manage runserver 0.0.0.0:8000
+     plugins=("${plugins[@]}" "geonode_anywhere")
   fi
+  if [[ -f /code/vendor/services/setup.py ]]; then
+    pip install /code/vendor/services
+    plugins=("${plugins[@]}" "worm")
+  fi
+  ADDITIONAL_APPS=$(IFS=,; echo "${plugins[*]}") $manage runserver 0.0.0.0:8000
 else
   pip freeze
   C_FORCE_ROOT=1 celery worker --app=exchange.celery_app:app -B --loglevel DEBUG

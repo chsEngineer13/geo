@@ -94,5 +94,8 @@ docker/data/*
 # anywhere
 vendor/exchange-mobile-extension
 
+# servoces
+vendor/services
+
 # sonar
 .scannerwork/

@@ -106,6 +106,9 @@ if settings.ES_SEARCH:
 if 'geonode_anywhere' in settings.INSTALLED_APPS:
     urlpatterns += [url(r"^anywhere/", include("geonode_anywhere.urls")), ]
 
+if 'worm' in settings.INSTALLED_APPS:
+    urlpatterns += [url(r"^services/", include("worm.urls")), ]
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += geonode_urls
 urlpatterns += maploom_urls
