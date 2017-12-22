@@ -96,3 +96,6 @@ vendor/exchange-mobile-extension
 
 # sonar
 .scannerwork/
+
+# docs
+exchange/static/docs

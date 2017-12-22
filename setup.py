@@ -17,23 +17,32 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 from setuptools import setup, find_packages
+from sphinx.setup_command import BuildDoc
 
+os.environ['SPHINX_BUILD'] = 'exchange/static/docs'
+
+cmdclass = {'build_sphinx': BuildDoc}
+version = __import__('exchange').get_version() # '1.3.1'
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
     name="geonode-exchange",
-    version=__import__('exchange').get_version(),
+    version=version,
+    cmdclass=cmdclass,
     author="Boundless Spatial",
     author_email="contact@boundlessgeo.com",
     description="Exchange, a platform for geospatial collaboration",
     long_description=(read('README.rst')),
-    # Full list of classifiers can be found at:
-    # http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    command_options={
+        'build_sphinx': {
+            'project': ('setup.py', 'exchange'),
+            'version': ('setup.py', version),
+            'release': ('setup.py', version),
+        }},
     classifiers=[
         'Intended Audience :: System Administrators',
         'Environment :: Web Environment',
