@@ -29,3 +29,14 @@ function sonar-scan {
               -Dsonar.language=py \
               -Dsonar.python.pylint=/usr/bin/pylint
 }
+
+# function to get exchange healthcheck
+function exchange-healthcheck {
+    if [[ $(docker inspect --format '{{ .State.Health.Status }}' exchange) = healthy ]]; then
+        echo "exchange is healthy"
+    else
+        echo "exchange is not healthy, attempting to get logs"
+        docker-compose logs exchange
+        exit 1
+    fi
+}

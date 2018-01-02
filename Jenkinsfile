@@ -30,7 +30,13 @@ node {
           docker-compose up --build --force-recreate -d
           echo "Waiting for exchange to finish loading"
           curl http://ron-swanson-quotes.herokuapp.com/v2/quotes || echo "API is down"
+          """
+      }
+
+      stage('Exchange-Healthcheck'){
+        sh """
           sleep 120
+          /bin/bash -c ". docker/devops/helper.sh && exchange-healthcheck"
           """
       }
 
