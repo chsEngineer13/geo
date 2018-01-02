@@ -45,7 +45,10 @@ if [[ $TASK != 'worker' ]]; then
     pip install /code/vendor/services
     plugins=("${plugins[@]}" "worm")
   fi
-  ADDITIONAL_APPS=$(IFS=,; echo "${plugins[*]}") $manage runserver 0.0.0.0:8000
+  if [ "$plugins" ]; then
+    ADDITIONAL_APPS=$(IFS=,; echo "${plugins[*]}")
+  fi
+  $manage runserver 0.0.0.0:8000
 else
   pip freeze
   C_FORCE_ROOT=1 celery worker --app=exchange.celery_app:app -B --loglevel DEBUG

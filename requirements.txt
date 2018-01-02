@@ -34,3 +34,4 @@ elasticsearch-dsl>=2.0.0,<3.0.0
 social-auth-app-django==1.2.0
 mock==2.0.0
 Django==1.8.7
+six==1.10.0
