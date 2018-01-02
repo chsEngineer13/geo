@@ -36,11 +36,17 @@ git clone --recursive -j8 git://github.com/boundlessgeo/exchange.git
 cd exchange
 ```
 
-#### Update Repo
+#### Update submodules
+To ensure the latest version/commits are being used in all the submodules, run: 
+
 ```bash
 cd exchange
-git submodule update --init --recursive
+git submodule update --remote --recursive
 ```
+
+when working off a different branch on one of the submodule, you may have to specify the specific branch to follow.  
+This can be done by specifying the branch name using the ```branch``` variable in ```.gitmodules```.  
+The branch the goenode submodule follows changes over time, but is currently set to ```exchange/1.4.x```. 
 
 #### Initial Docker Setup
 This will run all the docker containers and display log output in the terminal
