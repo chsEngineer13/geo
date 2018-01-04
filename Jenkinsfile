@@ -103,5 +103,5 @@ def notifyBuild(String buildStatus = currentBuild.result) {
   }
 
   // Send notifications
-  slackSend (color: colorCode, message: summary)
+  slackSend (color: colorCode, message: summary, channel: '#exchange-bots')
 }
